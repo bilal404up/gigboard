@@ -134,28 +134,34 @@ interface Props {
   seed: string;
   category?: string | null;
   className?: string;
+  /** Hide the category tag on very small covers. */
+  showTag?: boolean;
 }
 
 /**
  * A cover built in code: flat shapes in two colors, one pattern rule per category,
  * seeded by the gig id so no two gigs match. No photos, gradients or shadows.
  */
-export function GigCover({ seed, category, className }: Props) {
+export function GigCover({ seed, category, className, showTag = true }: Props) {
   const cat = coverCategoryFor(category, seed);
   const { bg, fg, tag } = COVER_STYLES[cat];
   return (
+    <div className={cn("relative h-full w-full", className)}>
     <svg
       viewBox={`0 0 ${W} ${H}`}
-      className={cn("block h-full w-full", className)}
+      className="block h-full w-full"
       role="img"
       aria-label={`${tag} gig cover`}
       preserveAspectRatio="xMidYMid slice"
     >
       <rect width={W} height={H} fill={bg} />
       <g transform="translate(0 14) scale(1 0.92)">{figure(cat, seed, fg, bg)}</g>
-      <text x={10} y={16} fill={fg} fontSize={11} fontWeight={500} style={{ fontFamily: "var(--font-mono), monospace" }}>
-        {tag}
-      </text>
     </svg>
+    {showTag && (
+      <span className="num absolute left-2.5 top-2 text-[11px] leading-none" style={{ color: fg }}>
+        {tag}
+      </span>
+    )}
+    </div>
   );
 }

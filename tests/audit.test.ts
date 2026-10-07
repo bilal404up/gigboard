@@ -93,3 +93,20 @@ test("demo switch: refuses when no demo password is configured", async () => {
   delete process.env.DEMO_PASSWORD;
   assert.equal((await demoPost({ role: "buyer" })).status, 500);
 });
+
+// ---- stored XSS in gig descriptions ----
+test("cleanGigHtml: strips scripts, handlers and unsafe links but keeps formatting", async () => {
+  const { cleanGigHtml } = await import("../lib/security/clean-html");
+  const dirty =
+    '<p onclick="steal()">Hello <strong>there</strong></p><script>alert(1)</script><img src=x onerror=alert(1)>' +
+    '<a href="javascript:alert(1)">bad</a><a href="https://example.com" onmouseover="x()">ok</a><iframe src="https://evil.example"></iframe>' +
+    "<ul><li>one</li></ul><style>body{display:none}</style>";
+  const out = cleanGigHtml(dirty);
+  for (const bad of ["<script", "onerror", "onclick", "onmouseover", "javascript:", "<iframe", "<img", "<style"]) {
+    assert.ok(!out.toLowerCase().includes(bad), `output still contains ${bad}: ${out}`);
+  }
+  for (const good of ["<strong>there</strong>", "<li>one</li>", 'href="https://example.com"']) {
+    assert.ok(out.includes(good), `output lost ${good}: ${out}`);
+  }
+  assert.equal(cleanGigHtml(null as unknown as string), "");
+});

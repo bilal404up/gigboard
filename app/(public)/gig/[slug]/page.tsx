@@ -9,6 +9,7 @@ import { RatingStars } from "@/components/ui/rating-stars";
 import { OrderCard } from "@/components/gig/order-card";
 import { StickyMobileCTA } from "@/components/gig/sticky-mobile-cta";
 import { GigGallery } from "@/components/gig/gig-gallery";
+import { cleanGigHtml } from "@/lib/security/clean-html";
 import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { ReviewsSection } from "@/components/gig/reviews-section";
 import { createClient } from "@/lib/supabase/server";
@@ -98,8 +99,8 @@ export default async function GigDetailPage({ params }: { params: { slug: string
             <section className="bg-white border border-line rounded-2xl p-6 sm:p-7">
               <h2 className="font-heading text-lg text-ink mb-4">About this gig</h2>
               <div
-                className="prose prose-sm max-w-none prose-headings:font-semibold prose-headings:text-ink prose-p:text-ink prose-strong:text-ink prose-a:text-brand-primary-dark"
-                dangerouslySetInnerHTML={{ __html: gig.description }}
+                className="max-w-none text-[15px] leading-[22px] text-ink [&_h2]:mb-2 [&_h2]:mt-5 [&_h2]:text-[20px] [&_h2]:font-semibold [&_li]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_a]:underline"
+                dangerouslySetInnerHTML={{ __html: cleanGigHtml(gig.description) }}
               />
 
               {gig.tags && gig.tags.length > 0 && (

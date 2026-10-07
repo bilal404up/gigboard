@@ -55,7 +55,7 @@ export function DemoStrip() {
         <span className="truncate">
           <span className="sm:hidden">Sample data. Stripe test mode.</span>
           <span className="hidden sm:inline">
-            Everything here is sample data: gigs, sellers, ratings and reviews are invented. Payments run in Stripe test mode, so no real money moves.
+            Sample data: gigs, sellers and reviews are invented. Stripe test mode, no real money moves.
           </span>
         </span>
       </p>

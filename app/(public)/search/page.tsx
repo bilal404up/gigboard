@@ -195,7 +195,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
         </div>
 
         <div className="grid lg:grid-cols-[260px_1fr] gap-6 lg:gap-8">
-          <aside className="lg:sticky lg:top-20 lg:self-start">
+          <aside className="hidden lg:block lg:sticky lg:top-20 lg:self-start">
             <FilterSidebar searchParams={searchParams} selectedLevels={selectedLevels} />
           </aside>
 

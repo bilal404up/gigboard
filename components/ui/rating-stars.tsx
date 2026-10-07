@@ -31,7 +31,7 @@ export function RatingStars({ value, max = 5, size = 16, className, onChange, in
               width={size}
               height={size}
               className={cn(
-                filled ? "fill-warning text-warning" : half ? "fill-warning/50 text-warning" : "fill-neutral-200 text-neutral-300"
+                filled ? "fill-ink text-ink" : half ? "fill-ink/50 text-ink" : "fill-neutral-200 text-neutral-300"
               )}
             />
           </button>

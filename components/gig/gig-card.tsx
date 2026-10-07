@@ -73,7 +73,7 @@ function useFavorite(gigId: string, initial: boolean) {
   return { fav, pending, toggle };
 }
 
-function Cover({ gig }: { gig: GigCardData }) {
+function Cover({ gig, showTag = true }: { gig: GigCardData; showTag?: boolean }) {
   if (gig.thumbnail_url) {
     return (
       <Image
@@ -85,7 +85,7 @@ function Cover({ gig }: { gig: GigCardData }) {
       />
     );
   }
-  return <GigCover seed={gig.id} category={gig.category_slug} />;
+  return <GigCover seed={gig.id} category={gig.category_slug} showTag={showTag} />;
 }
 
 function HeartButton({ fav, pending, onClick, className }: { fav: boolean; pending: boolean; onClick: (e: React.MouseEvent) => void; className?: string }) {
@@ -175,7 +175,7 @@ export function GigRow({ gig, initialFavorited = false }: { gig: GigCardData; in
       className="group grid grid-cols-[56px_minmax(0,1fr)_32px] items-center gap-x-4 gap-y-1 border-b border-ink px-4 py-3 hover:bg-canvas-subtle md:grid-cols-[72px_minmax(0,1fr)_150px_132px_96px_112px_32px]"
     >
       <div className="relative row-span-2 aspect-[3/2] overflow-hidden md:row-span-1">
-        <Cover gig={gig} />
+        <Cover gig={gig} showTag={false} />
       </div>
       <div className="min-w-0">
         <p className="line-clamp-2 text-[15px] font-semibold leading-[22px] text-ink">{gig.title}</p>

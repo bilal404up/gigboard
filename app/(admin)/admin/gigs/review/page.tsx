@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { createClient } from "@/lib/supabase/server";
 import { GigReviewActions } from "@/components/admin/gig-review-actions";
 import { formatDate } from "@/lib/utils/format";
+import { cleanGigHtml } from "@/lib/security/clean-html";
 
 export default async function AdminGigsReviewPage() {
   const sb = createClient();
@@ -70,7 +71,7 @@ export default async function AdminGigsReviewPage() {
                 </div>
                 <div
                   className="px-5 sm:px-6 pb-4 text-sm text-ink-muted leading-relaxed line-clamp-3"
-                  dangerouslySetInnerHTML={{ __html: g.description.slice(0, 360) }}
+                  dangerouslySetInnerHTML={{ __html: cleanGigHtml(g.description.slice(0, 360)) }}
                 />
                 <div className="px-5 sm:px-6 py-4 border-t border-line bg-canvas-subtle">
                   <GigReviewActions gigId={g.id} />

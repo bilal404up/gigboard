@@ -70,7 +70,7 @@ export function OrderCard({
           <div className="flex items-center gap-1.5 text-ink-muted">
             <Clock className="w-3.5 h-3.5" />
             <span>
-              <span className="font-semibold text-ink">{currentPkg?.delivery_days}</span> days delivery
+              <span className="font-semibold text-ink">{currentPkg?.delivery_days}</span> {currentPkg?.delivery_days === 1 ? "day" : "days"} delivery
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-ink-muted">
@@ -79,7 +79,7 @@ export function OrderCard({
               <span className="font-semibold text-ink">
                 {currentPkg?.revisions === -1 ? "Unlimited" : currentPkg?.revisions}
               </span>{" "}
-              revisions
+              {currentPkg?.revisions === 1 ? "revision" : "revisions"}
             </span>
           </div>
         </div>

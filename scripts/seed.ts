@@ -80,7 +80,6 @@ const GIGS: Array<[string, string, string, [number, number, number]]> = [
   ["priyaNair", BUSINESS, "I will transcribe and summarize your meetings", [30, 80, 170]],
 ];
 
-const DELIVERY = [3, 5, 8];
 
 async function createAuthUser(email: string, fullName: string, username: string) {
   const { data, error } = await sb.auth.admin.createUser({
@@ -149,7 +148,7 @@ async function main() {
         slug: slugify(title) + "-" + Math.random().toString(36).slice(2, 6),
         description: `<p>${title}. This is a sample gig for the Gigboard demo. What you get:</p><ul><li>A clear plan before work starts</li><li>Progress you can check at each step</li><li>Payment held until you approve the work</li></ul>`,
         short_description: title.slice(0, 150),
-        tags: title.split(" ").filter((w) => w.length > 3).slice(0, 5),
+        tags: title.toLowerCase().split(" ").filter((w) => w.length > 3 && !["will", "that", "your", "with", "from", "into"].includes(w)).slice(0, 5),
         thumbnail_url: null,
         status: "active",
         total_orders: Math.round(sellerInfo.orders / 3),
@@ -171,7 +170,7 @@ async function main() {
         name: ["Starter", "Standard", "Premium"][i],
         description: ["One deliverable for a simple need", "The full job with more rounds of changes", "Everything, with priority handling"][i],
         price: prices[i],
-        delivery_days: DELIVERY[i],
+        delivery_days: [1 + (n % 5), 3 + (n % 5), 6 + (n % 5)][i],
         revisions: [1, 3, 5][i],
         features: [
           { name: "Source files", included: i >= 1 },
