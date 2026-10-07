@@ -2,7 +2,7 @@
 
 This is a demo project built to show app-audit work. It is not client work. Gigboard is a sample freelance marketplace (Next.js 14, Supabase, Stripe test mode). A set of realistic flaws is planted in the `audit/before` state, and the write-up in `AUDIT.md` shows how each one was found and fixed.
 
-Status: work in progress. The audit and the fixes are not written yet.
+Status: audit written (see AUDIT.md), three issues fixed with tests, one issue documented but not fixed. Not published yet.
 
 ---
 

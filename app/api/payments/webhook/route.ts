@@ -20,6 +20,13 @@ export async function POST(request: NextRequest) {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!secret || secret.includes("placeholder")) {
+    // Demo fallback only outside production. In production a missing secret
+    // must fail loudly so Stripe retries and the misconfiguration is noticed,
+    // instead of orders silently never leaving "pending_payment".
+    if (process.env.NODE_ENV === "production") {
+      console.error("STRIPE_WEBHOOK_SECRET is not configured");
+      return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
+    }
     return NextResponse.json({ received: true, demoMode: true });
   }
   if (!signature) {
