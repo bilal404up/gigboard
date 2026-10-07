@@ -19,7 +19,7 @@ export function SellerCard({ username, fullName, avatarUrl, level, rating, total
   return (
     <Link
       href={`/seller/${username}`}
-      className="group block bg-white border border-line rounded-xl p-5 text-center transition-all hover:border-line-strong hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+      className="group block bg-white border border-line rounded-xl p-5 text-center transition-all hover:border-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
     >
       <Avatar className="w-20 h-20 mx-auto mb-3 border border-line">
         {avatarUrl && <AvatarImage src={avatarUrl} />}

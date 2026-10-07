@@ -7,7 +7,7 @@ export default function SellerProfileLoading() {
     <>
       <Navbar />
       <main className="bg-canvas min-h-screen">
-        <div className="h-48 sm:h-56 bg-gradient-to-br from-brand-primary via-brand-primary-dark to-[#064E50]" />
+        <div className="h-48 sm:h-56 bg-brand-primary" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-16 sm:-mt-20 pb-12">
           <div className="bg-white border border-line rounded-2xl overflow-hidden">
             <div className="p-6 sm:p-8 flex flex-col sm:flex-row gap-6 items-start">

@@ -16,7 +16,7 @@ export function Sidebar({ items, title }: { items: SidebarItem[]; title?: string
   return (
     <aside className="w-60 shrink-0 border-r border-neutral-200 bg-white hidden lg:block">
       <nav className="p-4 space-y-1 sticky top-16">
-        {title && <h3 className="text-xs font-semibold uppercase text-neutral-500 px-2 mb-2">{title}</h3>}
+        {title && <h3 className="text-xs font-semibold text-neutral-500 px-2 mb-2">{title}</h3>}
         {items.map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = item.icon;

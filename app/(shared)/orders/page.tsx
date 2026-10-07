@@ -37,7 +37,7 @@ export default async function OrdersPage() {
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <header className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-1">My account</p>
+          <p className="text-xs font-semibold text-ink-subtle mb-1">My account</p>
           <h1 className="font-heading text-2xl sm:text-3xl text-ink">Orders</h1>
           <p className="text-sm text-ink-subtle mt-1">
             {orders?.length ?? 0} total · most recent first

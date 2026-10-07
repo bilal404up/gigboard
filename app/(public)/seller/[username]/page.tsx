@@ -7,6 +7,7 @@ import { SellerLevelBadge } from "@/components/seller/seller-level-badge";
 import { RatingStars } from "@/components/ui/rating-stars";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { GigCard, type GigCardData } from "@/components/gig/gig-card";
+import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { initials, isOnline, countryFlag, formatDate } from "@/lib/utils/format";
@@ -20,11 +21,26 @@ export default async function SellerProfilePage({ params }: { params: { username
 
   const [{ data: profile }, { data: gigs }, { data: reviews }] = await Promise.all([
     sb.from("seller_profiles").select("*").eq("user_id", user.id).single(),
-    sb.from("gigs").select("id, slug, title, thumbnail_url, average_rating, total_reviews").eq("seller_id", user.id).eq("status", "active"),
+    sb.from("gigs").select("id, slug, title, thumbnail_url, average_rating, total_reviews, category_id").eq("seller_id", user.id).eq("status", "active"),
     sb.from("reviews").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }).limit(10),
   ]);
 
   if (!profile) notFound();
+
+  // Real starting price and delivery time per gig (this page used to show a fixed $50).
+  const gigIdList = (gigs ?? []).map((g: any) => g.id);
+  const { data: pkgRows } = gigIdList.length
+    ? await sb.from("gig_packages").select("gig_id, price, delivery_days").in("gig_id", gigIdList)
+    : { data: [] as any[] };
+  const minPrice = new Map<string, number>();
+  const minDays = new Map<string, number>();
+  for (const r of (pkgRows ?? []) as any[]) {
+    const price = Number(r.price);
+    const d = Number(r.delivery_days);
+    if (!minPrice.has(r.gig_id) || price < minPrice.get(r.gig_id)!) minPrice.set(r.gig_id, price);
+    if (!minDays.has(r.gig_id) || d < minDays.get(r.gig_id)!) minDays.set(r.gig_id, d);
+  }
+  const roots = await getCategoryRootSlugs();
 
   const memberSince = new Date(user.created_at).getFullYear();
   const isVerified = (profile as any).is_verified ?? false;
@@ -33,7 +49,7 @@ export default async function SellerProfilePage({ params }: { params: { username
     <>
       <Navbar />
       <main className="bg-canvas min-h-screen">
-        <div className="relative h-48 sm:h-56 bg-gradient-to-br from-brand-primary via-brand-primary-dark to-[#064E50] overflow-hidden">
+        <div className="relative h-48 sm:h-56 bg-brand-primary overflow-hidden">
           <div className="absolute inset-0 opacity-30" style={{
             backgroundImage: "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.15) 1px, transparent 0)",
             backgroundSize: "24px 24px",
@@ -44,7 +60,7 @@ export default async function SellerProfilePage({ params }: { params: { username
           <div className="bg-white border border-line rounded-2xl overflow-hidden">
             <div className="p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row gap-6 items-start">
-                <Avatar className="w-28 h-28 sm:w-32 sm:h-32 border-4 border-white -mt-20 sm:-mt-24 shadow-card-hover shrink-0 bg-canvas-subtle">
+                <Avatar className="w-28 h-28 sm:w-32 sm:h-32 border-4 border-white -mt-20 sm:-mt-24 shrink-0 bg-canvas-subtle">
                   {user.avatar_url && <AvatarImage src={user.avatar_url} />}
                   <AvatarFallback className="text-3xl bg-canvas-subtle text-ink-muted">
                     {initials(user.full_name)}
@@ -74,7 +90,7 @@ export default async function SellerProfilePage({ params }: { params: { username
 
                   <div className="flex items-center gap-2 flex-wrap">
                     {isOnline(user.last_seen) && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full bg-green-50 text-green-700 border border-green-100 text-xs font-medium">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full bg-white text-success border border-success text-xs font-medium">
                         <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
                         Online now
                       </span>
@@ -111,7 +127,7 @@ export default async function SellerProfilePage({ params }: { params: { username
               <Stat label="Rating" value={profile.average_rating.toFixed(2)} />
               <Stat label="Orders completed" value={profile.total_orders_completed.toString()} />
               <Stat label="On-time delivery" value={`${profile.on_time_delivery_rate}%`} />
-              <Stat label="Response rate" value={`${profile.response_rate ?? "—"}%`} />
+              <Stat label="Response rate" value={`${profile.response_rate ?? "n/a"}%`} />
             </div>
           </div>
 
@@ -138,7 +154,9 @@ export default async function SellerProfilePage({ params }: { params: { username
                       thumbnail_url: g.thumbnail_url,
                       average_rating: g.average_rating || 0,
                       total_reviews: g.total_reviews || 0,
-                      starting_price: 50,
+                      starting_price: minPrice.get(g.id) ?? 0,
+                      category_slug: roots.get((g as any).category_id) ?? null,
+                      delivery_days: minDays.get(g.id) ?? null,
                       seller: {
                         username: user.username,
                         full_name: user.full_name,
@@ -249,7 +267,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-center px-4 py-5 border-r border-line last:border-r-0 [&:nth-child(2)]:border-r-0 md:[&:nth-child(2)]:border-r">
       <p className="font-heading text-xl sm:text-2xl text-ink tabular-nums">{value}</p>
-      <p className="text-2xs uppercase tracking-wider text-ink-subtle mt-1 font-medium">{label}</p>
+      <p className="text-2xs text-ink-subtle mt-1 font-medium">{label}</p>
     </div>
   );
 }

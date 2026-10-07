@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
- * Keepalive endpoint — runs on a Vercel Cron every 3 days to prevent
+ * Keepalive endpoint, runs on a Vercel Cron every 3 days to prevent
  * Supabase from auto-pausing the free-tier project after 7 consecutive
  * days of inactivity.
  *
  * Does a few small reads across different tables so any read is sufficient
  * to register the project as active. Intentionally has NO auth so it works
- * even if CRON_SECRET isn't set in env vars — this is a safety net.
+ * even if CRON_SECRET isn't set in env vars, this is a safety net.
  *
  * Safe to hit manually for verification (returns counts but no data).
  */

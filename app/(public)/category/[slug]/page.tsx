@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { GigCard, GigCardSkeleton, type GigCardData } from "@/components/gig/gig-card";
+import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 300;
@@ -21,7 +22,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
 
   const { data: gigRows } = await sb
     .from("gigs")
-    .select("id, slug, title, thumbnail_url, average_rating, total_reviews, seller_id")
+    .select("id, slug, title, thumbnail_url, average_rating, total_reviews, seller_id, category_id")
     .eq("category_id", category.id)
     .eq("status", "active")
     .order("total_orders", { ascending: false })
@@ -37,16 +38,21 @@ export default async function CategoryPage({ params }: { params: { slug: string 
       ? sb.from("seller_profiles").select("user_id, seller_level").in("user_id", sellerIds)
       : Promise.resolve({ data: [] as any[] }),
     gigIds.length > 0
-      ? sb.from("gig_packages").select("gig_id, price").in("gig_id", gigIds)
+      ? sb.from("gig_packages").select("gig_id, price, delivery_days").in("gig_id", gigIds)
       : Promise.resolve({ data: [] as any[] }),
   ]);
   const userById = new Map((users ?? []).map((u: any) => [u.id, u]));
   const profileById = new Map((profiles ?? []).map((p: any) => [p.user_id, p]));
   const minPriceByGig = new Map<string, number>();
+    const minDeliveryByGig = new Map<string, number>();
+    const roots = await getCategoryRootSlugs();
   for (const p of packages ?? []) {
     const cur = minPriceByGig.get((p as any).gig_id);
     const price = Number((p as any).price);
     if (cur == null || price < cur) minPriceByGig.set((p as any).gig_id, price);
+      const dd = Number((p as any).delivery_days);
+      const cd = minDeliveryByGig.get((p as any).gig_id);
+      if (cd == null || dd < cd) minDeliveryByGig.set((p as any).gig_id, dd);
   }
 
   const gigs: GigCardData[] = (gigRows ?? []).map((g: any) => {
@@ -60,6 +66,8 @@ export default async function CategoryPage({ params }: { params: { slug: string 
       average_rating: g.average_rating || 0,
       total_reviews: g.total_reviews || 0,
       starting_price: minPriceByGig.get(g.id) ?? 0,
+        category_slug: roots.get(g.category_id) ?? null,
+        delivery_days: minDeliveryByGig.get(g.id) ?? null,
       seller: {
         username: u?.username ?? "seller",
         full_name: u?.full_name ?? "Seller",

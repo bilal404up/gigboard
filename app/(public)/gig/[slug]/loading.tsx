@@ -28,7 +28,7 @@ export default function GigDetailLoading() {
             </div>
           </div>
           <div className="lg:col-span-4">
-            <div className="bg-white border border-line rounded-2xl overflow-hidden shadow-card">
+            <div className="bg-white border border-line rounded-2xl overflow-hidden ">
               <div className="h-12 border-b border-line flex">
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="flex-1 flex items-center justify-center">

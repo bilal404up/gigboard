@@ -101,7 +101,7 @@ export default function CreateGigPage() {
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <header className="mb-6">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-1">Seller</p>
+          <p className="text-xs font-semibold text-ink-subtle mb-1">Seller</p>
           <h1 className="font-heading text-2xl sm:text-3xl text-ink">Create a gig</h1>
           <p className="text-sm text-ink-subtle mt-1">
             Step {step} of {STEPS.length} · {STEPS[step - 1]}
@@ -132,7 +132,7 @@ export default function CreateGigPage() {
               <h2 className="font-heading text-lg text-ink">Overview</h2>
               <Field
                 label="Gig title"
-                hint={`${title.length}/80 — start with "I will…"`}
+                hint={`${title.length}/80, start with "I will…"`}
               >
                 <Input
                   value={title}
@@ -150,11 +150,11 @@ export default function CreateGigPage() {
           {step === 2 && (
             <div className="space-y-4">
               <h2 className="font-heading text-lg text-ink">Pricing</h2>
-              <p className="text-sm text-ink-subtle">Three tiers — buyers will see them as Basic / Standard / Premium tabs.</p>
+              <p className="text-sm text-ink-subtle">Three tiers, buyers will see them as Basic / Standard / Premium tabs.</p>
               {packages.map((pkg, i) => (
                 <div key={pkg.package_type} className="border border-line rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-2xs uppercase tracking-wider font-semibold text-brand-primary-dark">
+                    <span className="text-2xs font-semibold text-brand-primary-dark">
                       {pkg.package_type}
                     </span>
                     {pkg.package_type === "standard" && (
@@ -203,7 +203,7 @@ export default function CreateGigPage() {
           {step === 3 && (
             <div className="space-y-5">
               <h2 className="font-heading text-lg text-ink">Description</h2>
-              <Field label="Short description" hint={`${shortDesc.length}/150 — shown in cards`}>
+              <Field label="Short description" hint={`${shortDesc.length}/150, shown in cards`}>
                 <Textarea value={shortDesc} onChange={(e) => setShortDesc(e.target.value)} maxLength={150} rows={2} />
               </Field>
               <Field label="Full description" hint="Min 120 characters">

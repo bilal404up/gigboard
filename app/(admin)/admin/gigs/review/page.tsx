@@ -20,7 +20,7 @@ export default async function AdminGigsReviewPage() {
       <Navbar />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <header className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-1">Admin</p>
+          <p className="text-xs font-semibold text-ink-subtle mb-1">Admin</p>
           <h1 className="font-heading text-2xl sm:text-3xl text-ink">Gig review queue</h1>
           <p className="text-sm text-ink-subtle mt-1">
             {gigs?.length ?? 0} gig{gigs?.length === 1 ? "" : "s"} awaiting approval

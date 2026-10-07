@@ -4,6 +4,7 @@ import { Heart, Search as SearchIcon } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { GigCard, type GigCardData } from "@/components/gig/gig-card";
+import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 0;
@@ -25,7 +26,7 @@ export default async function FavoritesPage() {
   if (gigIds.length > 0) {
     const { data: gigRows } = await sb
       .from("gigs")
-      .select("id, slug, title, thumbnail_url, average_rating, total_reviews, seller_id, status")
+      .select("id, slug, title, thumbnail_url, average_rating, total_reviews, seller_id, category_id, status")
       .in("id", gigIds);
 
     const liveGigs = (gigRows ?? []).filter((g: any) => g.status === "active");
@@ -40,17 +41,22 @@ export default async function FavoritesPage() {
         ? sb.from("seller_profiles").select("user_id, seller_level").in("user_id", sellerIds)
         : Promise.resolve({ data: [] as any[] }),
       liveIds.length
-        ? sb.from("gig_packages").select("gig_id, price").in("gig_id", liveIds)
+        ? sb.from("gig_packages").select("gig_id, price, delivery_days").in("gig_id", liveIds)
         : Promise.resolve({ data: [] as any[] }),
     ]);
 
     const userById = new Map((users ?? []).map((u: any) => [u.id, u]));
     const profileById = new Map((profiles ?? []).map((p: any) => [p.user_id, p]));
     const minPriceByGig = new Map<string, number>();
+    const minDeliveryByGig = new Map<string, number>();
+    const roots = await getCategoryRootSlugs();
     for (const p of packages ?? []) {
       const cur = minPriceByGig.get((p as any).gig_id);
       const price = Number((p as any).price);
       if (cur == null || price < cur) minPriceByGig.set((p as any).gig_id, price);
+      const dd = Number((p as any).delivery_days);
+      const cd = minDeliveryByGig.get((p as any).gig_id);
+      if (cd == null || dd < cd) minDeliveryByGig.set((p as any).gig_id, dd);
     }
 
     // Re-sort by original favorite order (most recently saved first)
@@ -67,6 +73,8 @@ export default async function FavoritesPage() {
           average_rating: g.average_rating ?? 0,
           total_reviews: g.total_reviews ?? 0,
           starting_price: minPriceByGig.get(g.id) ?? 0,
+        category_slug: roots.get(g.category_id) ?? null,
+        delivery_days: minDeliveryByGig.get(g.id) ?? null,
           seller: {
             username: u?.username ?? "seller",
             full_name: u?.full_name ?? "Seller",
@@ -83,7 +91,7 @@ export default async function FavoritesPage() {
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <header className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-1">My account</p>
+          <p className="text-xs font-semibold text-ink-subtle mb-1">My account</p>
           <h1 className="font-heading text-2xl sm:text-3xl text-ink">Saved gigs</h1>
           <p className="text-sm text-ink-subtle mt-1">
             {gigs.length === 0

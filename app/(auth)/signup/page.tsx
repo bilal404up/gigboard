@@ -62,7 +62,7 @@ export default function SignupPage() {
             Gigboard
           </Link>
         </div>
-        <div className="bg-white p-7 sm:p-8 rounded-2xl border border-line shadow-card">
+        <div className="bg-white p-7 sm:p-8 rounded-2xl border border-line ">
           <h1 className="font-heading text-2xl text-ink text-center mb-1.5">Create your account</h1>
           <p className="text-sm text-ink-subtle text-center mb-6">Join in under a minute. No card required.</p>
           <form onSubmit={onSubmit} className="space-y-4">

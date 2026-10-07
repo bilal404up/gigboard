@@ -107,7 +107,7 @@ async function sideEffects(order: Order, status: OrderStatus) {
 
   switch (status) {
     case "requires_requirements": {
-      // Only fire emails once per order — on requires_requirements, not on the intermediate "active" hop.
+      // Only fire emails once per order, on requires_requirements, not on the intermediate "active" hop.
       await createNotification(sb, {
         userId: order.seller_id,
         type: "new_order",
@@ -118,7 +118,7 @@ async function sideEffects(order: Order, status: OrderStatus) {
       await sendEmail({
         to: buyer.email,
         toName: buyer.full_name,
-        subject: `Order Confirmed — ${order.order_number}`,
+        subject: `Order Confirmed, ${order.order_number}`,
         template: "order_placed_buyer",
         data: {
           buyerName: buyer.full_name,
@@ -126,14 +126,14 @@ async function sideEffects(order: Order, status: OrderStatus) {
           gigTitle: (order.package_snapshot as any)?.name ?? "Service",
           sellerName: seller.full_name,
           totalPaid: Number(order.buyer_total_paid).toFixed(2),
-          dueDate: order.delivery_due_at?.split("T")[0] ?? "—",
+          dueDate: order.delivery_due_at?.split("T")[0] ?? "n/a",
           orderUrl,
         },
       });
       await sendEmail({
         to: seller.email,
         toName: seller.full_name,
-        subject: `New Order — ${order.order_number}`,
+        subject: `New Order, ${order.order_number}`,
         template: "new_order_seller",
         data: {
           sellerName: seller.full_name,
@@ -141,7 +141,7 @@ async function sideEffects(order: Order, status: OrderStatus) {
           gigTitle: (order.package_snapshot as any)?.name ?? "Service",
           buyerName: buyer.full_name,
           sellerEarnings: Number(order.seller_earnings).toFixed(2),
-          dueDate: order.delivery_due_at?.split("T")[0] ?? "—",
+          dueDate: order.delivery_due_at?.split("T")[0] ?? "n/a",
           orderUrl,
         },
       });
@@ -175,7 +175,7 @@ async function sideEffects(order: Order, status: OrderStatus) {
       await sendEmail({
         to: buyer.email,
         toName: buyer.full_name,
-        subject: `Order Complete — ${order.order_number}`,
+        subject: `Order Complete, ${order.order_number}`,
         template: "order_completed",
         data: {
           buyerName: buyer.full_name,

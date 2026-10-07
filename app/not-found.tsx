@@ -9,7 +9,7 @@ export default function NotFound() {
       <Navbar />
       <main className="flex-1 flex items-center justify-center px-4 py-20 text-center">
         <div className="max-w-md">
-          <p className="text-xs font-semibold uppercase tracking-wider text-brand-primary-dark mb-3">
+          <p className="text-xs font-semibold text-brand-primary-dark mb-3">
             404 · Not found
           </p>
           <h1 className="font-heading text-3xl sm:text-4xl text-ink mb-3 text-balance">

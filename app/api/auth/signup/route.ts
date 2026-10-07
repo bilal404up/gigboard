@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "That username is already taken." }, { status: 409 });
   }
 
-  // Create the auth user with email already confirmed — skips the verification
+  // Create the auth user with email already confirmed, skips the verification
   // email entirely so the Supabase email rate limit doesn't apply.
   const { data: created, error: createErr } = await admin.auth.admin.createUser({
     email,

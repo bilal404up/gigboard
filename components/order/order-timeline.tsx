@@ -1,13 +1,12 @@
-import { Check, Circle } from "lucide-react";
 import type { OrderStatus } from "@/types/database.types";
-import { cn } from "@/lib/utils/cn";
+import { PinTile, type PinTileTone } from "@/components/ui/pin-tile";
 
-const STEPS: { key: OrderStatus | "ordered"; label: string }[] = [
-  { key: "ordered", label: "Order Placed" },
+const STEPS: { key: string; label: string }[] = [
+  { key: "ordered", label: "Ordered" },
   { key: "requires_requirements", label: "Requirements" },
-  { key: "in_progress", label: "In Progress" },
+  { key: "in_progress", label: "In progress" },
   { key: "delivered", label: "Delivered" },
-  { key: "completed", label: "Completed" },
+  { key: "completed", label: "Approved" },
 ];
 
 const STATUS_INDEX: Record<OrderStatus, number> = {
@@ -32,36 +31,34 @@ export function OrderTimeline({
   completed: string | null;
 }) {
   const current = STATUS_INDEX[status];
+  const finished = status === "completed";
+
+  const toneFor = (i: number): PinTileTone => {
+    if (status === "cancelled") return "cancelled";
+    if (i < current || (finished && i === current)) return "approved";
+    if (i === current) return status === "revision_requested" ? "revision" : "held";
+    return "new";
+  };
+
   return (
-    <div className="bg-white border border-neutral-200 rounded-xl p-6">
-      <div className="flex items-center justify-between">
-        {STEPS.map((step, i) => {
-          const done = i < current;
-          const active = i === current;
-          return (
-            <div key={step.key} className="flex-1 flex items-center">
-              <div className="flex flex-col items-center">
-                <div
-                  className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center",
-                    done && "bg-success text-white",
-                    active && "bg-brand-primary text-white animate-pulse-soft",
-                    !done && !active && "bg-neutral-100 text-neutral-400"
-                  )}
-                >
-                  {done ? <Check className="w-4 h-4" /> : <Circle className="w-3 h-3" />}
-                </div>
-                <p className={cn("text-xs mt-2", active ? "font-semibold" : "text-neutral-500")}>
-                  {step.label}
-                </p>
-              </div>
-              {i < STEPS.length - 1 && (
-                <div className={cn("flex-1 h-0.5", done ? "bg-success" : "bg-neutral-200")} />
-              )}
-            </div>
-          );
-        })}
-      </div>
+    <div className="rounded-lg border border-ink bg-white p-5">
+      <ol className="flex flex-wrap items-center gap-y-3" aria-label="Order progress">
+        {STEPS.map((step, i) => (
+          <li key={step.key} className="flex items-center">
+            <PinTile tone={toneFor(i)}>{step.label}</PinTile>
+            {i < STEPS.length - 1 && <span aria-hidden className="mx-1 h-px w-6 bg-ink sm:w-10" />}
+          </li>
+        ))}
+      </ol>
+      <p className="mt-4 text-[13px] leading-[18px] text-ink-muted">
+        {status === "cancelled"
+          ? "This order was cancelled."
+          : finished
+            ? `Approved${completed ? ` on ${new Date(completed).toLocaleDateString("en-US")}` : ""}. The seller has been paid.`
+            : delivered
+              ? `Delivered on ${new Date(delivered).toLocaleDateString("en-US")}. Approve it or ask for a revision.`
+              : "Your payment is held until you approve the work."}
+      </p>
     </div>
   );
 }

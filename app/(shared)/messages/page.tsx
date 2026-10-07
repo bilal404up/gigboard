@@ -147,12 +147,12 @@ export default function MessagesPage() {
     <>
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-        <div className="bg-white border border-line rounded-2xl flex h-[calc(100vh-9rem)] overflow-hidden shadow-card">
+        <div className="bg-white border border-line rounded-2xl flex h-[calc(100vh-9rem)] overflow-hidden ">
           <aside className="w-80 border-r border-line flex flex-col">
             <div className="px-5 h-16 flex items-center border-b border-line">
               <h2 className="font-heading text-lg text-ink">Messages</h2>
               {conversations.length > 0 && (
-                <span className="ml-auto text-2xs uppercase tracking-wider font-semibold text-ink-subtle">
+                <span className="ml-auto text-2xs font-semibold text-ink-subtle">
                   {conversations.length}
                 </span>
               )}

@@ -30,11 +30,10 @@ export function OrderCard({
   const orderUrl = `/checkout?gig=${gigId}&pkg=${currentPkg?.id}&extras=${selectedExtras.join(",")}`;
 
   return (
-    <div className="bg-white border border-line rounded-2xl overflow-hidden shadow-card">
-      <div role="tablist" aria-label="Package tiers" className="flex border-b border-line bg-canvas-subtle">
+    <div className="overflow-hidden rounded-lg border border-ink bg-white">
+      <div role="tablist" aria-label="Package tiers" className="flex border-b border-ink bg-canvas-subtle">
         {packages.map((p) => {
           const active = p.package_type === pkgType;
-          const isMid = p.package_type === "standard";
           return (
             <button
               key={p.package_type}
@@ -44,16 +43,11 @@ export function OrderCard({
               className={cn(
                 "relative flex-1 h-12 text-sm font-medium capitalize transition-colors",
                 active
-                  ? "bg-white text-ink border-b-2 border-brand-primary -mb-px"
+                  ? "bg-white text-ink border-b-2 border-ink -mb-px"
                   : "text-ink-subtle hover:text-ink hover:bg-white/60"
               )}
             >
               {p.package_type}
-              {isMid && !active && (
-                <span className="absolute -top-1 right-2 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-brand-accent text-white text-[9px] font-semibold uppercase tracking-wider leading-none">
-                  Popular
-                </span>
-              )}
             </button>
           );
         })}
@@ -67,7 +61,7 @@ export function OrderCard({
               <p className="text-xs text-ink-subtle mt-1 line-clamp-2">{currentPkg.description}</p>
             )}
           </div>
-          <p className="font-heading text-2xl text-ink tabular-nums shrink-0">
+          <p className="num shrink-0 text-[24px] leading-[28px] text-ink">
             {formatMoney(Number(currentPkg?.price ?? 0))}
           </p>
         </div>
@@ -106,7 +100,7 @@ export function OrderCard({
 
       {extras.length > 0 && (
         <div className="border-t border-line p-5 space-y-2.5 bg-canvas-subtle">
-          <p className="text-2xs font-semibold text-ink-subtle uppercase tracking-wider flex items-center gap-1.5">
+          <p className="text-2xs font-semibold text-ink-subtle flex items-center gap-1.5">
             <Sparkles className="w-3 h-3" />
             Add-ons
           </p>
@@ -160,24 +154,27 @@ export function OrderCard({
         {pricing.buyerSmallOrderFee > 0 && (
           <div className="flex justify-between text-ink-subtle text-xs">
             <span>Small order fee</span>
-            <span className="tabular-nums">{formatMoney(pricing.buyerSmallOrderFee)}</span>
+            <span className="num">{formatMoney(pricing.buyerSmallOrderFee)}</span>
           </div>
         )}
         <div className="flex justify-between font-semibold text-ink pt-2 mt-2 border-t border-line text-base">
           <span>Total</span>
-          <span className="tabular-nums">{formatMoney(pricing.buyerTotalPaid)}</span>
+          <span className="num">{formatMoney(pricing.buyerTotalPaid)}</span>
         </div>
       </div>
 
       <div className="p-5 pt-0 space-y-2">
         <Link href={orderUrl} className="block">
           <Button variant="default" size="lg" className="w-full">
-            Continue ({formatMoney(pricing.buyerTotalPaid)})
+            Continue for {formatMoney(pricing.buyerTotalPaid)}
           </Button>
         </Link>
         <Button variant="secondary" className="w-full">
           Contact seller
         </Button>
+        <p className="pt-1 text-[13px] leading-[18px] text-ink-muted">
+          Payment is held until you approve the work.
+        </p>
       </div>
     </div>
   );

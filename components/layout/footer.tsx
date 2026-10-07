@@ -1,38 +1,41 @@
 import Link from "next/link";
+import { WordMark } from "@/components/layout/wordmark";
+
+const CATEGORIES: [string, string][] = [
+  ["Web development", "web-development"],
+  ["Mobile development", "mobile-development"],
+  ["Design and creative", "design-creative"],
+  ["AI and automation", "ai-automation"],
+  ["Digital marketing", "digital-marketing"],
+  ["Business support", "business-support"],
+];
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-line bg-canvas-subtle">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
-        <Col title="Platform">
-          <FooterLink href="/about">About</FooterLink>
-          <FooterLink href="/blog">Blog</FooterLink>
-          <FooterLink href="/careers">Careers</FooterLink>
-          <FooterLink href="/press">Press</FooterLink>
-        </Col>
+    <footer className="mt-auto border-t-2 border-ink bg-white">
+      <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-12 text-[15px] leading-[22px] sm:px-6 md:grid-cols-[1.2fr_1fr_1fr]">
+        <div className="space-y-3">
+          <Link href="/" aria-label="Gigboard home">
+            <WordMark />
+          </Link>
+          <p className="max-w-[40ch] text-ink-muted">
+            Hire one freelancer for one defined job. Payment is held until you approve the work.
+          </p>
+        </div>
         <Col title="Categories">
-          <FooterLink href="/category/web-development">Web development</FooterLink>
-          <FooterLink href="/category/mobile-development">Mobile development</FooterLink>
-          <FooterLink href="/category/design-creative">Design &amp; creative</FooterLink>
-          <FooterLink href="/category/ai-automation">AI &amp; automation</FooterLink>
+          {CATEGORIES.map(([label, slug]) => (
+            <FooterLink key={slug} href={`/category/${slug}`}>{label}</FooterLink>
+          ))}
         </Col>
-        <Col title="Support">
-          <FooterLink href="/help">Help center</FooterLink>
-          <FooterLink href="/contact">Contact</FooterLink>
+        <Col title="Gigboard">
+          <FooterLink href="/search">Browse gigs</FooterLink>
           <FooterLink href="/how-it-works">How it works</FooterLink>
-        </Col>
-        <Col title="Legal">
-          <FooterLink href="/privacy">Privacy policy</FooterLink>
-          <FooterLink href="/terms">Terms of service</FooterLink>
-          <FooterLink href="/cookies">Cookie policy</FooterLink>
+          <FooterLink href="/become-seller">Create a gig</FooterLink>
         </Col>
       </div>
-      <div className="border-t border-line">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between gap-3 flex-wrap text-xs text-ink-subtle">
-          <p>© {new Date().getFullYear()} Gigboard. All rights reserved.</p>
-          <Link href="/" className="text-base font-semibold text-brand-primary tracking-tight">
-            Gigboard
-          </Link>
+      <div className="border-t border-ink">
+        <div className="mx-auto max-w-[1200px] px-4 py-4 text-[13px] leading-[18px] text-ink-muted sm:px-6">
+          Gigboard is a demo. All gigs, sellers, ratings and reviews are sample data, and payments run in Stripe test mode.
         </div>
       </div>
     </footer>
@@ -42,7 +45,7 @@ export function Footer() {
 function Col({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h4 className="text-2xs font-semibold uppercase tracking-wider text-ink-subtle mb-3">{title}</h4>
+      <h4 className="mb-3 text-[15px] font-semibold leading-[22px] text-ink">{title}</h4>
       <div className="space-y-2 text-ink-muted">{children}</div>
     </div>
   );
@@ -50,7 +53,7 @@ function Col({ title, children }: { title: string; children: React.ReactNode }) 
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="block hover:text-brand-primary-dark transition-colors">
+    <Link href={href} className="block hover:text-ink hover:underline underline-offset-4">
       {children}
     </Link>
   );

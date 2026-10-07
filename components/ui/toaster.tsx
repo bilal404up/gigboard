@@ -17,15 +17,15 @@ export function Toaster() {
           actionButton:
             "!bg-brand-primary !text-white !text-xs !font-semibold !rounded-md !h-7 !px-3 hover:!bg-brand-primary-dark",
           cancelButton: "!bg-canvas-subtle !text-ink-muted !text-xs !rounded-md !h-7 !px-3",
-          success: "!border-green-100 !bg-green-50",
+          success: "!border-success !bg-white",
           error: "!border-red-100 !bg-red-50",
           info: "!border-blue-100 !bg-blue-50",
-          warning: "!border-amber-100 !bg-amber-50",
+          warning: "!border-warning !bg-white",
         },
       }}
       icons={{
         success: (
-          <svg className="w-4 h-4 text-green-700" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <svg className="w-4 h-4 text-success" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M3 8l3.5 3.5L13 5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         ),
@@ -41,7 +41,7 @@ export function Toaster() {
           </svg>
         ),
         warning: (
-          <svg className="w-4 h-4 text-amber-700" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="w-4 h-4 text-warning" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M8 2.5L1.5 13.5h13L8 2.5z" strokeLinejoin="round" />
             <path d="M8 7v3M8 12v.01" strokeLinecap="round" />
           </svg>

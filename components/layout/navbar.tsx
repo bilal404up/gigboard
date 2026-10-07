@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { SearchAutocomplete } from "@/components/search/search-autocomplete";
+import { WordMark } from "@/components/layout/wordmark";
 import { useUser } from "@/lib/contexts/user-context";
 import { initials } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
@@ -78,13 +79,14 @@ export function Navbar() {
   const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-line">
+    <header className="sticky top-0 z-40 bg-white border-b border-ink">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-4">
         <Link
           href="/"
-          className="text-xl font-semibold text-brand-primary tracking-tight whitespace-nowrap shrink-0 hover:text-brand-primary-dark transition-colors"
+          className="whitespace-nowrap shrink-0"
+          aria-label="Gigboard home"
         >
-          Gigboard
+          <WordMark />
         </Link>
 
         <div className="hidden md:block flex-1 min-w-0 max-w-xl">
@@ -99,7 +101,7 @@ export function Navbar() {
               className={cn(
                 "px-3 h-9 inline-flex items-center rounded-md transition-colors",
                 isActive(l.href)
-                  ? "text-brand-primary-dark bg-brand-primary-50"
+                  ? "text-ink underline underline-offset-[10px] decoration-2"
                   : "text-ink-muted hover:text-ink hover:bg-canvas-subtle"
               )}
             >
@@ -201,7 +203,7 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="p-0 flex flex-col">
               <div className="px-5 h-16 flex items-center border-b border-line">
-                <span className="text-xl font-semibold text-brand-primary tracking-tight">Gigboard</span>
+                <WordMark />
               </div>
 
               <div className="p-5 border-b border-line">

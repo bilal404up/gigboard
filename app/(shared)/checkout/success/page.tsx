@@ -18,7 +18,7 @@ function SuccessInner() {
       </div>
       <h1 className="font-heading text-2xl sm:text-3xl text-ink mb-3">Order confirmed</h1>
       <p className="text-sm text-ink-muted leading-relaxed mb-8 text-balance">
-        Your payment is held in escrow. The seller has been notified — submit your requirements
+        Your payment is held in escrow. The seller has been notified, submit your requirements
         so they can get started.
       </p>
       <div className="flex flex-col gap-2.5">

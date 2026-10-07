@@ -17,7 +17,7 @@ export const createClient = () => {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Called from a Server Component — middleware refreshes the session.
+            // Called from a Server Component, middleware refreshes the session.
           }
         },
       },

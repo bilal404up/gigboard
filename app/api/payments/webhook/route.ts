@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
         break;
     }
   } catch (err: any) {
-    // Don't 500 to Stripe — that triggers retries. Log and acknowledge.
+    // Don't 500 to Stripe, that triggers retries. Log and acknowledge.
     console.error("Webhook handler error for", event.type, err);
     return NextResponse.json({ received: true, handled: false, error: err?.message });
   }

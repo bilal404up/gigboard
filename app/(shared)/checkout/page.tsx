@@ -87,7 +87,7 @@ function CheckoutInner() {
           }),
         });
         if (res.status === 503) {
-          // Server says Stripe isn't configured — fall back gracefully
+          // Server says Stripe isn't configured, fall back gracefully
           setUseStripeFlow(false);
           return;
         }
@@ -153,7 +153,7 @@ function CheckoutInner() {
               <div className="bg-info/5 border border-info/20 rounded-xl p-4 flex items-start gap-3">
                 <Info className="w-5 h-5 text-info shrink-0 mt-0.5" />
                 <div className="text-sm">
-                  <p className="font-semibold text-ink mb-0.5">Demo mode — no real charge</p>
+                  <p className="font-semibold text-ink mb-0.5">Demo mode, no real charge</p>
                   <p className="text-ink-muted leading-relaxed">
                     Stripe isn&apos;t configured in this environment. Fill in any card details to
                     simulate placing the order.
@@ -206,7 +206,7 @@ function CheckoutInner() {
           </section>
 
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="bg-white border border-line rounded-2xl overflow-hidden shadow-card">
+            <div className="bg-white border border-line rounded-2xl overflow-hidden ">
               <div className="p-5 border-b border-line bg-canvas-subtle">
                 <h2 className="font-heading text-base text-ink mb-2">Order summary</h2>
                 <p className="text-sm font-medium text-ink line-clamp-2">{gig.title}</p>

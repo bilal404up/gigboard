@@ -44,7 +44,7 @@ export default async function SellerDashboardPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <header className="flex items-start justify-between mb-8 flex-wrap gap-4">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-1">Seller dashboard</p>
+            <p className="text-xs font-semibold text-ink-subtle mb-1">Seller dashboard</p>
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="font-heading text-2xl sm:text-3xl text-ink">
                 Hi, {user.full_name.split(" ")[0]}
@@ -102,7 +102,7 @@ export default async function SellerDashboardPage() {
           />
           <NavCard
             title="Avg rating"
-            value={profile.average_rating ? profile.average_rating.toFixed(2) : "—"}
+            value={profile.average_rating ? profile.average_rating.toFixed(2) : "n/a"}
             href={`/seller/${user.username}`}
             icon={<Star className="w-4 h-4" />}
           />
@@ -196,12 +196,12 @@ function BalanceCard({
         accent ? "bg-brand-primary-50 border-brand-primary/25" : "bg-white border-line"
       )}
     >
-      <div className={cn("flex items-center gap-2 mb-2 text-xs uppercase tracking-wider font-semibold",
+      <div className={cn("flex items-center gap-2 mb-2 text-xs font-semibold",
         accent ? "text-brand-primary-dark" : "text-ink-subtle")}>
         <span>{icon}</span>
         <span>{label}</span>
       </div>
-      <p className="font-heading text-2xl sm:text-[1.75rem] text-ink tabular-nums tracking-tight">{value}</p>
+      <p className="num text-[32px] leading-[38px] text-ink">{value}</p>
       {cta && (
         <Link
           href={cta.href}
@@ -218,16 +218,16 @@ function NavCard({ title, value, href, icon }: { title: string; value: string; h
   return (
     <Link
       href={href}
-      className="group bg-white border border-line rounded-2xl p-5 hover:border-line-strong hover:shadow-card-hover transition-all"
+      className="group bg-white border border-line rounded-2xl p-5 hover:border-line-strong transition-all"
     >
       <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2 text-2xs uppercase tracking-wider font-semibold text-ink-subtle">
+        <div className="flex items-center gap-2 text-2xs font-semibold text-ink-subtle">
           <span className="text-brand-primary-dark">{icon}</span>
           <span>{title}</span>
         </div>
         <ArrowRight className="w-4 h-4 text-ink-faint group-hover:text-ink group-hover:translate-x-0.5 transition-all" />
       </div>
-      <p className="font-heading text-2xl sm:text-3xl text-ink tabular-nums">{value}</p>
+      <p className="num text-[32px] leading-[38px] text-ink">{value}</p>
     </Link>
   );
 }

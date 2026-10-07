@@ -40,7 +40,7 @@ export const templates: Record<EmailTemplate, (data: Record<string, string | num
   welcome: (d) =>
     wrapper("Welcome to Gigboard! 👋", `
       <p>Hi ${d.userName},</p>
-      <p>Welcome to Gigboard — the marketplace where you can find skilled freelancers or start selling your own services.</p>
+      <p>Welcome to Gigboard, the marketplace where you can find skilled freelancers or start selling your own services.</p>
       <p>Get started by browsing services or activating your seller profile.</p>
       ${btn(String(d.appUrl), "Explore Gigboard")}
     `),
@@ -97,7 +97,7 @@ export const templates: Record<EmailTemplate, (data: Record<string, string | num
     wrapper("Gig Needs Updates", `
       <p>Hi ${d.sellerName},</p>
       <p>Your gig <strong>${d.gigTitle}</strong> needs some changes before it can go live.</p>
-      ${detailBlock(detailRow("Reason", String(d.reason)) + detailRow("Details", String(d.details ?? "—")))}
+      ${detailBlock(detailRow("Reason", String(d.reason)) + detailRow("Details", String(d.details ?? "n/a")))}
       ${btn(String(d.editUrl), "Update Your Gig", "#0D9488")}
     `),
 

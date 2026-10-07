@@ -45,7 +45,7 @@ export default async function SellerAnalyticsPage() {
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <header className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-1">Seller</p>
+          <p className="text-xs font-semibold text-ink-subtle mb-1">Seller</p>
           <h1 className="font-heading text-2xl sm:text-3xl text-ink">Analytics</h1>
           <p className="text-sm text-ink-subtle mt-1">Performance across the last 30 days.</p>
         </header>
@@ -53,7 +53,7 @@ export default async function SellerAnalyticsPage() {
         <section className="bg-white border border-line rounded-2xl p-6 sm:p-7 mb-6">
           <div className="flex items-start justify-between mb-5 flex-wrap gap-3">
             <div>
-              <div className="flex items-center gap-2 text-2xs uppercase tracking-wider font-semibold text-ink-subtle mb-1">
+              <div className="flex items-center gap-2 text-2xs font-semibold text-ink-subtle mb-1">
                 <TrendingUp className="w-3.5 h-3.5 text-brand-primary-dark" />
                 <span>Earnings · 30 days</span>
               </div>
@@ -73,7 +73,7 @@ export default async function SellerAnalyticsPage() {
             <div className="overflow-x-auto -mx-2">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-2xs font-semibold uppercase tracking-wider text-ink-subtle border-b border-line">
+                  <tr className="text-left text-2xs font-semibold text-ink-subtle border-b border-line">
                     <th className="py-2.5 px-2">Gig</th>
                     <th className="py-2.5 px-2 text-right">Impressions</th>
                     <th className="py-2.5 px-2 text-right">Clicks</th>
@@ -96,7 +96,7 @@ export default async function SellerAnalyticsPage() {
                           {ctr.toFixed(1)}%
                         </td>
                         <td className="py-3 px-2 text-right tabular-nums font-semibold text-ink">{(g.total_orders ?? 0).toLocaleString()}</td>
-                        <td className="py-3 px-2 text-right tabular-nums text-ink-muted">{g.average_rating ? g.average_rating.toFixed(1) : "—"}</td>
+                        <td className="py-3 px-2 text-right tabular-nums text-ink-muted">{g.average_rating ? g.average_rating.toFixed(1) : "n/a"}</td>
                       </tr>
                     );
                   })}

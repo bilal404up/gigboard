@@ -50,7 +50,7 @@ export default async function DashboardPage() {
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-0.5">Dashboard</p>
+            <p className="text-xs font-semibold text-ink-subtle mb-0.5">Dashboard</p>
             <h1 className="font-heading text-2xl sm:text-3xl text-ink truncate">
               Welcome back, {user.full_name.split(" ")[0]}
             </h1>
@@ -135,7 +135,7 @@ function StatCard({ label, value, icon }: { label: string; value: string; icon: 
     <div className="bg-white border border-line rounded-2xl p-5">
       <div className="flex items-center gap-2 mb-2 text-ink-subtle">
         <span className="text-brand-primary-dark">{icon}</span>
-        <p className="text-2xs uppercase tracking-wider font-semibold">{label}</p>
+        <p className="text-2xs font-semibold">{label}</p>
       </div>
       <p className="font-heading text-2xl sm:text-3xl text-ink tabular-nums">{value}</p>
     </div>

@@ -9,6 +9,7 @@ import { RatingStars } from "@/components/ui/rating-stars";
 import { OrderCard } from "@/components/gig/order-card";
 import { StickyMobileCTA } from "@/components/gig/sticky-mobile-cta";
 import { GigGallery } from "@/components/gig/gig-gallery";
+import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { ReviewsSection } from "@/components/gig/reviews-section";
 import { createClient } from "@/lib/supabase/server";
 import { initials, isOnline } from "@/lib/utils/format";
@@ -29,6 +30,7 @@ export default async function GigDetailPage({ params }: { params: { slug: string
       sb.from("reviews").select("*").eq("gig_id", gig.id).order("created_at", { ascending: false }).limit(10),
       sb.from("categories").select("name, slug").eq("id", gig.category_id).single(),
     ]);
+  const rootSlugs = await getCategoryRootSlugs();
 
   if (!seller || !profile || !packages || packages.length === 0) notFound();
 
@@ -70,7 +72,7 @@ export default async function GigDetailPage({ params }: { params: { slug: string
                 </Link>
                 <SellerLevelBadge level={profile.seller_level} />
                 {isOnline(seller.last_seen) && (
-                  <span className="inline-flex items-center gap-1.5 text-xs text-green-700">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-success">
                     <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
                     Online
                   </span>
@@ -88,6 +90,8 @@ export default async function GigDetailPage({ params }: { params: { slug: string
               thumbnail={gig.thumbnail_url}
               images={(gig.gallery_images as string[] | null) ?? []}
               title={gig.title}
+              seed={gig.id}
+              category={rootSlugs.get(gig.category_id) ?? null}
             />
 
 
@@ -147,7 +151,7 @@ export default async function GigDetailPage({ params }: { params: { slug: string
                   )}
                   <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-xs mb-4 pb-4 border-b border-line">
                     <StatRow label="Member since" value={new Date(seller.created_at).getFullYear().toString()} />
-                    <StatRow label="Avg. response" value={`${profile.response_time_hours ?? "—"} hr`} />
+                    <StatRow label="Avg. response" value={`${profile.response_time_hours ?? "n/a"} hr`} />
                     <StatRow label="Orders done" value={profile.total_orders_completed.toString()} />
                     <StatRow label="On-time" value={`${profile.on_time_delivery_rate}%`} />
                   </div>

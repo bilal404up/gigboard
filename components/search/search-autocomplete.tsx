@@ -135,7 +135,7 @@ export function SearchAutocomplete({
           autoComplete="off"
           className={cn(
             "w-full bg-canvas-subtle border border-transparent rounded-md text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:bg-white focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-colors",
-            size === "lg" ? "h-12 pl-10 pr-4 shadow-card" : "h-10 pl-9 pr-4"
+            size === "lg" ? "h-12 pl-10 pr-4 " : "h-10 pl-9 pr-4"
           )}
         />
       </form>
@@ -155,7 +155,7 @@ export function SearchAutocomplete({
             <>
               {data.categories.length > 0 && (
                 <div>
-                  <p className="px-4 pt-3 pb-1 text-2xs font-semibold uppercase tracking-wider text-ink-subtle flex items-center gap-1.5">
+                  <p className="px-4 pt-3 pb-1 text-2xs font-semibold text-ink-subtle flex items-center gap-1.5">
                     <Tag className="w-3 h-3" />
                     Categories
                   </p>
@@ -175,7 +175,7 @@ export function SearchAutocomplete({
               )}
               {data.gigs.length > 0 && (
                 <div className="border-t border-line">
-                  <p className="px-4 pt-3 pb-1 text-2xs font-semibold uppercase tracking-wider text-ink-subtle flex items-center gap-1.5">
+                  <p className="px-4 pt-3 pb-1 text-2xs font-semibold text-ink-subtle flex items-center gap-1.5">
                     <Sparkles className="w-3 h-3" />
                     Top gigs
                   </p>
@@ -201,7 +201,7 @@ export function SearchAutocomplete({
                         meta={
                           g.average_rating && g.average_rating > 0 ? (
                             <span className="inline-flex items-center gap-0.5">
-                              <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                              <Star className="w-3 h-3 fill-ink text-ink" />
                               {g.average_rating.toFixed(1)}
                             </span>
                           ) : undefined

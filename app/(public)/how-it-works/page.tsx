@@ -4,8 +4,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 
 export const metadata = {
-  title: "How it works — Gigboard",
-  description: "From finding the right freelancer to releasing payment — see exactly how Gigboard works for buyers and sellers.",
+  title: "How it works | Gigboard",
+  description: "From finding the right freelancer to releasing payment, see exactly how Gigboard works for buyers and sellers.",
 };
 
 export default function HowItWorksPage() {
@@ -15,7 +15,7 @@ export default function HowItWorksPage() {
       <main>
         <section className="border-b border-line bg-canvas">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center">
-            <p className="text-xs font-semibold uppercase tracking-wider text-brand-primary-dark mb-3">How it works</p>
+            <p className="text-xs font-semibold text-brand-primary-dark mb-3">How it works</p>
             <h1 className="font-heading text-3xl sm:text-5xl text-ink text-balance leading-tight mb-4">
               Hire confidently. Get paid securely.
             </h1>
@@ -33,7 +33,7 @@ export default function HowItWorksPage() {
             <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
               <Step n={1} icon={<Search className="w-5 h-5" />} title="Find a service" body="Browse categories or search by keyword. Every gig shows a fixed starting price, delivery time, and reviews up front." />
               <Step n={2} icon={<MessageCircle className="w-5 h-5" />} title="Message or order" body="Ask the seller a question, request a custom offer, or order a package directly. No back-and-forth required to get a quote." />
-              <Step n={3} icon={<ShieldCheck className="w-5 h-5" />} title="Pay into escrow" body="Your payment is held safely by Gigboard — the seller is only paid when you approve the delivery." />
+              <Step n={3} icon={<ShieldCheck className="w-5 h-5" />} title="Pay into escrow" body="Your payment is held safely by Gigboard, the seller is only paid when you approve the delivery." />
               <Step n={4} icon={<CheckCircle2 className="w-5 h-5" />} title="Review and release" body="Approve the work or request a revision. Once you approve, funds release automatically and you can leave a review." />
             </ol>
           </div>
@@ -44,7 +44,7 @@ export default function HowItWorksPage() {
             <h2 className="font-heading text-2xl sm:text-3xl text-ink text-center mb-2">For sellers</h2>
             <p className="text-sm text-ink-subtle text-center mb-10">Build a profile, publish gigs, get paid.</p>
             <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              <Step n={1} icon={<Star className="w-5 h-5" />} title="Create a profile" body="Add your tagline, skills, languages, and a portfolio. Profiles are public — link to them from your own site." />
+              <Step n={1} icon={<Star className="w-5 h-5" />} title="Create a profile" body="Add your tagline, skills, languages, and a portfolio. Profiles are public, link to them from your own site." />
               <Step n={2} icon={<CheckCircle2 className="w-5 h-5" />} title="Publish a gig" body="Define three package tiers (Basic / Standard / Premium), delivery times, and revision policy. Submit for review." />
               <Step n={3} icon={<MessageCircle className="w-5 h-5" />} title="Deliver the work" body="Communicate inside Gigboard so the order timeline, files, and revisions stay in one place." />
               <Step n={4} icon={<Wallet className="w-5 h-5" />} title="Get paid" body="When the buyer approves, your earnings appear in your balance. Withdraw to your bank anytime." />
@@ -66,7 +66,7 @@ export default function HowItWorksPage() {
           <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
             <h2 className="font-heading text-2xl sm:text-3xl text-ink mb-4">Ready to start?</h2>
             <p className="text-base text-ink-muted mb-6">
-              Browse services or set up your seller profile — both take about a minute.
+              Browse services or set up your seller profile, both take about a minute.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link href="/search" className="btn-primary">Browse services</Link>
@@ -87,7 +87,7 @@ function Step({ n, icon, title, body }: { n: number; icon: React.ReactNode; titl
         <div className="w-9 h-9 rounded-full bg-brand-primary-50 text-brand-primary-dark inline-flex items-center justify-center shrink-0">
           {icon}
         </div>
-        <span className="text-2xs font-semibold uppercase tracking-wider text-ink-subtle">Step {n}</span>
+        <span className="text-2xs font-semibold text-ink-subtle">Step {n}</span>
       </div>
       <h3 className="font-heading text-base text-ink mb-1.5">{title}</h3>
       <p className="text-sm text-ink-muted leading-relaxed">{body}</p>

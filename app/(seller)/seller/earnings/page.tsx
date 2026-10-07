@@ -43,7 +43,7 @@ export default async function SellerEarningsPage() {
       <Navbar />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <header className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-1">Seller</p>
+          <p className="text-xs font-semibold text-ink-subtle mb-1">Seller</p>
           <h1 className="font-heading text-2xl sm:text-3xl text-ink">Earnings</h1>
           <p className="text-sm text-ink-subtle mt-1">Balance, clearing schedule, and withdrawals.</p>
         </header>
@@ -78,7 +78,7 @@ export default async function SellerEarningsPage() {
                 <p className="text-xs text-ink-subtle">Account ending in {profile.mock_account_last4}</p>
               </div>
             ) : (
-              <p className="text-sm text-ink-subtle">No bank account connected — link one to enable withdrawals.</p>
+              <p className="text-sm text-ink-subtle">No bank account connected, link one to enable withdrawals.</p>
             )}
           </div>
         </section>
@@ -93,9 +93,9 @@ export default async function SellerEarningsPage() {
               rightAlign={[false, false, true, true]}
               rows={clearing.map((c) => [
                 <span key="num" className="font-mono text-2xs text-ink-subtle">{c.order_number}</span>,
-                <span key="name" className="text-ink">{(c.package_snapshot as any)?.name ?? "—"}</span>,
+                <span key="name" className="text-ink">{(c.package_snapshot as any)?.name ?? "n/a"}</span>,
                 <span key="amt" className="text-ink font-medium tabular-nums">{formatMoney(c.seller_earnings)}</span>,
-                <span key="clears" className="text-ink-subtle text-xs">{c.funds_cleared_at ? formatDate(c.funds_cleared_at) : "—"}</span>,
+                <span key="clears" className="text-ink-subtle text-xs">{c.funds_cleared_at ? formatDate(c.funds_cleared_at) : "n/a"}</span>,
               ])}
             />
           )}
@@ -141,7 +141,7 @@ function BalanceCard({
         accent ? "bg-brand-primary-50 border-brand-primary/25" : "bg-white border-line"
       )}
     >
-      <div className={cn("flex items-center gap-2 mb-2 text-xs uppercase tracking-wider font-semibold",
+      <div className={cn("flex items-center gap-2 mb-2 text-xs font-semibold",
         accent ? "text-brand-primary-dark" : "text-ink-subtle")}>
         <span>{icon}</span>
         <span>{label}</span>
@@ -164,7 +164,7 @@ function Table({
     <div className="overflow-x-auto -mx-2">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-2xs font-semibold uppercase tracking-wider text-ink-subtle border-b border-line">
+          <tr className="text-left text-2xs font-semibold text-ink-subtle border-b border-line">
             {headers.map((h, i) => (
               <th key={i} className={cn("py-2.5 px-2", rightAlign[i] && "text-right")}>{h}</th>
             ))}

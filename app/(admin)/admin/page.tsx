@@ -31,7 +31,7 @@ export default async function AdminDashboardPage() {
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <header className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-1">Admin</p>
+          <p className="text-xs font-semibold text-ink-subtle mb-1">Admin</p>
           <h1 className="font-heading text-2xl sm:text-3xl text-ink">Dashboard</h1>
         </header>
 
@@ -90,14 +90,14 @@ function StatCard({
         isDanger
           ? "bg-error/5 border-error/30"
           : accent
-            ? "bg-amber-50 border-amber-200"
+            ? "bg-brand-accent-50 border-brand-accent"
             : "bg-white border-line"
       )}
     >
       <div
         className={cn(
-          "flex items-center gap-2 mb-2 text-2xs uppercase tracking-wider font-semibold",
-          isDanger ? "text-error" : accent ? "text-amber-700" : "text-ink-subtle"
+          "flex items-center gap-2 mb-2 text-2xs font-semibold",
+          isDanger ? "text-error" : accent ? "text-warning" : "text-ink-subtle"
         )}
       >
         <span>{icon}</span>
@@ -131,12 +131,12 @@ function NavCard({
         urgent && tone === "danger"
           ? "border-error/30 hover:border-error"
           : urgent
-            ? "border-amber-300 hover:border-amber-400"
-            : "border-line hover:border-line-strong hover:shadow-card-hover"
+            ? "border-brand-accent hover:border-ink"
+            : "border-line hover:border-line-strong "
       )}
     >
       <div className="flex items-center justify-between mb-2">
-        <div className={cn("flex items-center gap-2 text-2xs uppercase tracking-wider font-semibold", urgent && tone === "danger" ? "text-error" : urgent ? "text-amber-700" : "text-ink-subtle")}>
+        <div className={cn("flex items-center gap-2 text-2xs font-semibold", urgent && tone === "danger" ? "text-error" : urgent ? "text-warning" : "text-ink-subtle")}>
           <span>{icon}</span>
           <span>{title}</span>
         </div>

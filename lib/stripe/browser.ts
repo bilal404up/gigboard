@@ -13,7 +13,7 @@ export const getStripeBrowser = () => {
 /**
  * Returns true when a real Stripe publishable key is configured.
  * The placeholder values (used in dev when env isn't set) start with
- * "pk_test_placeholder" — those should fall back to the demo flow.
+ * "pk_test_placeholder", those should fall back to the demo flow.
  */
 export const isStripeLive = (): boolean => {
   const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;

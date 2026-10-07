@@ -13,7 +13,7 @@ export default async function AdminEmailsPage() {
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <header className="mb-6">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-1">Admin</p>
+          <p className="text-xs font-semibold text-ink-subtle mb-1">Admin</p>
           <h1 className="font-heading text-2xl sm:text-3xl text-ink">Email logs</h1>
         </header>
         <div className="flex items-start gap-3 bg-info/5 border border-info/20 rounded-xl p-4 mb-6">

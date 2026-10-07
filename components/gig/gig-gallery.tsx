@@ -4,15 +4,20 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X, Maximize2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { GigCover } from "@/components/gig/gig-cover";
 
 export function GigGallery({
   thumbnail,
   images,
   title,
+  seed,
+  category,
 }: {
   thumbnail: string | null;
   images: string[] | null | undefined;
   title: string;
+  seed?: string;
+  category?: string | null;
 }) {
   const all = [thumbnail, ...(images ?? [])].filter((u): u is string => Boolean(u));
   const total = all.length;
@@ -35,8 +40,8 @@ export function GigGallery({
 
   if (total === 0) {
     return (
-      <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-canvas-subtle border border-line flex items-center justify-center text-ink-faint text-5xl font-semibold tracking-tight">
-        Gigboard
+      <div className="relative aspect-[16/9] overflow-hidden rounded-lg border border-ink">
+        <GigCover seed={seed ?? title} category={category} />
       </div>
     );
   }
@@ -46,7 +51,7 @@ export function GigGallery({
       <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-canvas-subtle border border-line group">
         <Image
           src={all[index]}
-          alt={`${title} — image ${index + 1} of ${total}`}
+          alt={`${title}, image ${index + 1} of ${total}`}
           fill
           className="object-cover"
           priority={index === 0}
@@ -58,14 +63,14 @@ export function GigGallery({
             <button
               onClick={prev}
               aria-label="Previous image"
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm shadow-card flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={next}
               aria-label="Next image"
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm shadow-card flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -88,7 +93,7 @@ export function GigGallery({
         <button
           onClick={() => setLightbox(true)}
           aria-label="Expand image"
-          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm shadow-card flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
         >
           <Maximize2 className="w-4 h-4" />
         </button>
@@ -131,7 +136,7 @@ export function GigGallery({
           >
             <Image
               src={all[index]}
-              alt={`${title} — image ${index + 1} of ${total}`}
+              alt={`${title}, image ${index + 1} of ${total}`}
               fill
               className="object-contain"
               sizes="100vw"

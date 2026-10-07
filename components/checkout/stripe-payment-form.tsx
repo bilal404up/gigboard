@@ -77,7 +77,7 @@ function InnerForm({ orderId, totalCents }: { orderId: string; totalCents: numbe
     });
 
     // If we get here, there was an immediate error (e.g. validation).
-    // Successful payments redirect away — see return_url above.
+    // Successful payments redirect away, see return_url above.
     setLoading(false);
     if (stripeErr) {
       setError(stripeErr.message ?? "Payment failed");
@@ -98,7 +98,7 @@ function InnerForm({ orderId, totalCents }: { orderId: string; totalCents: numbe
         <ShieldCheck className="w-4 h-4 shrink-0 text-brand-primary-dark mt-0.5" />
         <p>
           Your payment is held in escrow by Gigboard until you approve the delivery.
-          We never store your card details — Stripe handles all sensitive data.
+          We never store your card details, Stripe handles all sensitive data.
         </p>
       </div>
 

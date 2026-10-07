@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
             Gigboard
           </Link>
         </div>
-        <div className="bg-white p-7 sm:p-8 rounded-2xl border border-line shadow-card">
+        <div className="bg-white p-7 sm:p-8 rounded-2xl border border-line ">
           {sent ? (
             <div className="text-center">
               <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-brand-primary-50 text-brand-primary-dark flex items-center justify-center">

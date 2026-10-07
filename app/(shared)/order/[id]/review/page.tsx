@@ -58,13 +58,13 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
 
         <div className="bg-white border border-line rounded-2xl p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center">
-              <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
+            <div className="w-10 h-10 rounded-full bg-brand-accent-50 text-ink flex items-center justify-center">
+              <Star className="w-5 h-5 fill-ink text-ink" />
             </div>
             <h1 className="font-heading text-xl text-ink">Leave a review</h1>
           </div>
           <p className="text-sm text-ink-muted leading-relaxed mb-6">
-            Your review is public and permanent. Be specific — buyers and sellers both rely on
+            Your review is public and permanent. Be specific, buyers and sellers both rely on
             real feedback.
           </p>
 

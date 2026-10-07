@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { GigCard, type GigCardData } from "@/components/gig/gig-card";
+import { GigRow, GigBoardHeader, type GigCardData } from "@/components/gig/gig-card";
+import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Search as SearchIcon, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -32,6 +33,7 @@ type GigRow = {
   seller_id: string;
   category_id: string;
   starting_price: number;
+  delivery_days: number | null;
   seller: {
     username: string;
     full_name: string;
@@ -102,6 +104,7 @@ async function searchGigs(params: SearchParams): Promise<{ gigs: GigRow[]; count
       return {
         ...g,
         starting_price: startingPrice,
+        delivery_days: pkgs.length > 0 ? Math.min(...pkgs.map((x) => x.delivery_days)) : null,
         seller: {
           username: u?.username ?? "seller",
           full_name: u?.full_name ?? "Seller",
@@ -142,7 +145,7 @@ const LEVEL_OPTIONS = [
   { value: "new_seller", label: "New Seller", dot: "bg-ink-faint" },
   { value: "level_one", label: "Level One", dot: "bg-brand-primary" },
   { value: "level_two", label: "Level Two", dot: "bg-brand-primary-dark" },
-  { value: "top_rated", label: "Top Rated", dot: "bg-amber-600" },
+  { value: "top_rated", label: "Top Rated", dot: "bg-brand-accent" },
 ];
 
 const RATING_OPTIONS = [
@@ -164,6 +167,7 @@ function countActiveFilters(p: SearchParams) {
 
 export default async function SearchPage({ searchParams }: { searchParams: SearchParams }) {
   const { gigs } = await searchGigs(searchParams);
+  const roots = await getCategoryRootSlugs();
   const q = searchParams.q ?? "";
   const sort = searchParams.sort ?? "relevance";
   const activeCount = countActiveFilters(searchParams);
@@ -207,7 +211,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
 
             {activeCount > 0 && (
               <div className="flex flex-wrap items-center gap-2 mb-4">
-                <span className="text-xs text-ink-subtle uppercase tracking-wider font-semibold mr-1">Active</span>
+                <span className="text-xs text-ink-subtle font-semibold mr-1">Active</span>
                 {(searchParams.min_price || searchParams.max_price) && (
                   <ActiveChip
                     label={`${searchParams.min_price ? `$${searchParams.min_price}` : "Any"} – ${searchParams.max_price ? `$${searchParams.max_price}` : "Any"}`}
@@ -247,7 +251,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
                 }
               />
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+              <div className="border-t-2 border-ink">
+                <GigBoardHeader />
                 {gigs.map((g) => {
                   const card: GigCardData = {
                     id: g.id,
@@ -257,9 +262,11 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
                     average_rating: g.average_rating ?? 0,
                     total_reviews: g.total_reviews ?? 0,
                     starting_price: g.starting_price,
+                    category_slug: roots.get(g.category_id) ?? null,
+                    delivery_days: g.delivery_days,
                     seller: g.seller,
                   };
-                  return <GigCard key={g.id} gig={card} />;
+                  return <GigRow key={g.id} gig={card} />;
                 })}
               </div>
             )}
@@ -324,7 +331,7 @@ function FilterSection({
 }) {
   return (
     <div className="py-4 border-t border-line first:border-t-0 first:pt-0">
-      <h3 className="text-xs font-semibold text-ink uppercase tracking-wider mb-3">{title}</h3>
+      <h3 className="text-xs font-semibold text-ink mb-3">{title}</h3>
       {children}
     </div>
   );

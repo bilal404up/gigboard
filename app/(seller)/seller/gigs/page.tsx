@@ -32,7 +32,7 @@ export default async function SellerGigsPage() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <header className="flex items-start justify-between mb-8 flex-wrap gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-1">Seller</p>
+            <p className="text-xs font-semibold text-ink-subtle mb-1">Seller</p>
             <h1 className="font-heading text-2xl sm:text-3xl text-ink">Your gigs</h1>
             <p className="text-sm text-ink-subtle mt-1">{gigs?.length ?? 0} total</p>
           </div>

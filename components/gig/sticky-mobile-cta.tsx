@@ -19,7 +19,7 @@ export function StickyMobileCTA({
     <div className="lg:hidden fixed inset-x-0 bottom-0 z-30 bg-white/95 backdrop-blur border-t border-line shadow-popover">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-2xs uppercase tracking-wider text-ink-subtle font-semibold leading-none mb-0.5">
+          <p className="text-2xs text-ink-subtle font-semibold leading-none mb-0.5">
             From
           </p>
           <p className="text-lg font-semibold text-ink tabular-nums leading-tight">

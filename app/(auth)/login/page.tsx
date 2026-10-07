@@ -83,7 +83,7 @@ export default function LoginPage() {
             Gigboard
           </Link>
         </div>
-        <div className="bg-white p-7 sm:p-8 rounded-2xl border border-line shadow-card">
+        <div className="bg-white p-7 sm:p-8 rounded-2xl border border-line ">
           <h1 className="font-heading text-2xl text-ink text-center mb-1.5">Welcome back</h1>
           <p className="text-sm text-ink-subtle text-center mb-6">Sign in to your Gigboard account.</p>
           <Suspense fallback={<Loader2 className="w-6 h-6 animate-spin mx-auto text-ink-faint" />}>

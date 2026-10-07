@@ -60,7 +60,7 @@ export default function SettingsPage() {
       <Navbar />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <header className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle mb-1">Account</p>
+          <p className="text-xs font-semibold text-ink-subtle mb-1">Account</p>
           <h1 className="font-heading text-2xl sm:text-3xl text-ink">Settings</h1>
         </header>
 

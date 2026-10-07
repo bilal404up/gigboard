@@ -83,7 +83,7 @@ export default function BecomeSellerPage() {
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
         <header className="text-center mb-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-brand-primary-dark mb-2">Seller onboarding</p>
+          <p className="text-xs font-semibold text-brand-primary-dark mb-2">Seller onboarding</p>
           <h1 className="font-heading text-2xl sm:text-3xl text-ink">Become a seller</h1>
           <p className="text-sm text-ink-subtle mt-1">Takes about 2 minutes.</p>
         </header>
@@ -109,7 +109,7 @@ export default function BecomeSellerPage() {
                   >
                     {done ? <Check className="w-4 h-4" /> : s}
                   </div>
-                  <span className={cn("text-2xs uppercase tracking-wider font-medium", current || done ? "text-ink" : "text-ink-faint")}>
+                  <span className={cn("text-2xs font-medium", current || done ? "text-ink" : "text-ink-faint")}>
                     {label}
                   </span>
                 </div>
@@ -168,7 +168,7 @@ export default function BecomeSellerPage() {
           {step === 2 && (
             <>
               <h2 className="font-heading text-lg text-ink mb-1.5">Background</h2>
-              <p className="text-sm text-ink-subtle mb-6">Optional — fill these in later from settings.</p>
+              <p className="text-sm text-ink-subtle mb-6">Optional, fill these in later from settings.</p>
               <p className="text-sm text-ink-muted leading-relaxed mb-6 p-4 bg-canvas-subtle border border-line rounded-lg">
                 Education, certifications, portfolio items, and social links can all be added from your
                 seller dashboard once your account is active.
@@ -206,7 +206,7 @@ export default function BecomeSellerPage() {
                 <Sparkles className="w-4 h-4 text-info shrink-0 mt-0.5" />
                 <p className="text-ink-muted leading-relaxed">
                   <strong className="text-ink">Demo mode:</strong> portfolio project. No real bank
-                  connection — these fields are stored as mock values only.
+                  connection, these fields are stored as mock values only.
                 </p>
               </div>
               <div className="space-y-5">

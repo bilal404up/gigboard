@@ -1,5 +1,5 @@
 /**
- * Fee math — ALWAYS use this. Never inline fee calculations elsewhere.
+ * Fee math, ALWAYS use this. Never inline fee calculations elsewhere.
  * Reads rates from platform_settings (loaded once and cached).
  */
 
