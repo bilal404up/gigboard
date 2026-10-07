@@ -4,6 +4,18 @@ Hire one freelancer for one defined job. Sellers publish gigs with Basic, Standa
 
 This is a demo. All gigs, sellers, ratings and reviews are sample data, and payments run in Stripe test mode, so no real money moves.
 
+## Screenshots
+
+![Home page with the board of gigs](docs/screenshots/01-home.png)
+
+![Search results as a board](docs/screenshots/02-search-board.png)
+
+![Gig page with packages and the held-payment note](docs/screenshots/03-gig-detail.png)
+
+![Seller dashboard](docs/screenshots/04-seller-dashboard.png)
+
+![Admin dashboard](docs/screenshots/05-admin.png)
+
 ## What it includes
 - Search with category, price, delivery and seller-level filters
 - Gig pages with three packages, add-ons and reviews
