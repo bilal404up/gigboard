@@ -33,7 +33,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
   const isBuyer = order.buyer_id === user.id;
   const otherId = isBuyer ? order.seller_id : order.buyer_id;
   const { data: other } = await sb
-    .from("users")
+    .from("public_profiles")
     .select("full_name, username, avatar_url")
     .eq("id", otherId)
     .single();

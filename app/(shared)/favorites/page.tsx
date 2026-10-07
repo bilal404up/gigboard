@@ -35,10 +35,10 @@ export default async function FavoritesPage() {
 
     const [{ data: users }, { data: profiles }, { data: packages }] = await Promise.all([
       sellerIds.length
-        ? sb.from("users").select("id, username, full_name, avatar_url").in("id", sellerIds)
+        ? sb.from("public_profiles").select("id, username, full_name, avatar_url").in("id", sellerIds)
         : Promise.resolve({ data: [] as any[] }),
       sellerIds.length
-        ? sb.from("seller_profiles").select("user_id, seller_level").in("user_id", sellerIds)
+        ? sb.from("public_seller_profiles").select("user_id, seller_level").in("user_id", sellerIds)
         : Promise.resolve({ data: [] as any[] }),
       liveIds.length
         ? sb.from("gig_packages").select("gig_id, price, delivery_days").in("gig_id", liveIds)

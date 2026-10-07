@@ -16,11 +16,11 @@ export const revalidate = 120;
 
 export default async function SellerProfilePage({ params }: { params: { username: string } }) {
   const sb = createClient();
-  const { data: user } = await sb.from("users").select("*").eq("username", params.username).single();
+  const { data: user } = await sb.from("public_profiles").select("*").eq("username", params.username).single();
   if (!user || !user.is_seller) notFound();
 
   const [{ data: profile }, { data: gigs }, { data: reviews }] = await Promise.all([
-    sb.from("seller_profiles").select("*").eq("user_id", user.id).single(),
+    sb.from("public_seller_profiles").select("*").eq("user_id", user.id).single(),
     sb.from("gigs").select("id, slug, title, thumbnail_url, average_rating, total_reviews, category_id").eq("seller_id", user.id).eq("status", "active"),
     sb.from("reviews").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }).limit(10),
   ]);

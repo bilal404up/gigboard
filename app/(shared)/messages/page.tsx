@@ -59,7 +59,7 @@ export default function MessagesPage() {
 
       if (convs && convs.length > 0) {
         const otherIds = convs.map((c) => (c.buyer_id === user.id ? c.seller_id : c.buyer_id));
-        const { data: others } = await sb.from("users").select("id, full_name, avatar_url, username").in("id", otherIds);
+        const { data: others } = await sb.from("public_profiles").select("id, full_name, avatar_url, username").in("id", otherIds);
         const convosFull: Conversation[] = convs.map((c) => ({
           ...c,
           other_user: others?.find((u) => u.id === (c.buyer_id === user.id ? c.seller_id : c.buyer_id)) || {

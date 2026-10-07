@@ -77,8 +77,8 @@ async function searchGigs(params: SearchParams): Promise<{ gigs: GigRow[]; count
     const gigIds = gigRows.map((g: any) => g.id);
 
     const [{ data: users }, { data: profiles }, { data: packages }] = await Promise.all([
-      sb.from("users").select("id, username, full_name, avatar_url").in("id", sellerIds),
-      sb.from("seller_profiles").select("user_id, seller_level").in("user_id", sellerIds),
+      sb.from("public_profiles").select("id, username, full_name, avatar_url").in("id", sellerIds),
+      sb.from("public_seller_profiles").select("user_id, seller_level").in("user_id", sellerIds),
       sb.from("gig_packages").select("gig_id, price, delivery_days").in("gig_id", gigIds),
     ]);
 

@@ -53,7 +53,9 @@ Stripe test card: `4242 4242 4242 4242`, any future expiry, any CVC.
 
 ## Tests
 
-`npx tsx --test tests/audit.test.ts` runs the security regression tests: cron authorization, the sign-in redirect, webhook configuration and the demo switch guards.
+`npm test` runs the security regression tests: cron authorization, the sign-in redirect, webhook configuration, gig description sanitizing and the demo switch guards.
+
+`npm run check:exposure` connects with the public key only and checks that emails, admin flags and seller balances cannot be read, while the public profile views still work. Run it after any change to `supabase/schema.sql`.
 
 ## Fees
 Seller commission 20%. Buyer service fee 5.5%, plus a $2.50 flat fee on orders under $50. Tips split 20% platform and 80% seller. All values are in the `platform_settings` table.

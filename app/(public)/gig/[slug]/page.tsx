@@ -24,8 +24,8 @@ export default async function GigDetailPage({ params }: { params: { slug: string
 
   const [{ data: seller }, { data: profile }, { data: packages }, { data: extras }, { data: reviews }, { data: category }] =
     await Promise.all([
-      sb.from("users").select("*").eq("id", gig.seller_id).single(),
-      sb.from("seller_profiles").select("*").eq("user_id", gig.seller_id).single(),
+      sb.from("public_profiles").select("*").eq("id", gig.seller_id).single(),
+      sb.from("public_seller_profiles").select("*").eq("user_id", gig.seller_id).single(),
       sb.from("gig_packages").select("*").eq("gig_id", gig.id).order("price"),
       sb.from("gig_extras").select("*").eq("gig_id", gig.id).eq("is_active", true).order("sort_order"),
       sb.from("reviews").select("*").eq("gig_id", gig.id).order("created_at", { ascending: false }).limit(10),

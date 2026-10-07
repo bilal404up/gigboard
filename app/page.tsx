@@ -29,7 +29,7 @@ async function loadHomeData() {
     const [{ data: parentCategories }, { count: activeGigs }, { count: verifiedSellers }] = await Promise.all([
       sb.from("categories").select("*").is("parent_id", null).order("sort_order"),
       sb.from("gigs").select("id", { count: "exact", head: true }).eq("status", "active"),
-      sb.from("users").select("id", { count: "exact", head: true }).eq("is_seller", true),
+      sb.from("public_profiles").select("id", { count: "exact", head: true }).eq("is_seller", true),
     ]);
 
     const { data: gigRows } = await sb
@@ -40,7 +40,7 @@ async function loadHomeData() {
       .limit(8);
 
     const { data: topSellerRows } = await sb
-      .from("seller_profiles")
+      .from("public_seller_profiles")
       .select("user_id, seller_level, average_rating, total_orders_completed, tagline")
       .order("average_rating", { ascending: false })
       .limit(4);
@@ -52,10 +52,10 @@ async function loadHomeData() {
 
     const [{ data: users }, { data: profiles }, { data: packages }] = await Promise.all([
       allSellerIds.length > 0
-        ? sb.from("users").select("id, username, full_name, avatar_url").in("id", allSellerIds)
+        ? sb.from("public_profiles").select("id, username, full_name, avatar_url").in("id", allSellerIds)
         : Promise.resolve({ data: [] as any[] }),
       sellerIdsForGigs.length > 0
-        ? sb.from("seller_profiles").select("user_id, seller_level").in("user_id", sellerIdsForGigs)
+        ? sb.from("public_seller_profiles").select("user_id, seller_level").in("user_id", sellerIdsForGigs)
         : Promise.resolve({ data: [] as any[] }),
       gigIds.length > 0
         ? sb.from("gig_packages").select("gig_id, price, delivery_days").in("gig_id", gigIds)

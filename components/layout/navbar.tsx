@@ -52,10 +52,14 @@ export function Navbar() {
       setUnread(total);
     }
 
+    let cancelled = false;
     (async () => {
       await refreshUnread();
+      // The effect can be cleaned up while the first fetch is still running (React runs effects twice in
+      // development), so check before subscribing, and use a unique channel name per run.
+      if (cancelled) return;
       convChannel = sb
-        .channel(`nav-conv-unread-${user.id}`)
+        .channel(`nav-conv-unread-${user.id}-${Math.random().toString(36).slice(2, 8)}`)
         .on(
           "postgres_changes",
           { event: "UPDATE", schema: "public", table: "conversations" },
@@ -65,6 +69,7 @@ export function Navbar() {
     })();
 
     return () => {
+      cancelled = true;
       if (convChannel) sb.removeChannel(convChannel);
     };
   }, [user]);

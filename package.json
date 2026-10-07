@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "tsx scripts/seed.ts",
-    "types:gen": "supabase gen types typescript --linked > types/database.types.ts"
+    "types:gen": "supabase gen types typescript --linked > types/database.types.ts",
+    "check:exposure": "tsx scripts/check-exposure.ts",
+    "test": "tsx --test tests/audit.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

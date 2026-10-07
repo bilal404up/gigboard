@@ -32,10 +32,10 @@ export default async function CategoryPage({ params }: { params: { slug: string 
   const gigIds = (gigRows ?? []).map((g: any) => g.id);
   const [{ data: users }, { data: profiles }, { data: packages }] = await Promise.all([
     sellerIds.length > 0
-      ? sb.from("users").select("id, username, full_name, avatar_url").in("id", sellerIds)
+      ? sb.from("public_profiles").select("id, username, full_name, avatar_url").in("id", sellerIds)
       : Promise.resolve({ data: [] as any[] }),
     sellerIds.length > 0
-      ? sb.from("seller_profiles").select("user_id, seller_level").in("user_id", sellerIds)
+      ? sb.from("public_seller_profiles").select("user_id, seller_level").in("user_id", sellerIds)
       : Promise.resolve({ data: [] as any[] }),
     gigIds.length > 0
       ? sb.from("gig_packages").select("gig_id, price, delivery_days").in("gig_id", gigIds)
