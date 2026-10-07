@@ -16,10 +16,10 @@ export const LEVEL_LABELS: Record<SellerLevel, string> = {
 };
 
 export const LEVEL_COLORS: Record<SellerLevel, string> = {
-  new_seller: "#6B7280",
-  level_one: "#3B82F6",
-  level_two: "#8B5CF6",
-  top_rated: "#F59E0B",
+  new_seller: "#62687E",
+  level_one: "#1F2F6E",
+  level_two: "#141F4D",
+  top_rated: "#F2B705",
 };
 
 export function getLevelRequirements(settings: PlatformSettings): Record<SellerLevel, LevelRequirement> {

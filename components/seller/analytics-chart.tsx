@@ -9,10 +9,10 @@ export function AnalyticsChart({ data }: { data: { date: string; earnings: numbe
         <XAxis dataKey="date" tickLine={false} axisLine={false} fontSize={12} />
         <YAxis tickLine={false} axisLine={false} fontSize={12} />
         <Tooltip
-          contentStyle={{ borderRadius: 8, border: "1px solid #E5E7EB" }}
+          contentStyle={{ borderRadius: 8, border: "1px solid #D9DCE5" }}
           formatter={(v: number) => `$${v.toFixed(2)}`}
         />
-        <Line type="monotone" dataKey="earnings" stroke="#0D9488" strokeWidth={2} dot={false} />
+        <Line type="monotone" dataKey="earnings" stroke="#1F2F6E" strokeWidth={2} dot={false} />
       </LineChart>
     </ResponsiveContainer>
   );

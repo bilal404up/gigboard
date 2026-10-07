@@ -1,25 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #F8F6F2;
-  --foreground: #111827;
+  --background: #FFFFFF;
+  --foreground: #151A2B;
 
-  --brand-primary: #0D9488;
-  --brand-primary-dark: #0F766E;
-  --brand-accent: #F97316;
-  --brand-accent-dark: #EA6C0A;
+  --brand-primary: #1F2F6E;
+  --brand-primary-dark: #141F4D;
+  --brand-accent: #F2B705;
+  --brand-accent-dark: #D9A304;
 }
 
 html,
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-family: var(--font-sans), 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -27,14 +24,14 @@ body {
 
 h1, h2, h3, h4, h5, h6,
 .font-heading {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans), 'Helvetica Neue', Arial, sans-serif;
   font-weight: 600;
-  letter-spacing: -0.015em;
-  color: #111827;
+  letter-spacing: 0;
+  color: #151A2B;
 }
 
 h1, .font-heading.text-3xl, .font-heading.text-4xl, .font-heading.text-5xl {
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 
 a {
@@ -43,8 +40,8 @@ a {
 }
 
 ::selection {
-  background: #CCFBF1;
-  color: #0F766E;
+  background: #DADEF3;
+  color: #141F4D;
 }
 
 @layer utilities {
@@ -71,7 +68,7 @@ a {
     @apply inline-flex items-center justify-center gap-2 bg-brand-primary text-white px-4 h-10 rounded-md text-sm font-medium hover:bg-brand-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
   }
   .btn-cta {
-    @apply inline-flex items-center justify-center gap-2 bg-brand-accent text-white px-5 h-11 rounded-md text-sm font-semibold hover:bg-brand-accent-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
+    @apply inline-flex items-center justify-center gap-2 bg-brand-accent text-ink px-5 h-11 rounded-md text-sm font-semibold hover:bg-brand-accent-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
   }
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 bg-white border border-line-strong text-ink px-4 h-10 rounded-md text-sm font-medium hover:bg-canvas-subtle hover:border-ink-faint transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
@@ -100,13 +97,22 @@ a {
 }
 
 .hero-bg {
-  background-color: #F8F6F2;
-  background-image: radial-gradient(circle at 1px 1px, rgba(13, 148, 136, 0.06) 1px, transparent 0);
-  background-size: 32px 32px;
+  background-color: #FFFFFF;
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #EFEDE8 0%, #F8F6F2 50%, #EFEDE8 100%);
+  background: linear-gradient(90deg, #EBEDF2 0%, #F2F3F5 50%, #EBEDF2 100%);
   background-size: 200% 100%;
   animation: shimmer 1.6s linear infinite;
+}
+
+.num {
+  font-family: var(--font-mono), ui-monospace, Consolas, monospace;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+*:focus-visible {
+  outline: 2px solid #141F4D;
+  outline-offset: 2px;
 }

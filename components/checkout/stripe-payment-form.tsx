@@ -22,12 +22,12 @@ export function StripePaymentForm({ clientSecret, orderId, totalCents }: Props) 
         appearance: {
           theme: "flat",
           variables: {
-            colorPrimary: "#0F766E",
-            colorText: "#111827",
-            colorTextSecondary: "#6B7280",
-            colorTextPlaceholder: "#9CA3AF",
+            colorPrimary: "#1F2F6E",
+            colorText: "#151A2B",
+            colorTextSecondary: "#62687E",
+            colorTextPlaceholder: "#62687E",
             colorBackground: "#FFFFFF",
-            colorDanger: "#EF4444",
+            colorDanger: "#B42318",
             borderRadius: "8px",
             fontFamily: "Inter, system-ui, sans-serif",
             fontSizeBase: "14px",
@@ -35,17 +35,17 @@ export function StripePaymentForm({ clientSecret, orderId, totalCents }: Props) 
           },
           rules: {
             ".Input": {
-              border: "1px solid #D1D5DB",
+              border: "1px solid #D9DCE5",
               boxShadow: "none",
               padding: "10px 12px",
             },
             ".Input:focus": {
-              border: "1px solid #0F766E",
+              border: "1px solid #1F2F6E",
               boxShadow: "0 0 0 3px rgba(15, 118, 110, 0.15)",
             },
             ".Label": {
               fontWeight: "500",
-              color: "#111827",
+              color: "#151A2B",
               marginBottom: "6px",
             },
           },

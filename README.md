@@ -1,11 +1,3 @@
-# Demo: Fix-an-App Audit (Gigboard)
-
-This is a demo project built to show app-audit work. It is not client work. Gigboard is a sample freelance marketplace (Next.js 14, Supabase, Stripe test mode). A set of realistic flaws is planted in the `audit/before` state, and the write-up in `AUDIT.md` shows how each one was found and fixed.
-
-Status: audit written (see AUDIT.md), three issues fixed with tests, one issue documented but not fixed. Not published yet.
-
----
-
 # Gigboard — Freelance Services Marketplace
 
 A production-grade freelance marketplace portfolio project. Browse services, place orders, message sellers, leave reviews, withdraw earnings — all running on a free-tier stack with no real charges.
