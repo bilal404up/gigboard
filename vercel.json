@@ -1,0 +1,20 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/keepalive",
+      "schedule": "0 6 */3 * *"
+    },
+    {
+      "path": "/api/cron/auto-complete-orders",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/clear-funds",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/update-seller-levels",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}
