@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { DemoStrip } from "@/components/layout/demo-strip";
 import { UserProvider } from "@/lib/contexts/user-context";
 import { createClient } from "@/lib/supabase/server";
 import type { User } from "@/types/database.types";
@@ -35,10 +36,11 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
-      <body className="antialiased min-h-screen flex flex-col bg-white text-neutral-900">
+      <body className={`antialiased min-h-screen flex flex-col bg-white text-neutral-900 ${process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? "pb-12 sm:pb-9" : ""}`}>
         <UserProvider initialUser={user}>
           {children}
           <Toaster />
+          {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && <DemoStrip />}
         </UserProvider>
       </body>
     </html>
