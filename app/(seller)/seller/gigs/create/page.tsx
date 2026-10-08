@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Field } from "@/components/ui/field";
 import { useRouter } from "next/navigation";
 import { Loader2, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
@@ -284,18 +285,6 @@ export default function CreateGigPage() {
       </main>
       <Footer />
     </>
-  );
-}
-
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="flex items-baseline justify-between mb-1.5">
-        <label className="text-sm font-medium text-ink">{label}</label>
-        {hint && <span className="text-2xs text-ink-subtle">{hint}</span>}
-      </div>
-      {children}
-    </div>
   );
 }
 

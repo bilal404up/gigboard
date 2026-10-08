@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Field } from "@/components/ui/field";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -75,10 +76,11 @@ export default function SignupPage() {
                 placeholder="Ada Lovelace"
               />
             </Field>
-            <Field label="Username" hint="Lowercase letters, numbers, underscores">
+            <Field label="Username" hint="Lowercase letters, numbers, underscores" htmlFor="signup-username">
               <div className="relative">
                 <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-faint pointer-events-none" />
                 <Input
+                  id="signup-username"
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
@@ -134,14 +136,3 @@ export default function SignupPage() {
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="flex items-baseline justify-between mb-1.5">
-        <label className="text-sm font-medium text-ink">{label}</label>
-        {hint && <span className="text-2xs text-ink-subtle">{hint}</span>}
-      </div>
-      {children}
-    </div>
-  );
-}

@@ -152,7 +152,7 @@ export default async function HomePage() {
               </div>
               <p className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-[15px] leading-[22px]">
                 {EXAMPLES.map(([label, q]) => (
-                  <Link key={q} href={`/search?q=${encodeURIComponent(q)}`} className="underline underline-offset-4 hover:decoration-2">
+                  <Link key={q} href={`/search?q=${encodeURIComponent(q)}`} className="inline-block py-2 underline underline-offset-4 hover:decoration-2">
                     {label}
                   </Link>
                 ))}
@@ -185,7 +185,7 @@ export default async function HomePage() {
             </div>
           )}
           <p className="mt-4 text-[15px] leading-[22px]">
-            <Link href="/search" className="underline underline-offset-4 hover:decoration-2">See every gig</Link>
+            <Link href="/search" className="inline-block py-2 underline underline-offset-4 hover:decoration-2">See every gig</Link>
           </p>
         </section>
 

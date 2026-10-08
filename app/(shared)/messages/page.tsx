@@ -137,6 +137,7 @@ export default function MessagesPage() {
       <>
         <Navbar />
         <main className="flex justify-center py-20">
+        <h1 className="sr-only">Messages</h1>
           <Loader2 className="w-6 h-6 animate-spin text-ink-faint" />
         </main>
       </>
@@ -147,8 +148,9 @@ export default function MessagesPage() {
     <>
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-        <div className="bg-white border border-line rounded-2xl flex h-[calc(100vh-9rem)] overflow-hidden ">
-          <aside className="w-80 border-r border-line flex flex-col">
+        <h1 className="sr-only">Messages</h1>
+        <div className="bg-white border border-line rounded-2xl flex flex-col md:flex-row h-[calc(100vh-9rem)] overflow-hidden">
+          <aside className="w-full md:w-80 max-h-[38%] md:max-h-none border-b md:border-b-0 md:border-r border-line flex flex-col">
             <div className="px-5 h-16 flex items-center border-b border-line">
               <h2 className="font-heading text-lg text-ink">Messages</h2>
               {conversations.length > 0 && (

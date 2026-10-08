@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Field } from "@/components/ui/field";
 import { Loader2, AtSign, AlertTriangle, Mail } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
@@ -79,10 +80,10 @@ export default function SettingsPage() {
                 <Field label="Full name">
                   <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
                 </Field>
-                <Field label="Username" hint="Username can't be changed">
+                <Field label="Username" hint="Username can't be changed" htmlFor="settings-username">
                   <div className="relative">
                     <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-faint pointer-events-none" />
-                    <Input value={user.username} disabled className="pl-9" />
+                    <Input id="settings-username" value={user.username} disabled className="pl-9" />
                   </div>
                 </Field>
                 <Field label="Bio" hint={`${bio.length}/600`}>
@@ -218,18 +219,6 @@ function Section({
       <div className="mb-5">
         <h2 className={`font-heading text-lg ${tone === "danger" ? "text-error" : "text-ink"}`}>{title}</h2>
         {description && <p className="text-sm text-ink-subtle mt-1">{description}</p>}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="flex items-baseline justify-between mb-1.5">
-        <label className="text-sm font-medium text-ink">{label}</label>
-        {hint && <span className="text-2xs text-ink-subtle">{hint}</span>}
       </div>
       {children}
     </div>

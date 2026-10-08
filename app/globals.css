@@ -116,3 +116,9 @@ a {
   outline: 2px solid #141F4D;
   outline-offset: 2px;
 }
+
+/* The body is a flex column and main uses mx-auto, which would let wide content stretch main past the screen. */
+main {
+  width: 100%;
+  min-width: 0;
+}

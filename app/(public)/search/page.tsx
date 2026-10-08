@@ -365,7 +365,7 @@ function FilterSidebar({
             name="min_price"
             min={0}
             inputMode="numeric"
-            placeholder="Min"
+            aria-label="Minimum price" placeholder="Min"
             defaultValue={searchParams.min_price ?? ""}
             className="min-w-0 flex-1 h-9 px-3 bg-white border border-line-strong rounded-md text-sm placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
           />
@@ -375,7 +375,7 @@ function FilterSidebar({
             name="max_price"
             min={0}
             inputMode="numeric"
-            placeholder="Max"
+            aria-label="Maximum price" placeholder="Max"
             defaultValue={searchParams.max_price ?? ""}
             className="min-w-0 flex-1 h-9 px-3 bg-white border border-line-strong rounded-md text-sm placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
           />

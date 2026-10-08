@@ -34,8 +34,9 @@ function LoginForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-ink mb-1.5">Email</label>
+        <label htmlFor="login-email" className="block text-sm font-medium text-ink mb-1.5">Email</label>
         <Input
+          id="login-email"
           type="email"
           required
           autoComplete="email"
@@ -46,12 +47,13 @@ function LoginForm() {
       </div>
       <div>
         <div className="flex items-baseline justify-between mb-1.5">
-          <label className="text-sm font-medium text-ink">Password</label>
+          <label htmlFor="login-password" className="text-sm font-medium text-ink">Password</label>
           <Link href="/forgot-password" className="text-xs font-medium text-brand-primary-dark hover:underline">
             Forgot?
           </Link>
         </div>
         <Input
+          id="login-password"
           type="password"
           required
           autoComplete="current-password"

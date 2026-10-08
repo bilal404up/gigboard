@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import { Field } from "@/components/ui/field";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Lock, Loader2, Info, ShieldCheck, ChevronLeft } from "lucide-react";
 import Link from "next/link";
@@ -362,12 +363,3 @@ function DemoCardForm({
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="block text-sm font-medium text-ink mb-1.5">{label}</label>
-      {children}
-      {error && <p className="mt-1 text-xs text-error">{error}</p>}
-    </div>
-  );
-}

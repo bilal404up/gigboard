@@ -132,6 +132,7 @@ export function SearchAutocomplete({
           onFocus={() => setOpen(true)}
           onKeyDown={onKey}
           placeholder={placeholder}
+          aria-label={placeholder}
           autoComplete="off"
           className={cn(
             "w-full bg-canvas-subtle border border-transparent rounded-md text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:bg-white focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-colors",

@@ -11,7 +11,7 @@ export const TabsList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.List
     ref={ref}
-    className={cn("inline-flex items-center justify-start gap-2 border-b border-neutral-200", className)}
+    className={cn("inline-flex max-w-full items-center justify-start gap-2 overflow-x-auto border-b border-neutral-200", className)}
     {...props}
   />
 ));

@@ -53,7 +53,7 @@ function Col({ title, children }: { title: string; children: React.ReactNode }) 
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="block hover:text-ink hover:underline underline-offset-4">
+    <Link href={href} className="block py-1.5 hover:text-ink hover:underline underline-offset-4">
       {children}
     </Link>
   );
