@@ -59,7 +59,7 @@ export default async function GigDetailPage({ params }: { params: { slug: string
                 About this gig
               </h2>
               <div
-                className="prose prose-sm mt-4 max-w-copy text-ink prose-headings:font-display prose-a:text-brass-deep"
+                className="prose prose-sm mt-4 max-w-copy [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 text-ink prose-headings:font-display prose-a:text-brass-deep"
                 dangerouslySetInnerHTML={{ __html: cleanGigHtml(gig.description ?? "") }}
               />
             </section>
