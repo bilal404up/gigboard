@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Heart, Search as SearchIcon } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { GigCard, type GigCardData } from "@/components/gig/gig-card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Button } from "@/components/ui/button";
 import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { createClient } from "@/lib/supabase/server";
 
@@ -89,37 +90,28 @@ export default async function FavoritesPage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <header className="mb-8">
-          <p className="text-xs font-semibold text-ink-subtle mb-1">My account</p>
-          <h1 className="font-heading text-2xl sm:text-3xl text-ink">Saved gigs</h1>
-          <p className="text-sm text-ink-subtle mt-1">
-            {gigs.length === 0
-              ? "Tap the heart on any gig to save it for later."
-              : `${gigs.length} ${gigs.length === 1 ? "gig" : "gigs"} saved`}
-          </p>
-        </header>
-
-        {gigs.length === 0 ? (
-          <div className="bg-white border border-line rounded-2xl p-12 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-brand-primary-50 text-brand-primary-dark flex items-center justify-center">
-              <Heart className="w-5 h-5" />
-            </div>
-            <p className="text-sm text-ink font-medium mb-1">No saved gigs yet</p>
-            <p className="text-sm text-ink-subtle mb-5">
-              Browse services and tap the heart on any gig to save it here.
-            </p>
-            <Link href="/search" className="btn-primary">
-              <SearchIcon className="w-4 h-4" />
-              Browse services
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {gigs.map((g) => (
-              <GigCard key={g.id} gig={g} initialFavorited />
+      <main id="main" className="wrap py-8 lg:py-10">
+        <h1 className="t-sign">Saved gigs</h1>
+        <p className="num mt-2 text-sm text-ink-muted">
+          {gigs.length} {gigs.length === 1 ? "gig" : "gigs"} pinned
+        </p>
+        {gigs.length > 0 ? (
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {gigs.map((gig) => (
+              <GigCard key={gig.id} gig={gig} initialFavorited />
             ))}
           </div>
+        ) : (
+          <EmptyState
+            className="mt-8"
+            title="Nothing pinned yet"
+            description="Press the pin on any gig to keep it here."
+            action={
+              <Button asChild variant="cta">
+                <Link href="/search">Browse gigs</Link>
+              </Button>
+            }
+          />
         )}
       </main>
       <Footer />

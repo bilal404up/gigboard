@@ -1,12 +1,14 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Package, MessageCircle, Heart, ShoppingBag } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { SellerMark } from "@/components/seller/SellerMark";
+import { StatPlate, StatRow } from "@/components/dashboard/stat-plate";
 import { createClient } from "@/lib/supabase/server";
-import { initials, formatMoney, formatDate } from "@/lib/utils/format";
+import { formatMoney, formatDate } from "@/lib/utils/format";
 
 const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "success" | "warning" | "error" | "info"> = {
   pending_payment: "warning",
@@ -41,103 +43,86 @@ export default async function DashboardPage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <header className="flex items-center gap-4 mb-8">
-          <Avatar className="w-14 h-14 shrink-0 border border-line">
-            {user.avatar_url && <AvatarImage src={user.avatar_url} />}
-            <AvatarFallback className="bg-canvas-subtle text-ink-muted">
-              {initials(user.full_name)}
-            </AvatarFallback>
-          </Avatar>
+      <main id="main" className="wrap py-8 lg:py-10">
+        <header className="flex flex-wrap items-center gap-4">
+          <SellerMark username={user.username ?? user.id} label={user.full_name} size={56} />
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-ink-subtle mb-0.5">Dashboard</p>
-            <h1 className="font-heading text-2xl sm:text-3xl text-ink truncate">
-              Welcome back, {user.full_name.split(" ")[0]}
-            </h1>
+            <h1 className="t-sign truncate">{user.full_name}</h1>
+            <p className="mt-1 text-sm text-ink-muted">Your side of the counter.</p>
           </div>
-          <Link
-            href="/search"
-            className="hidden sm:inline-flex h-10 px-4 items-center gap-2 rounded-md bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-dark transition-colors shrink-0"
-          >
-            <ShoppingBag className="w-4 h-4" />
-            Browse services
-          </Link>
+          <Button asChild variant="cta">
+            <Link href="/search">Find a freelancer</Link>
+          </Button>
         </header>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <StatCard label="Active orders" value={activeOrders?.toString() ?? "0"} icon={<Package className="w-4 h-4" />} />
-          <StatCard label="Completed" value={pendingReviews?.toString() ?? "0"} icon={<MessageCircle className="w-4 h-4" />} />
-          <StatCard label="Total spent" value={formatMoney(totalSpent)} icon={<ShoppingBag className="w-4 h-4" />} />
-          <StatCard label="Saved gigs" value={savedGigs?.toString() ?? "0"} icon={<Heart className="w-4 h-4" />} />
-        </div>
+        <StatRow className="mt-8">
+          <StatPlate label="Active orders" value={String(activeOrders ?? 0)} tone={(activeOrders ?? 0) > 0 ? "brass" : "laminate"} hint="Held under the glass" />
+          <StatPlate label="Completed orders" value={String(pendingReviews ?? 0)} />
+          <StatPlate label="Total spent" value={formatMoney(totalSpent)} hint="Approved and paid out" />
+          <StatPlate label="Saved gigs" value={String(savedGigs ?? 0)} />
+        </StatRow>
 
-        <div className="flex items-baseline justify-between mb-4">
-          <h2 className="font-heading text-lg text-ink">Recent orders</h2>
-          {orders && orders.length > 0 && (
-            <Link href="/orders" className="text-sm font-medium text-brand-primary-dark hover:underline">
-              View all <ArrowRight className="w-3 h-3 inline -mt-0.5" />
-            </Link>
-          )}
-        </div>
-
-        {!orders || orders.length === 0 ? (
-          <div className="bg-white border border-line rounded-2xl p-10 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-brand-primary-50 text-brand-primary-dark flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5" />
+        <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
+          <section aria-labelledby="recent-title">
+            <div className="flex items-end justify-between gap-4">
+              <h2 id="recent-title" className="t-head">
+                Recent orders
+              </h2>
+              <Link href="/orders" className="link text-sm font-semibold">
+                All orders
+              </Link>
             </div>
-            <p className="text-sm text-ink mb-1 font-medium">No orders yet</p>
-            <p className="text-sm text-ink-subtle mb-5">When you place an order, it will appear here.</p>
-            <Link href="/search" className="btn-primary">Browse services</Link>
-          </div>
-        ) : (
-          <div className="bg-white border border-line rounded-2xl divide-y divide-line overflow-hidden">
-            {orders.map((o) => {
-              const variant = STATUS_VARIANT[o.status] ?? "secondary";
-              return (
-                <Link
-                  key={o.id}
-                  href={`/order/${o.id}`}
-                  className="block px-5 py-4 hover:bg-canvas-subtle transition-colors"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <p className="font-mono text-2xs text-ink-subtle">{o.order_number}</p>
-                        <Badge variant={variant} className="capitalize">
-                          {o.status.replace(/_/g, " ")}
-                        </Badge>
+            {orders && orders.length > 0 ? (
+              <ul className="mt-4 grid gap-3">
+                {orders.map((o: any) => (
+                  <li key={o.id}>
+                    <Link href={`/order/${o.id}`} className="tray tray--hover flex flex-wrap items-center gap-x-4 gap-y-2 p-4 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-semibold">{(o.package_snapshot as { name?: string } | null)?.name ?? "Order"}</p>
+                        <p className="num mt-0.5 text-xs text-ink-muted">
+                          {o.order_number ?? o.id} · placed {formatDate(o.created_at)}
+                        </p>
                       </div>
-                      <p className="font-medium text-ink truncate">
-                        {(o.package_snapshot as any)?.name ?? "Service"}
-                      </p>
-                      <p className="text-xs text-ink-subtle mt-0.5">Placed {formatDate(o.created_at)}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-base font-semibold text-ink tabular-nums">
-                        {formatMoney(o.buyer_total_paid)}
-                      </p>
-                      <ArrowRight className="w-4 h-4 text-ink-faint inline-block mt-1" />
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+                      <Badge variant={STATUS_VARIANT[o.status] ?? "default"} className="capitalize">{String(o.status).replace(/_/g, " ")}</Badge>
+                      <span className="num font-bold">{formatMoney(Number(o.buyer_total_paid))}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <EmptyState
+                className="mt-4"
+                title="Nothing in the drawer yet"
+                description="Hire a freelancer for one job and your order will show up here with its money held."
+                action={
+                  <Button asChild variant="cta">
+                    <Link href="/search">Browse gigs</Link>
+                  </Button>
+                }
+              />
+            )}
+          </section>
+
+          <aside className="grid gap-3">
+            <QuickLink href="/messages" title="Messages" body="Talk to your sellers" />
+            <QuickLink href="/favorites" title="Saved gigs" body="Gigs you pinned" />
+            <QuickLink href="/settings" title="Settings" body="Name, bio, notifications" />
+          </aside>
+        </div>
       </main>
       <Footer />
     </>
   );
 }
 
-function StatCard({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
+function QuickLink({ href, title, body }: { href: string; title: string; body: string }) {
   return (
-    <div className="bg-white border border-line rounded-2xl p-5">
-      <div className="flex items-center gap-2 mb-2 text-ink-subtle">
-        <span className="text-brand-primary-dark">{icon}</span>
-        <p className="text-2xs font-semibold">{label}</p>
-      </div>
-      <p className="font-heading text-2xl sm:text-3xl text-ink tabular-nums">{value}</p>
-    </div>
+    <Link href={href} className="tray tray--hover flex min-h-11 items-center gap-3 p-4 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany">
+      <span className="lamp lamp--on shrink-0" aria-hidden="true" />
+      <span className="min-w-0">
+        <span className="block font-semibold">{title}</span>
+        <span className="block text-sm text-ink-muted">{body}</span>
+      </span>
+    </Link>
   );
 }

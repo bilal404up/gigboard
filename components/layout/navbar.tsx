@@ -17,14 +17,17 @@ import {
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { SearchAutocomplete } from "@/components/search/search-autocomplete";
 import { WordMark } from "@/components/layout/wordmark";
+import { SellerMark } from "@/components/seller/SellerMark";
 import { useUser } from "@/lib/contexts/user-context";
-import { initials } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
 
 const NAV_LINKS = [
   { href: "/search", label: "Browse" },
   { href: "/how-it-works", label: "How it works" },
 ];
+
+const ICON_BTN =
+  "inline-flex h-11 w-11 items-center justify-center rounded-[4px] text-sand transition-colors hover:bg-mahogany-raised hover:text-laminate focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release md:h-10 md:w-10";
 
 export function Navbar() {
   const router = useRouter();
@@ -84,63 +87,55 @@ export function Navbar() {
   const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-ink">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-4">
-        <Link
-          href="/"
-          className="whitespace-nowrap shrink-0"
-          aria-label="Gigboard home"
-        >
+    <header className="header">
+      <div className="wrap flex min-h-[var(--header-h)] items-center gap-4">
+        <Link href="/" className="shrink-0 whitespace-nowrap rounded-[4px] text-laminate focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-4 focus-visible:outline-release" aria-label="Gigboard home">
           <WordMark />
         </Link>
 
-        <div className="hidden md:block flex-1 min-w-0 max-w-xl">
+        <div className="hidden min-w-0 max-w-xl flex-1 md:block">
           <SearchAutocomplete placeholder="What service are you looking for?" />
         </div>
 
-        <nav className="hidden lg:flex items-center gap-1 text-sm shrink-0">
+        <nav className="hidden shrink-0 items-center gap-1 text-sm lg:flex">
           {NAV_LINKS.map((l) => (
             <Link
               key={l.href}
               href={l.href}
+              aria-current={isActive(l.href) ? "page" : undefined}
               className={cn(
-                "px-3 h-9 inline-flex items-center rounded-md transition-colors",
-                isActive(l.href)
-                  ? "text-ink underline underline-offset-[10px] decoration-2"
-                  : "text-ink-muted hover:text-ink hover:bg-canvas-subtle"
+                "inline-flex h-10 items-center gap-2 rounded-[4px] px-3 font-semibold transition-colors focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release",
+                isActive(l.href) ? "bg-mahogany-raised text-laminate" : "text-sand hover:bg-mahogany-raised hover:text-laminate"
               )}
             >
+              {isActive(l.href) ? <span className="lamp lamp--on h-2 w-2" aria-hidden="true" /> : null}
               {l.label}
             </Link>
           ))}
           {!user?.is_seller && (
             <Link
               href="/become-seller"
-              className="px-3 h-9 inline-flex items-center rounded-md text-ink-muted hover:text-ink hover:bg-canvas-subtle transition-colors"
+              className="inline-flex h-10 items-center rounded-[4px] px-3 font-semibold text-sand transition-colors hover:bg-mahogany-raised hover:text-laminate focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release"
             >
               Become a seller
             </Link>
           )}
         </nav>
 
-        <div className="flex items-center gap-1 ml-auto shrink-0">
+        <div className="ml-auto flex shrink-0 items-center gap-1">
           {user ? (
             <>
-              <Link
-                href="/favorites"
-                aria-label="Favorites"
-                className="hidden sm:inline-flex w-9 h-9 items-center justify-center rounded-md text-ink-muted hover:text-ink hover:bg-canvas-subtle transition-colors"
-              >
-                <Heart className="w-[18px] h-[18px]" />
+              <Link href="/favorites" aria-label="Favorites" className={cn(ICON_BTN, "hidden sm:inline-flex")}>
+                <Heart className="h-[18px] w-[18px]" />
               </Link>
               <Link
                 href="/messages"
                 aria-label={unread > 0 ? `Messages (${unread} unread)` : "Messages"}
-                className="relative w-9 h-9 inline-flex items-center justify-center rounded-md text-ink-muted hover:text-ink hover:bg-canvas-subtle transition-colors"
+                className={cn(ICON_BTN, "relative")}
               >
-                <Bell className="w-[18px] h-[18px]" />
+                <Bell className="h-[18px] w-[18px]" />
                 {unread > 0 && (
-                  <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 inline-flex items-center justify-center rounded-full bg-error text-white text-[10px] font-semibold leading-none ring-2 ring-white">
+                  <span className="absolute right-1.5 top-1.5 inline-flex h-4 min-w-[16px] items-center justify-center rounded-pill bg-alarm px-1 text-[10px] font-semibold leading-none text-laminate ring-2 ring-mahogany-deep">
                     {unread > 9 ? "9+" : unread}
                   </span>
                 )}
@@ -148,21 +143,21 @@ export function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="ml-1 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+                    className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-[4px] focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release md:h-10 md:w-10"
                     aria-label="Account menu"
                   >
-                    <Avatar className="w-8 h-8 border border-line">
+                    <Avatar className="h-8 w-8 shadow-[0_0_0_1.5px_#C9A24A]">
                       {user.avatar_url && <AvatarImage src={user.avatar_url} />}
-                      <AvatarFallback className="text-xs bg-canvas-subtle text-ink-muted">
-                        {initials(user.full_name)}
+                      <AvatarFallback className="bg-transparent p-0">
+                        <SellerMark username={user.username} label={user.full_name} size={32} />
                       </AvatarFallback>
                     </Avatar>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-60">
                   <DropdownMenuLabel>
-                    <div className="font-semibold text-ink truncate">{user.full_name}</div>
-                    <div className="text-xs text-ink-subtle font-normal truncate">@{user.username}</div>
+                    <div className="truncate font-semibold text-ink">{user.full_name}</div>
+                    <div className="num truncate text-xs font-normal text-ink-muted">@{user.username}</div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={() => router.push("/dashboard")}>Dashboard</DropdownMenuItem>
@@ -185,13 +180,13 @@ export function Navbar() {
             <>
               <Link
                 href="/login"
-                className="hidden sm:inline-flex h-9 px-3 items-center rounded-md text-sm font-medium text-ink-muted hover:text-ink hover:bg-canvas-subtle transition-colors"
+                className="hidden h-10 items-center rounded-[4px] px-3 text-sm font-semibold text-sand transition-colors hover:bg-mahogany-raised hover:text-laminate focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release sm:inline-flex"
               >
                 Log in
               </Link>
               <Link
                 href="/signup"
-                className="inline-flex h-9 px-4 items-center rounded-md text-sm font-medium bg-brand-primary text-white hover:bg-brand-primary-dark transition-colors"
+                className="inline-flex h-10 items-center rounded-[4px] bg-[linear-gradient(180deg,#E7C978_0%,#C9A24A_55%,#B08A2C_100%)] px-4 text-sm font-semibold text-ink shadow-[0_2px_0_#7A5A14,inset_0_1px_0_#E7C978] transition-transform hover:-translate-y-px focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release active:translate-y-px"
               >
                 Join
               </Link>
@@ -199,67 +194,64 @@ export function Navbar() {
           )}
           <Sheet>
             <SheetTrigger asChild>
-              <button
-                className="lg:hidden w-9 h-9 inline-flex items-center justify-center rounded-md text-ink-muted hover:text-ink hover:bg-canvas-subtle transition-colors"
-                aria-label="Open menu"
-              >
-                <Menu className="w-[18px] h-[18px]" />
+              <button className={cn(ICON_BTN, "lg:hidden")} aria-label="Open menu">
+                <Menu className="h-[18px] w-[18px]" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="p-0 flex flex-col">
-              <div className="px-5 h-16 flex items-center border-b border-line">
+            <SheetContent side="right" className="flex flex-col p-0">
+              <div className="booth booth--plain flex h-16 items-center px-5">
                 <WordMark />
               </div>
 
-              <div className="p-5 border-b border-line">
+              <div className="border-b-2 border-dotted border-sand p-5">
                 <SearchAutocomplete placeholder="Search services…" />
               </div>
 
               <nav className="flex-1 py-2">
-                <MobileNavLink href="/search" label="Browse" icon={<Search className="w-4 h-4" />} />
-                <MobileNavLink href="/how-it-works" label="How it works" icon={<UserIcon className="w-4 h-4" />} />
+                <MobileNavLink href="/search" label="Browse" icon={<Search className="h-4 w-4" />} />
+                <MobileNavLink href="/how-it-works" label="How it works" icon={<UserIcon className="h-4 w-4" />} />
                 {!user?.is_seller && (
-                  <MobileNavLink href="/become-seller" label="Become a seller" icon={<ShieldCheck className="w-4 h-4" />} />
+                  <MobileNavLink href="/become-seller" label="Become a seller" icon={<ShieldCheck className="h-4 w-4" />} />
                 )}
 
                 {user && (
                   <>
-                    <div className="my-2 border-t border-line" />
-                    <MobileNavLink href="/dashboard" label="Dashboard" icon={<LayoutDashboard className="w-4 h-4" />} />
+                    <div className="my-2 border-t-2 border-dotted border-sand" />
+                    <MobileNavLink href="/dashboard" label="Dashboard" icon={<LayoutDashboard className="h-4 w-4" />} />
                     {user.is_seller && (
-                      <MobileNavLink href="/seller/dashboard" label="Seller dashboard" icon={<LayoutDashboard className="w-4 h-4" />} />
+                      <MobileNavLink href="/seller/dashboard" label="Seller dashboard" icon={<LayoutDashboard className="h-4 w-4" />} />
                     )}
-                    <MobileNavLink href="/messages" label="Messages" icon={<MessageCircle className="w-4 h-4" />} />
-                    <MobileNavLink href="/favorites" label="Favorites" icon={<Heart className="w-4 h-4" />} />
-                    <MobileNavLink href="/settings" label="Settings" icon={<Settings className="w-4 h-4" />} />
+                    <MobileNavLink href="/messages" label="Messages" icon={<MessageCircle className="h-4 w-4" />} />
+                    <MobileNavLink href="/favorites" label="Favorites" icon={<Heart className="h-4 w-4" />} />
+                    <MobileNavLink href="/settings" label="Settings" icon={<Settings className="h-4 w-4" />} />
                     {user.is_admin && (
-                      <MobileNavLink href="/admin" label="Admin" icon={<ShieldCheck className="w-4 h-4" />} />
+                      <MobileNavLink href="/admin" label="Admin" icon={<ShieldCheck className="h-4 w-4" />} />
                     )}
                   </>
                 )}
               </nav>
 
-              <div className="p-5 border-t border-line">
+              <div className="border-t-2 border-dotted border-sand p-5">
                 {user ? (
                   <>
-                    <div className="flex items-center gap-3 mb-3">
-                      <Avatar className="w-10 h-10 border border-line shrink-0">
+                    <div className="mb-3 flex items-center gap-3">
+                      <Avatar className="h-10 w-10 shrink-0 shadow-[0_0_0_1.5px_#C9A24A]">
                         {user.avatar_url && <AvatarImage src={user.avatar_url} />}
-                        <AvatarFallback className="text-sm bg-canvas-subtle text-ink-muted">
-                          {initials(user.full_name)}
+                        <AvatarFallback className="bg-transparent p-0">
+                          <SellerMark username={user.username} label={user.full_name} size={40} />
                         </AvatarFallback>
                       </Avatar>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-ink truncate">{user.full_name}</p>
-                        <p className="text-xs text-ink-subtle truncate">@{user.username}</p>
+                        <p className="truncate text-sm font-semibold text-ink">{user.full_name}</p>
+                        <p className="num truncate text-xs text-ink-muted">@{user.username}</p>
                       </div>
                     </div>
                     <SheetClose asChild>
                       <button
                         onClick={signOut}
-                        className="w-full h-10 inline-flex items-center justify-center gap-2 rounded-md border border-line-strong text-sm font-medium text-ink-muted hover:bg-canvas-subtle hover:text-ink transition-colors"
+                        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-[4px] text-sm font-semibold text-ink shadow-[inset_0_0_0_1.5px_#4B2320] hover:bg-laminate-sunk focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany"
                       >
-                        <LogOut className="w-4 h-4" />
+                        <LogOut className="h-4 w-4" />
                         Sign out
                       </button>
                     </SheetClose>
@@ -269,7 +261,7 @@ export function Navbar() {
                     <SheetClose asChild>
                       <Link
                         href="/login"
-                        className="flex-1 h-10 inline-flex items-center justify-center rounded-md border border-line-strong text-sm font-medium text-ink hover:bg-canvas-subtle transition-colors"
+                        className="inline-flex h-11 flex-1 items-center justify-center rounded-[4px] text-sm font-semibold text-ink shadow-[inset_0_0_0_1.5px_#4B2320] hover:bg-laminate-sunk focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany"
                       >
                         Log in
                       </Link>
@@ -277,7 +269,7 @@ export function Navbar() {
                     <SheetClose asChild>
                       <Link
                         href="/signup"
-                        className="flex-1 h-10 inline-flex items-center justify-center rounded-md bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-dark transition-colors"
+                        className="inline-flex h-11 flex-1 items-center justify-center rounded-[4px] bg-[linear-gradient(180deg,#E7C978_0%,#C9A24A_55%,#B08A2C_100%)] text-sm font-semibold text-ink shadow-[0_2px_0_#7A5A14,inset_0_1px_0_#E7C978] focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany"
                       >
                         Join
                       </Link>
@@ -298,9 +290,9 @@ function MobileNavLink({ href, label, icon }: { href: string; label: string; ico
     <SheetClose asChild>
       <Link
         href={href}
-        className="flex items-center gap-3 px-5 h-11 text-sm font-medium text-ink hover:bg-canvas-subtle transition-colors"
+        className="flex h-11 items-center gap-3 px-5 text-sm font-semibold text-ink transition-colors hover:bg-laminate-sunk focus-visible:outline focus-visible:outline-[2.5px] focus-visible:-outline-offset-[3px] focus-visible:outline-mahogany"
       >
-        <span className="text-ink-subtle">{icon}</span>
+        <span className="text-brass-deep">{icon}</span>
         {label}
       </Link>
     </SheetClose>

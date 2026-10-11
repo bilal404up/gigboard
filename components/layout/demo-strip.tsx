@@ -45,38 +45,40 @@ export function DemoStrip() {
   }
 
   return (
-    <div
-      role="region"
-      aria-label="Demo notice"
-      className="fixed inset-x-0 bottom-0 z-50 flex min-h-9 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-ink bg-canvas-subtle px-4 py-1 text-[13px] leading-[18px] text-ink-muted"
-    >
-      <p className="flex min-w-0 items-center gap-2">
-        <PinTile tone="demo">Demo</PinTile>
-        <span className="truncate">
-          <span className="sm:hidden">Sample data. Stripe test mode.</span>
-          <span className="hidden sm:inline">
-            Sample data: gigs, sellers and reviews are invented. Stripe test mode, no real money moves.
+    <div role="region" aria-label="Demo notice" className="demo-bar">
+      <div className="wrap flex h-full flex-wrap items-center gap-x-4 gap-y-2 py-2 text-[13px] leading-[18px] text-sand">
+        <p className="flex min-w-0 flex-1 items-center gap-2">
+          <PinTile tone="demo">Demo</PinTile>
+          <span className="truncate">
+            <span className="sm:hidden">Sample data. Stripe test mode.</span>
+            <span className="hidden sm:inline">
+              Sample data: gigs, sellers and reviews are invented. Stripe test mode, no real money moves.
+            </span>
           </span>
-        </span>
-      </p>
-      <div className="flex items-center gap-2">
-        <span>View as</span>
-        <div role="group" aria-label="View as" className="flex overflow-hidden rounded-xs border border-ink">
-          {DEMO_ROLES.map((role) => (
-            <button
-              key={role}
-              type="button"
-              onClick={() => switchTo(role)}
-              disabled={pending !== null}
-              aria-pressed={current === role}
-              className={cn(
-                "h-7 px-3 text-[13px] font-semibold",
-                current === role ? "bg-ink text-white" : "bg-white text-ink hover:bg-brand-primary-50"
-              )}
-            >
-              {pending === role ? "Switching" : LABELS[role]}
-            </button>
-          ))}
+        </p>
+        <div className="flex basis-full items-center gap-2 md:basis-auto">
+          <span className="hidden md:inline">View as</span>
+          <div role="group" aria-label="View as" className="flex flex-1 gap-1 md:flex-none">
+            {DEMO_ROLES.map((role) => (
+              <button
+                key={role}
+                type="button"
+                onClick={() => switchTo(role)}
+                disabled={pending !== null}
+                aria-pressed={current === role}
+                className={cn(
+                  "inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-[4px] px-3 text-[13px] font-semibold transition-colors duration-120 md:h-9 md:flex-none",
+                  "focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release disabled:opacity-60",
+                  current === role
+                    ? "bg-[linear-gradient(180deg,#E7C978_0%,#C9A24A_55%,#B08A2C_100%)] text-ink shadow-[0_1px_0_#7A5A14]"
+                    : "text-laminate shadow-[inset_0_0_0_1.5px_rgba(239,233,223,0.5)] hover:bg-mahogany-raised"
+                )}
+              >
+                {current === role ? <span className="lamp lamp--release h-2 w-2" aria-hidden="true" /> : null}
+                {pending === role ? "Switching" : LABELS[role]}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -10,6 +10,9 @@ import { CountdownTimer } from "@/components/ui/countdown-timer";
 import { toast } from "sonner";
 import type { Order } from "@/types/database.types";
 
+/* the one release button: the only control on the site that moves money */
+const RELEASE = "bg-release text-ink shadow-[0_2px_0_#0B6B40] hover:bg-release hover:shadow-[0_3px_0_#0B6B40,0_0_0_4px_rgba(31,199,122,0.22)] focus-visible:bg-release focus-visible:outline-mahogany active:shadow-[0_0_0_#0B6B40,inset_0_2px_0_rgba(0,0,0,0.18)]";
+
 export function OrderActions({ order, isBuyer }: { order: Order; isBuyer: boolean }) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
@@ -34,32 +37,38 @@ export function OrderActions({ order, isBuyer }: { order: Order; isBuyer: boolea
 
   if (order.status === "requires_requirements" && isBuyer) {
     return (
-      <div className="bg-warning/5 border border-warning/20 rounded-xl p-6">
-        <h3 className="font-semibold mb-2">Submit your requirements to begin</h3>
-        <p className="text-sm text-neutral-600 mb-4">
+      <div className="tray p-6">
+        <div className="flex items-center gap-3">
+          <span className="lamp lamp--on" aria-hidden="true" />
+          <h3 className="t-head">Submit your requirements to begin</h3>
+        </div>
+        <p className="mt-2 max-w-[52ch] text-sm text-ink-muted">
           The seller needs details about your project before they can start. Your delivery clock begins after submission.
         </p>
-        <Link href={`/order/${order.id}/requirements`}>
-          <Button variant="cta">Submit Requirements</Button>
-        </Link>
+        <Button asChild variant="cta" className="mt-4">
+          <Link href={`/order/${order.id}/requirements`}>Submit Requirements</Link>
+        </Button>
       </div>
     );
   }
 
   if (order.status === "in_progress") {
     return (
-      <div className="bg-white border border-neutral-200 rounded-xl p-6">
-        <h3 className="font-semibold mb-3">In Progress</h3>
+      <div className="tray p-6">
+        <div className="flex items-center gap-3">
+          <span className="lamp lamp--on" aria-hidden="true" />
+          <h3 className="t-head">In Progress</h3>
+        </div>
         {order.delivery_due_at && (
-          <div className="mb-4">
-            <p className="text-sm text-neutral-600">Delivery expected by:</p>
-            <CountdownTimer to={order.delivery_due_at} className="text-2xl text-brand-primary" />
+          <div className="mt-4">
+            <p className="text-sm text-ink-muted">Delivery expected by:</p>
+            <CountdownTimer to={order.delivery_due_at} className="fig-price-xl mt-1 text-ink" />
           </div>
         )}
         {!isBuyer && (
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="default">Deliver Order</Button>
+              <Button variant="default" className="mt-5">Deliver Order</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -79,30 +88,33 @@ export function OrderActions({ order, isBuyer }: { order: Order; isBuyer: boolea
 
   if (order.status === "delivered" && isBuyer) {
     return (
-      <div className="bg-success/5 border border-success/20 rounded-xl p-6 space-y-4">
-        <h3 className="font-semibold">Delivery Received</h3>
+      <div className="tray space-y-4 p-6">
+        <div className="flex items-center gap-3">
+          <span className="lamp lamp--on" aria-hidden="true" />
+          <h3 className="t-head">Delivery Received</h3>
+        </div>
         {order.delivery_message && (
-          <div className="bg-white border border-neutral-200 rounded-lg p-3">
-            <p className="text-xs text-neutral-500 mb-1">Seller&apos;s message</p>
+          <div className="rounded-[6px] bg-laminate-sunk p-3">
+            <p className="mb-1 text-xs font-semibold text-ink-muted">Seller&apos;s message</p>
             <p className="text-sm">{order.delivery_message}</p>
           </div>
         )}
         {order.delivery_files && order.delivery_files.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-1">
             {order.delivery_files.map((url, i) => (
-              <a key={i} href={url} className="flex items-center gap-2 text-sm text-brand-primary hover:underline">
+              <a key={i} href={url} className="link inline-flex min-h-11 items-center gap-2 text-sm">
                 <FileText className="w-4 h-4" /> Delivery file {i + 1} <Download className="w-3 h-3" />
               </a>
             ))}
           </div>
         )}
-        <div className="flex gap-2 flex-wrap">
-          <Button onClick={() => call("accept", undefined, "accept")} disabled={loading === "accept"}>
+        <div className="flex flex-wrap gap-2">
+          <Button size="lg" className={RELEASE} onClick={() => call("accept", undefined, "accept")} disabled={loading === "accept"}>
             {loading === "accept" ? <Loader2 className="w-4 h-4 animate-spin" /> : "Accept Delivery"}
           </Button>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="secondary">Request Revision</Button>
+              <Button variant="secondary" size="lg">Request Revision</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -118,8 +130,9 @@ export function OrderActions({ order, isBuyer }: { order: Order; isBuyer: boolea
             </DialogContent>
           </Dialog>
         </div>
+        <p className="text-sm text-ink-muted">Accepting slides the drawer to the seller. Until then your payment stays under the glass.</p>
         {order.auto_complete_at && (
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-ink-muted">
             Auto-completes on {new Date(order.auto_complete_at).toLocaleDateString()} if no action.
           </p>
         )}
@@ -129,13 +142,20 @@ export function OrderActions({ order, isBuyer }: { order: Order; isBuyer: boolea
 
   if (order.status === "completed") {
     return (
-      <div className="bg-success/5 border border-success/20 rounded-xl p-6 space-y-4">
-        <h3 className="font-semibold text-success">Order Complete!</h3>
-        <div className="flex gap-2 flex-wrap">
+      <div className="tray space-y-4 p-6">
+        <div className="flex items-center gap-3">
+          <span className="lamp lamp--release" aria-hidden="true" />
+          <h3 className="t-head">Order Complete!</h3>
+        </div>
+        <div className="flex flex-wrap gap-2">
           {isBuyer && (
             <>
-              <Link href={`/order/${order.id}/review`}><Button variant="cta">Leave a Review</Button></Link>
-              <Link href={`/order/${order.id}/tip`}><Button variant="secondary">Send a Tip</Button></Link>
+              <Button asChild variant="cta">
+                <Link href={`/order/${order.id}/review`}>Leave a Review</Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href={`/order/${order.id}/tip`}>Send a Tip</Link>
+              </Button>
             </>
           )}
         </div>

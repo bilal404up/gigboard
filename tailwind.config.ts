@@ -1,116 +1,77 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   theme: {
     extend: {
-      fontFamily: {
-        heading: ["var(--font-sans)", "Helvetica Neue", "Arial", "sans-serif"],
-        sans: ["var(--font-sans)", "Helvetica Neue", "Arial", "sans-serif"],
-        mono: ["var(--font-mono)", "ui-monospace", "SF Mono", "Menlo", "Consolas", "monospace"],
-      },
       colors: {
+        mahogany: { DEFAULT: '#4B2320', raised: '#5E2F2A', deep: '#2E1414' },
+        laminate: { DEFAULT: '#EFE9DF', raised: '#F7F3EA', sunk: '#E4DCCF' },
+        ink: { DEFAULT: '#1A1412', muted: '#5C524C', subtle: '#6E6256', faint: '#B9AFA4' },
+        sand: { DEFAULT: '#D9C9B4', light: '#E8DDCD' },
+        brass: { DEFAULT: '#C9A24A', deep: '#7A5A14', light: '#E7C978', tint: '#F6EBCF' },
+        release: { DEFAULT: '#1FC77A', deep: '#0B6B40', tint: '#D9F3E6' },
+        alarm: { DEFAULT: '#B8281C', tint: '#F6E1DE' },
+        enamel: { teal: '#0E5E57', vermilion: '#C8331F', mustard: '#D9A531', cobalt: '#2D4FA8', plum: '#6A2C70' },
+
+        // legacy aliases so untouched pages still belong to the new world
         brand: {
-          primary: "#1F2F6E",
-          "primary-dark": "#141F4D",
-          "primary-50": "#EEF0FA",
-          "primary-100": "#DADEF3",
-          accent: "#F2B705",
-          "accent-dark": "#D9A304",
-          "accent-50": "#FFF6D6",
+          primary: '#4B2320',
+          'primary-dark': '#2E1414',
+          'primary-50': '#E4DCCF',
+          'primary-100': '#D9C9B4',
+          accent: '#C9A24A',
+          'accent-dark': '#7A5A14',
+          'accent-50': '#F6EBCF',
         },
-        canvas: {
-          DEFAULT: "#FFFFFF",
-          subtle: "#F2F3F5",
-          raised: "#FFFFFF",
-          board: "#101A33",
-        },
-        ink: {
-          DEFAULT: "#151A2B",
-          muted: "#4A5068",
-          subtle: "#62687E",
-          faint: "#9A9FB2",
-        },
-        line: {
-          DEFAULT: "#D9DCE5",
-          subtle: "#EBEDF2",
-          strong: "#151A2B",
-        },
-        neutral: {
-          50: "#F9FAFB",
-          100: "#F3F4F6",
-          200: "#E5E7EB",
-          300: "#D1D5DB",
-          500: "#6B7280",
-          700: "#374151",
-          900: "#111827",
-          950: "#0A0A0A",
-        },
-        success: "#1D7A4F",
-        warning: "#8A5A00",
-        error: "#B42318",
-        info: "#1F2F6E",
-        seller: {
-          new: "#62687E",
-          "level-one": "#1F2F6E",
-          "level-two": "#141F4D",
-          "top-rated": "#F2B705",
-        },
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        canvas: { DEFAULT: '#F7F3EA', subtle: '#E4DCCF', raised: '#F7F3EA', board: '#2E1414' },
+        line: { DEFAULT: '#D9C9B4', subtle: '#E8DDCD', strong: '#1A1412' },
+        success: '#0B6B40',
+        warning: '#7A5A14',
+        error: '#B8281C',
+        info: '#2D4FA8',
+        seller: { new: '#6E6256', 'level-one': '#0E5E57', 'level-two': '#7A5A14', 'top-rated': '#0B6B40' },
       },
-      borderRadius: {
-        xs: "4px",
-        sm: "4px",
-        md: "4px",
-        lg: "6px",
-        xl: "6px",
-        "2xl": "12px",
-        "3xl": "12px",
+
+      fontFamily: {
+        sans: ['var(--font-body)', 'system-ui', 'sans-serif'],
+        body: ['var(--font-body)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
+        display: ['var(--font-display)', 'system-ui', 'sans-serif'],
+        heading: ['var(--font-display)', 'system-ui', 'sans-serif'],
       },
-      boxShadow: {
-        card: "none",
-        "card-hover": "none",
-        popover: "0 8px 24px rgba(21, 26, 43, 0.14)",
-      },
+
       fontSize: {
-        "2xs": ["0.6875rem", { lineHeight: "1rem" }],
+        'sign-xl': ['6rem', { lineHeight: '0.95', letterSpacing: '-0.01em', fontWeight: '800' }],
+        sign: ['2.75rem', { lineHeight: '1', letterSpacing: '-0.01em', fontWeight: '700' }],
+        head: ['1.375rem', { lineHeight: '1.2', fontWeight: '700' }],
+        micro: ['0.8125rem', { lineHeight: '1.4' }],
+        price: ['1.75rem', { lineHeight: '1', fontWeight: '700' }],
+        'price-xl': ['3rem', { lineHeight: '1', fontWeight: '700' }],
       },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-        "fade-in": {
-          from: { opacity: "0" },
-          to: { opacity: "1" },
-        },
-        "pulse-soft": {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.6" },
-        },
-        shimmer: {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
-        },
+
+      borderRadius: { rail: '2px', tray: '10px', drawer: '14px', pill: '999px' },
+
+      boxShadow: {
+        rim: 'inset 0 0 0 1.5px #C9A24A',
+        tray: '0 1px 0 #D5CBBD, 0 6px 0 -2px #E4DCCF',
+        'tray-lift': '0 1px 0 #D5CBBD, 0 14px 0 -6px #E4DCCF, 0 18px 24px -14px rgba(26, 20, 18, 0.5)',
+        drawer: '0 2px 0 #2E1414, 0 10px 0 -4px #2E1414',
+        plate: '0 1px 0 #7A5A14, inset 0 1px 0 #E7C978',
+        lamp: '0 0 0 3px rgba(31, 199, 122, 0.25), 0 0 14px rgba(31, 199, 122, 0.6)',
+        field: 'inset 0 -2px 0 #4B2320',
       },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.2s ease-out",
-        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
-        shimmer: "shimmer 1.6s linear infinite",
-      },
+
+      spacing: { demo: 'var(--demo-h)', header: 'var(--header-h)' },
+      maxWidth: { wrap: '80rem', copy: '62ch' },
+      minHeight: { tap: '44px' },
+      zIndex: { sticky: '10', header: '30', demo: '40', scrim: '50', sheet: '60', toast: '70' },
+      transitionTimingFunction: { out: 'cubic-bezier(0.2, 0.7, 0.2, 1)', slide: 'cubic-bezier(0.3, 0.9, 0.3, 1)' },
+      transitionDuration: { 120: '120ms', 200: '200ms', 280: '280ms' },
+      gridTemplateColumns: { gig: 'minmax(0, 1fr) 22rem', hero: '6fr 7fr' },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-};
-export default config;
+  plugins: [require('tailwindcss-animate')],
+}
+
+export default config

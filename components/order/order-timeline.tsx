@@ -1,64 +1,93 @@
-import type { OrderStatus } from "@/types/database.types";
-import { PinTile, type PinTileTone } from "@/components/ui/pin-tile";
+import { EscrowDrawer, type EscrowState } from "@/components/escrow/EscrowDrawer"
+import { PinTile, type PinTileTone } from "@/components/ui/pin-tile"
+import type { OrderStatus } from "@/types/database.types"
 
-const STEPS: { key: string; label: string }[] = [
-  { key: "ordered", label: "Ordered" },
-  { key: "requires_requirements", label: "Requirements" },
-  { key: "in_progress", label: "In progress" },
-  { key: "delivered", label: "Delivered" },
-  { key: "completed", label: "Approved" },
-];
+type Props = { status: OrderStatus; delivered: string | null; completed: string | null }
 
-const STATUS_INDEX: Record<OrderStatus, number> = {
-  pending_payment: 0,
-  active: 1,
-  requires_requirements: 1,
-  in_progress: 2,
-  delivered: 3,
-  revision_requested: 2,
-  completed: 4,
-  cancelled: -1,
-  disputed: 3,
-};
+const STATE: Record<OrderStatus, EscrowState> = {
+  pending_payment: "held",
+  active: "held",
+  requires_requirements: "held",
+  in_progress: "held",
+  delivered: "delivered",
+  revision_requested: "delivered",
+  completed: "approved",
+  cancelled: "cancelled",
+  disputed: "disputed",
+}
 
-export function OrderTimeline({
-  status,
-  delivered,
-  completed,
-}: {
-  status: OrderStatus;
-  delivered: string | null;
-  completed: string | null;
-}) {
-  const current = STATUS_INDEX[status];
-  const finished = status === "completed";
+const TONE: Record<OrderStatus, PinTileTone> = {
+  pending_payment: "held",
+  active: "held",
+  requires_requirements: "held",
+  in_progress: "in-progress",
+  delivered: "delivered",
+  revision_requested: "revision",
+  completed: "approved",
+  cancelled: "cancelled",
+  disputed: "cancelled",
+}
 
-  const toneFor = (i: number): PinTileTone => {
-    if (status === "cancelled") return "cancelled";
-    if (i < current || (finished && i === current)) return "approved";
-    if (i === current) return status === "revision_requested" ? "revision" : "held";
-    return "new";
-  };
+const LABEL: Record<OrderStatus, string> = {
+  pending_payment: "Waiting for payment",
+  active: "Held",
+  requires_requirements: "Held, waiting for your brief",
+  in_progress: "Held, work in progress",
+  delivered: "Delivered",
+  revision_requested: "Revision requested",
+  completed: "Approved",
+  cancelled: "Cancelled",
+  disputed: "Disputed",
+}
+
+const RANK: Record<EscrowState, number> = { held: 0, delivered: 1, approved: 2, cancelled: -1, disputed: -1 }
+
+function day(iso: string | null) {
+  if (!iso) return null
+  const d = new Date(iso)
+  return Number.isNaN(d.getTime()) ? null : d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+}
+
+/* The order's place at the counter: the drawer at full size, then the three stations with their dates. */
+export function OrderTimeline({ status, delivered, completed }: Props) {
+  const state = STATE[status]
+  const rank = RANK[state]
+  const stations: { key: EscrowState; title: string; date: string | null; detail: string }[] = [
+    { key: "held", title: "Held", date: null, detail: "Payment is under the glass." },
+    { key: "delivered", title: "Delivered", date: day(delivered), detail: delivered ? "Work is in the drawer." : "Waiting for the seller." },
+    { key: "approved", title: "Approved", date: day(completed), detail: completed ? "The drawer slid across to the seller." : "Waiting for your approval." },
+  ]
 
   return (
-    <div className="rounded-lg border border-ink bg-white p-5">
-      <ol className="flex flex-wrap items-center gap-y-3" aria-label="Order progress">
-        {STEPS.map((step, i) => (
-          <li key={step.key} className="flex items-center">
-            <PinTile tone={toneFor(i)}>{step.label}</PinTile>
-            {i < STEPS.length - 1 && <span aria-hidden className="mx-1 h-px w-6 bg-ink sm:w-10" />}
-          </li>
-        ))}
+    <section aria-label="Order progress" className="booth rounded-drawer p-4 md:p-6">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="t-head">Where your money is</p>
+        <PinTile tone={TONE[status]}>{LABEL[status]}</PinTile>
+      </div>
+
+      <EscrowDrawer state={state} size="xl" captions={false} />
+
+      <ol className="mt-5 grid gap-3 sm:grid-cols-3" aria-label="Escrow steps">
+        {stations.map((s, i) => {
+          const done = rank >= i
+          const current = state === s.key
+          return (
+            <li
+              key={s.key}
+              aria-current={current ? "step" : undefined}
+              className={`rounded-[6px] border-t-[3px] pt-3 ${
+                current ? (s.key === "approved" ? "border-release" : "border-brass") : done ? "border-brass-deep" : "border-laminate/20"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className={`t-plate ${done ? "text-laminate" : "text-sand"}`}>{s.title}</p>
+                {s.date ? <span className="num text-xs text-sand">{s.date}</span> : null}
+              </div>
+              <p className={`mt-1 text-sm ${done ? "text-laminate" : "text-sand"}`}>{s.detail}</p>
+            </li>
+          )
+        })}
       </ol>
-      <p className="mt-4 text-[13px] leading-[18px] text-ink-muted">
-        {status === "cancelled"
-          ? "This order was cancelled."
-          : finished
-            ? `Approved${completed ? ` on ${new Date(completed).toLocaleDateString("en-US")}` : ""}. The seller has been paid.`
-            : delivered
-              ? `Delivered on ${new Date(delivered).toLocaleDateString("en-US")}. Approve it or ask for a revision.`
-              : "Your payment is held until you approve the work."}
-      </p>
-    </div>
-  );
+    </section>
+  )
 }

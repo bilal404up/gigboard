@@ -1,44 +1,61 @@
-import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SellerLevelBadge } from "./seller-level-badge";
-import { RatingStars } from "@/components/ui/rating-stars";
-import { initials } from "@/lib/utils/format";
-import type { SellerLevel } from "@/types/database.types";
+import Link from "next/link"
+import { SellerMark, LevelPlate } from "@/components/seller/SellerMark"
+import { RatingStars } from "@/components/ui/rating-stars"
+import type { SellerLevel } from "@/types/database.types"
 
-interface Props {
-  username: string;
-  fullName: string;
-  avatarUrl: string | null;
-  level: SellerLevel;
-  rating: number;
-  totalOrders: number;
-  tagline?: string | null;
+type Props = {
+  username: string
+  fullName: string
+  avatarUrl: string | null
+  level: SellerLevel
+  rating: number
+  totalOrders: number
+  tagline?: string | null
 }
 
+/* The seller's window: lit sign, name plate, level, rating with real counts. */
 export function SellerCard({ username, fullName, avatarUrl, level, rating, totalOrders, tagline }: Props) {
+  const hasRating = rating > 0
   return (
-    <Link
-      href={`/seller/${username}`}
-      className="group block bg-white border border-line rounded-xl p-5 text-center transition-all hover:border-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
-    >
-      <Avatar className="w-20 h-20 mx-auto mb-3 border border-line">
-        {avatarUrl && <AvatarImage src={avatarUrl} />}
-        <AvatarFallback className="text-xl bg-canvas-subtle text-ink-muted">
-          {initials(fullName)}
-        </AvatarFallback>
-      </Avatar>
-      <h3 className="font-heading text-sm text-ink mb-1 truncate group-hover:text-brand-primary-dark transition-colors">
-        {fullName}
-      </h3>
-      <div className="mb-2.5">
-        <SellerLevelBadge level={level} />
+    <div className="tray p-5">
+      <div className="flex items-start gap-4">
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={avatarUrl} alt="" width={56} height={56} className="h-14 w-14 shrink-0 rounded-[22%] object-cover" />
+        ) : (
+          <SellerMark username={username} level={level} size={56} />
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <Link href={`/seller/${username}`} className="t-head link truncate decoration-transparent hover:decoration-current">
+              {fullName}
+            </Link>
+            <LevelPlate level={level} />
+          </div>
+          <p className="num mt-0.5 text-sm text-ink-muted">@{username}</p>
+          {tagline ? <p className="mt-2 text-sm text-ink">{tagline}</p> : null}
+        </div>
       </div>
-      {tagline && <p className="text-xs text-ink-subtle leading-relaxed line-clamp-2 mb-3 min-h-[2.5rem]">{tagline}</p>}
-      <div className="flex items-center justify-center gap-1.5 text-xs pt-3 border-t border-line-subtle">
-        <RatingStars value={rating} size={12} />
-        <span className="font-semibold text-ink">{rating.toFixed(1)}</span>
-        <span className="text-ink-subtle">· {totalOrders} orders</span>
-      </div>
-    </Link>
-  );
+
+      <dl className="mt-4 grid grid-cols-2 gap-3 border-t-2 border-dotted border-sand pt-4">
+        <div>
+          <dt className="text-xs font-semibold text-ink-muted">Rating</dt>
+          <dd className="mt-1 flex items-center gap-2">
+            {hasRating ? (
+              <>
+                <RatingStars value={rating} size={14} />
+                <span className="num text-sm">{rating.toFixed(1)}</span>
+              </>
+            ) : (
+              <span className="text-sm text-ink-muted">Not rated yet</span>
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-xs font-semibold text-ink-muted">Orders completed</dt>
+          <dd className="num mt-1 text-sm">{totalOrders}</dd>
+        </div>
+      </dl>
+    </div>
+  )
 }

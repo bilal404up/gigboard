@@ -4,6 +4,8 @@ import { Footer } from "@/components/layout/footer";
 import { GigRow, GigBoardHeader, type GigCardData } from "@/components/gig/gig-card";
 import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Button } from "@/components/ui/button";
+import { ResultsSill } from "@/components/search/results-sill";
 import { Search as SearchIcon, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SortSelect } from "./sort-select";
@@ -176,98 +178,95 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
   return (
     <>
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <div className="mb-6">
-          <h1 className="font-heading text-2xl sm:text-3xl text-ink mb-1">
-            {q ? `Results for "${q}"` : "Browse all services"}
-          </h1>
-          <p className="text-sm text-ink-subtle">
-            {gigs.length} {gigs.length === 1 ? "service" : "services"} available
-            {activeCount > 0 && (
-              <>
-                {" · "}
-                <Link href={`/search${q ? `?q=${encodeURIComponent(q)}` : ""}`} className="text-brand-primary-dark hover:underline">
-                  Clear all filters
-                </Link>
-              </>
-            )}
-          </p>
-        </div>
+      <main id="main" className="wrap py-8 lg:py-10">
+        <ResultsSill
+          count={gigs.length}
+          query={q || null}
+          controls={
+            <>
+              <MobileFilterTrigger activeCount={activeCount}>
+                <FilterSidebar searchParams={searchParams} selectedLevels={selectedLevels} />
+              </MobileFilterTrigger>
+              <SortSelect defaultValue={sort} />
+            </>
+          }
+        />
 
-        <div className="grid lg:grid-cols-[260px_1fr] gap-6 lg:gap-8">
-          <aside className="hidden lg:block lg:sticky lg:top-20 lg:self-start">
+        {activeCount > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="t-plate mr-1 text-ink-muted">Active</span>
+            {(searchParams.min_price || searchParams.max_price) && (
+              <ActiveChip
+                label={`${searchParams.min_price ? `$${searchParams.min_price}` : "Any"} to ${searchParams.max_price ? `$${searchParams.max_price}` : "Any"}`}
+                removeUrl={buildRemoveUrl(searchParams, ["min_price", "max_price"])}
+              />
+            )}
+            {searchParams.delivery_days && (
+              <ActiveChip
+                label={DELIVERY_OPTIONS.find((d) => d.value === searchParams.delivery_days)?.label ?? `${searchParams.delivery_days} days`}
+                removeUrl={buildRemoveUrl(searchParams, ["delivery_days"])}
+              />
+            )}
+            {selectedLevels.map((lv) => (
+              <ActiveChip
+                key={lv}
+                label={LEVEL_OPTIONS.find((l) => l.value === lv)?.label ?? lv}
+                removeUrl={buildRemoveUrl(searchParams, [], { level: selectedLevels.filter((x) => x !== lv) })}
+              />
+            ))}
+            {searchParams.rating && (
+              <ActiveChip
+                label={RATING_OPTIONS.find((r) => r.value === searchParams.rating)?.label ?? searchParams.rating}
+                removeUrl={buildRemoveUrl(searchParams, ["rating"])}
+              />
+            )}
+            <Link href={`/search${q ? `?q=${encodeURIComponent(q)}` : ""}`} className="link ml-1 text-sm font-semibold">
+              Clear all filters
+            </Link>
+          </div>
+        )}
+
+        <div className="mt-6 grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)] lg:items-start">
+          <aside className="hidden lg:sticky lg:top-[calc(var(--header-h)+1rem)] lg:block lg:self-start">
             <FilterSidebar searchParams={searchParams} selectedLevels={selectedLevels} />
           </aside>
 
           <div className="min-w-0">
-            <div className="flex items-center justify-between gap-3 mb-4 pb-4 border-b border-line">
-              <MobileFilterTrigger activeCount={activeCount}>
-                <FilterSidebar searchParams={searchParams} selectedLevels={selectedLevels} />
-              </MobileFilterTrigger>
-              <div className="ml-auto">
-                <SortSelect defaultValue={sort} />
-              </div>
-            </div>
-
-            {activeCount > 0 && (
-              <div className="flex flex-wrap items-center gap-2 mb-4">
-                <span className="text-xs text-ink-subtle font-semibold mr-1">Active</span>
-                {(searchParams.min_price || searchParams.max_price) && (
-                  <ActiveChip
-                    label={`${searchParams.min_price ? `$${searchParams.min_price}` : "Any"} – ${searchParams.max_price ? `$${searchParams.max_price}` : "Any"}`}
-                    removeUrl={buildRemoveUrl(searchParams, ["min_price", "max_price"])}
-                  />
-                )}
-                {searchParams.delivery_days && (
-                  <ActiveChip
-                    label={DELIVERY_OPTIONS.find((d) => d.value === searchParams.delivery_days)?.label ?? `${searchParams.delivery_days} days`}
-                    removeUrl={buildRemoveUrl(searchParams, ["delivery_days"])}
-                  />
-                )}
-                {selectedLevels.map((lv) => (
-                  <ActiveChip
-                    key={lv}
-                    label={LEVEL_OPTIONS.find((l) => l.value === lv)?.label ?? lv}
-                    removeUrl={buildRemoveUrl(searchParams, [], { level: selectedLevels.filter((x) => x !== lv) })}
-                  />
-                ))}
-                {searchParams.rating && (
-                  <ActiveChip
-                    label={RATING_OPTIONS.find((r) => r.value === searchParams.rating)?.label ?? searchParams.rating}
-                    removeUrl={buildRemoveUrl(searchParams, ["rating"])}
-                  />
-                )}
-              </div>
-            )}
-
             {gigs.length === 0 ? (
               <EmptyState
-                icon={<SearchIcon className="w-16 h-16" />}
+                icon={<SearchIcon className="h-7 w-7" />}
                 title="No results found"
                 description={
                   activeCount > 0
                     ? "Try removing some filters, or broaden your search."
                     : `We couldn't find any services matching "${q}". Try a different search or browse categories.`
                 }
+                action={
+                  <Button asChild variant="cta">
+                    <Link href="/search">Browse all gigs</Link>
+                  </Button>
+                }
               />
             ) : (
-              <div className="border-t-2 border-ink">
+              <div>
                 <GigBoardHeader />
-                {gigs.map((g) => {
-                  const card: GigCardData = {
-                    id: g.id,
-                    slug: g.slug,
-                    title: g.title,
-                    thumbnail_url: g.thumbnail_url,
-                    average_rating: g.average_rating ?? 0,
-                    total_reviews: g.total_reviews ?? 0,
-                    starting_price: g.starting_price,
-                    category_slug: roots.get(g.category_id) ?? null,
-                    delivery_days: g.delivery_days,
-                    seller: g.seller,
-                  };
-                  return <GigRow key={g.id} gig={card} />;
-                })}
+                <div className="mt-3 grid gap-3">
+                  {gigs.map((g) => {
+                    const card: GigCardData = {
+                      id: g.id,
+                      slug: g.slug,
+                      title: g.title,
+                      thumbnail_url: g.thumbnail_url,
+                      average_rating: g.average_rating ?? 0,
+                      total_reviews: g.total_reviews ?? 0,
+                      starting_price: g.starting_price,
+                      category_slug: roots.get(g.category_id) ?? null,
+                      delivery_days: g.delivery_days,
+                      seller: g.seller,
+                    };
+                    return <GigRow key={g.id} gig={card} />;
+                  })}
+                </div>
               </div>
             )}
           </div>
@@ -314,10 +313,11 @@ function ActiveChip({ label, removeUrl }: { label: string; removeUrl: string }) 
   return (
     <Link
       href={removeUrl}
-      className="inline-flex items-center gap-1 h-7 pl-3 pr-2 rounded-full bg-brand-primary-50 border border-brand-primary/20 text-xs font-medium text-brand-primary-dark hover:bg-brand-primary/15 transition-colors"
+      className="chip h-11 gap-1.5 pr-2 text-xs font-semibold hover:bg-sand focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany md:h-8"
     >
       <span>{label}</span>
-      <X className="w-3 h-3" />
+      <X className="h-3.5 w-3.5" aria-hidden="true" />
+      <span className="sr-only">Remove filter</span>
     </Link>
   );
 }
@@ -330,12 +330,15 @@ function FilterSection({
   children: React.ReactNode;
 }) {
   return (
-    <div className="py-4 border-t border-line first:border-t-0 first:pt-0">
-      <h3 className="text-xs font-semibold text-ink mb-3">{title}</h3>
+    <fieldset className="border-t-2 border-dotted border-sand py-4 first:border-t-0 first:pt-0">
+      <legend className="t-plate mb-3 text-ink-muted">{title}</legend>
       {children}
-    </div>
+    </fieldset>
   );
 }
+
+const CHOICE = "flex min-h-11 cursor-pointer items-center gap-3 rounded-[4px] px-2 text-sm text-ink hover:bg-laminate-sunk";
+const BOX = "h-5 w-5 shrink-0 accent-mahogany";
 
 function FilterSidebar({
   searchParams,
@@ -353,7 +356,7 @@ function FilterSidebar({
   const clearHref = q ? `/search?q=${encodeURIComponent(q)}` : "/search";
 
   return (
-    <form method="get" action="/search" className="bg-white border border-line rounded-xl p-5">
+    <form method="get" action="/search" className="tray p-5">
       {q && <input type="hidden" name="q" value={q} />}
       {category && <input type="hidden" name="category" value={category} />}
       {sort && <input type="hidden" name="sort" value={sort} />}
@@ -367,9 +370,9 @@ function FilterSidebar({
             inputMode="numeric"
             aria-label="Minimum price" placeholder="Min"
             defaultValue={searchParams.min_price ?? ""}
-            className="min-w-0 flex-1 h-9 px-3 bg-white border border-line-strong rounded-md text-sm placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+            className="field field-num min-w-0 flex-1"
           />
-          <span className="shrink-0 text-ink-faint">–</span>
+          <span className="shrink-0 text-sm text-ink-muted">to</span>
           <input
             type="number"
             name="max_price"
@@ -377,22 +380,16 @@ function FilterSidebar({
             inputMode="numeric"
             aria-label="Maximum price" placeholder="Max"
             defaultValue={searchParams.max_price ?? ""}
-            className="min-w-0 flex-1 h-9 px-3 bg-white border border-line-strong rounded-md text-sm placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+            className="field field-num min-w-0 flex-1"
           />
         </div>
       </FilterSection>
 
       <FilterSection title="Delivery time">
-        <div className="space-y-2 text-sm">
+        <div className="-mx-2">
           {DELIVERY_OPTIONS.map((opt) => (
-            <label key={opt.label} className="flex items-center gap-2.5 cursor-pointer text-ink-muted hover:text-ink">
-              <input
-                type="radio"
-                name="delivery_days"
-                value={opt.value}
-                defaultChecked={selectedDelivery === opt.value}
-                className="w-4 h-4 accent-brand-primary"
-              />
+            <label key={opt.label} className={CHOICE}>
+              <input type="radio" name="delivery_days" value={opt.value} defaultChecked={selectedDelivery === opt.value} className={BOX} />
               <span>{opt.label}</span>
             </label>
           ))}
@@ -400,17 +397,11 @@ function FilterSidebar({
       </FilterSection>
 
       <FilterSection title="Seller level">
-        <div className="space-y-2 text-sm">
+        <div className="-mx-2">
           {LEVEL_OPTIONS.map((l) => (
-            <label key={l.value} className="flex items-center gap-2.5 cursor-pointer text-ink-muted hover:text-ink">
-              <input
-                type="checkbox"
-                name="level"
-                value={l.value}
-                defaultChecked={selectedLevels.includes(l.value)}
-                className="w-4 h-4 accent-brand-primary"
-              />
-              <span className={`inline-block w-2 h-2 rounded-full ${l.dot}`} />
+            <label key={l.value} className={CHOICE}>
+              <input type="checkbox" name="level" value={l.value} defaultChecked={selectedLevels.includes(l.value)} className={BOX} />
+              <span className={`inline-block h-2.5 w-2.5 rounded-full ${l.dot}`} aria-hidden="true" />
               <span>{l.label}</span>
             </label>
           ))}
@@ -418,35 +409,23 @@ function FilterSidebar({
       </FilterSection>
 
       <FilterSection title="Minimum rating">
-        <div className="space-y-2 text-sm">
+        <div className="-mx-2">
           {RATING_OPTIONS.map((opt) => (
-            <label key={opt.label} className="flex items-center gap-2.5 cursor-pointer text-ink-muted hover:text-ink">
-              <input
-                type="radio"
-                name="rating"
-                value={opt.value}
-                defaultChecked={selectedRating === opt.value}
-                className="w-4 h-4 accent-brand-primary"
-              />
+            <label key={opt.label} className={CHOICE}>
+              <input type="radio" name="rating" value={opt.value} defaultChecked={selectedRating === opt.value} className={BOX} />
               <span>{opt.label}</span>
             </label>
           ))}
         </div>
       </FilterSection>
 
-      <div className="pt-4 border-t border-line flex gap-2">
-        <button
-          type="submit"
-          className="flex-1 h-10 inline-flex items-center justify-center bg-brand-primary text-white rounded-md text-sm font-medium hover:bg-brand-primary-dark transition-colors"
-        >
+      <div className="flex gap-2 border-t-2 border-dotted border-sand pt-4">
+        <Button type="submit" variant="cta" className="flex-1">
           Apply
-        </button>
-        <Link
-          href={clearHref}
-          className="h-10 px-4 inline-flex items-center justify-center bg-white border border-line-strong text-ink-muted rounded-md text-sm font-medium hover:bg-canvas-subtle transition-colors"
-        >
-          Clear
-        </Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href={clearHref}>Clear</Link>
+        </Button>
       </div>
     </form>
   );

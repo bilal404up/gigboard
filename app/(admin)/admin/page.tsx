@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, Users, Package, AlertTriangle, ShoppingBag, AlertOctagon, TrendingUp, Mail } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { StatPlate, StatRow } from "@/components/dashboard/stat-plate";
 import { createClient } from "@/lib/supabase/server";
 import { formatMoney } from "@/lib/utils/format";
-import { cn } from "@/lib/utils/cn";
 
 export default async function AdminDashboardPage() {
   const sb = createClient();
@@ -29,120 +28,41 @@ export default async function AdminDashboardPage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <header className="mb-8">
-          <p className="text-xs font-semibold text-ink-subtle mb-1">Admin</p>
-          <h1 className="font-heading text-2xl sm:text-3xl text-ink">Dashboard</h1>
-        </header>
+      <main id="main" className="wrap py-8 lg:py-10">
+        <h1 className="t-sign">Admin</h1>
+        <p className="mt-2 text-sm text-ink-muted">Behind the counter. Sample data, Stripe test mode.</p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-          <StatCard label="Users" value={users?.toString() ?? "0"} icon={<Users className="w-4 h-4" />} />
-          <StatCard label="Active gigs" value={activeGigs?.toString() ?? "0"} icon={<Package className="w-4 h-4" />} />
-          <StatCard label="Pending review" value={pendingGigs?.toString() ?? "0"} icon={<AlertTriangle className="w-4 h-4" />} accent={(pendingGigs ?? 0) > 0} />
-          <StatCard label="Orders" value={totalOrders?.toString() ?? "0"} icon={<ShoppingBag className="w-4 h-4" />} />
-          <StatCard label="Open disputes" value={openDisputes?.toString() ?? "0"} icon={<AlertOctagon className="w-4 h-4" />} accent={(openDisputes ?? 0) > 0} tone="danger" />
-          <StatCard label="30-day revenue" value={formatMoney(revenue)} icon={<TrendingUp className="w-4 h-4" />} />
-        </div>
+        <StatRow className="mt-8 md:grid-cols-3">
+          <StatPlate label="Commission, last 30 days" value={formatMoney(revenue)} tone="brass" />
+          <StatPlate label="Open disputes" value={String(openDisputes ?? 0)} hint={(openDisputes ?? 0) > 0 ? "Drawers stuck under the glass" : "Nothing stuck"} />
+          <StatPlate label="Gigs awaiting review" value={String(pendingGigs ?? 0)} />
+          <StatPlate label="Users" value={String(users ?? 0)} />
+          <StatPlate label="Active gigs" value={String(activeGigs ?? 0)} />
+          <StatPlate label="Orders, all time" value={String(totalOrders ?? 0)} />
+        </StatRow>
 
-        <h2 className="font-heading text-base text-ink mb-3">Queues</h2>
-        <div className="grid md:grid-cols-3 gap-4">
-          <NavCard
-            href="/admin/gigs/review"
-            title="Gigs to review"
-            value={pendingGigs ?? 0}
-            icon={<Package className="w-4 h-4" />}
-            urgent={(pendingGigs ?? 0) > 0}
-          />
-          <NavCard
-            href="/admin/disputes"
-            title="Open disputes"
-            value={openDisputes ?? 0}
-            icon={<AlertOctagon className="w-4 h-4" />}
-            urgent={(openDisputes ?? 0) > 0}
-            tone="danger"
-          />
-          <NavCard href="/admin/emails" title="Email logs" value="View" icon={<Mail className="w-4 h-4" />} />
-        </div>
+        <section aria-labelledby="queues-title" className="mt-10">
+          <h2 id="queues-title" className="t-head">
+            Queues
+          </h2>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            {[
+              ["/admin/disputes", "Disputes", `${openDisputes ?? 0} open`, (openDisputes ?? 0) > 0],
+              ["/admin/gigs/review", "Gig review", `${pendingGigs ?? 0} waiting`, (pendingGigs ?? 0) > 0],
+              ["/admin/emails", "Emails", "Outbound log", false],
+            ].map(([href, title, body, lit]) => (
+              <Link key={String(href)} href={String(href)} className="tray tray--hover flex min-h-11 items-center gap-3 p-4 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany">
+                <span className={`lamp shrink-0 ${lit ? "lamp--alarm" : ""}`} aria-hidden="true" />
+                <span className="min-w-0">
+                  <span className="block font-semibold">{title}</span>
+                  <span className="block text-sm text-ink-muted">{body}</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
       </main>
       <Footer />
     </>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  icon,
-  accent,
-  tone,
-}: {
-  label: string;
-  value: string;
-  icon: React.ReactNode;
-  accent?: boolean;
-  tone?: "default" | "danger";
-}) {
-  const isDanger = tone === "danger" && accent;
-  return (
-    <div
-      className={cn(
-        "rounded-2xl p-4 border",
-        isDanger
-          ? "bg-error/5 border-error/30"
-          : accent
-            ? "bg-brand-accent-50 border-brand-accent"
-            : "bg-white border-line"
-      )}
-    >
-      <div
-        className={cn(
-          "flex items-center gap-2 mb-2 text-2xs font-semibold",
-          isDanger ? "text-error" : accent ? "text-warning" : "text-ink-subtle"
-        )}
-      >
-        <span>{icon}</span>
-        <span>{label}</span>
-      </div>
-      <p className={cn("font-heading text-xl sm:text-2xl tabular-nums", isDanger ? "text-error" : "text-ink")}>{value}</p>
-    </div>
-  );
-}
-
-function NavCard({
-  href,
-  title,
-  value,
-  icon,
-  urgent,
-  tone,
-}: {
-  href: string;
-  title: string;
-  value: string | number;
-  icon: React.ReactNode;
-  urgent?: boolean;
-  tone?: "default" | "danger";
-}) {
-  return (
-    <Link
-      href={href}
-      className={cn(
-        "group rounded-2xl p-5 border transition-all bg-white",
-        urgent && tone === "danger"
-          ? "border-error/30 hover:border-error"
-          : urgent
-            ? "border-brand-accent hover:border-ink"
-            : "border-line hover:border-line-strong "
-      )}
-    >
-      <div className="flex items-center justify-between mb-2">
-        <div className={cn("flex items-center gap-2 text-2xs font-semibold", urgent && tone === "danger" ? "text-error" : urgent ? "text-warning" : "text-ink-subtle")}>
-          <span>{icon}</span>
-          <span>{title}</span>
-        </div>
-        <ArrowRight className="w-4 h-4 text-ink-faint group-hover:text-ink group-hover:translate-x-0.5 transition-all" />
-      </div>
-      <p className={cn("font-heading text-2xl sm:text-3xl tabular-nums", urgent && tone === "danger" ? "text-error" : "text-ink")}>{value}</p>
-    </Link>
   );
 }

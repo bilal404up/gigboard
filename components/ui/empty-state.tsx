@@ -1,21 +1,20 @@
-import { ReactNode } from "react";
-import { cn } from "@/lib/utils/cn";
+import type { ReactNode } from "react"
 
-interface EmptyStateProps {
-  icon?: ReactNode;
-  title: string;
-  description?: string;
-  action?: ReactNode;
-  className?: string;
-}
+type Props = { icon?: ReactNode; title: string; description?: string; action?: ReactNode; className?: string }
 
-export function EmptyState({ icon, title, description, action, className }: EmptyStateProps) {
+/* A closed window: a dark sign with the lamp off, then what to do next. */
+export function EmptyState({ icon, title, description, action, className = "" }: Props) {
   return (
-    <div className={cn("flex flex-col items-center justify-center py-16 px-4 text-center", className)}>
-      {icon && <div className="mb-4 text-neutral-300">{icon}</div>}
-      <h3 className="font-heading text-xl mb-2">{title}</h3>
-      {description && <p className="text-neutral-500 mb-4 max-w-md">{description}</p>}
-      {action}
+    <div className={`tray grid justify-items-center gap-4 px-6 py-10 text-center ${className}`}>
+      <div className="sign relative flex h-16 w-24 items-center justify-center text-laminate" aria-hidden="true">
+        <span className="lamp absolute left-3 top-3" />
+        {icon ? <span className="[&_svg]:h-7 [&_svg]:w-7">{icon}</span> : <span className="grille scale-75" />}
+      </div>
+      <div className="grid gap-1.5">
+        <p className="t-head">{title}</p>
+        {description ? <p className="mx-auto max-w-[40ch] text-sm leading-[1.45] text-ink-muted">{description}</p> : null}
+      </div>
+      {action ? <div className="mt-1">{action}</div> : null}
     </div>
-  );
+  )
 }

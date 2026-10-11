@@ -1,37 +1,40 @@
-"use client";
+import { cloneElement, isValidElement, useId, type ReactNode } from "react"
 
-import * as React from "react";
+type Props = { label: string; hint?: string; error?: string; htmlFor?: string; children: ReactNode }
 
-/**
- * A form row with a label that is really tied to its input (htmlFor and id), so screen readers
- * announce the label and clicking it focuses the field. Pass one input, select or textarea as the child.
- */
-export function Field({ label, hint, error, htmlFor, children }: { label: string; hint?: string; error?: string; htmlFor?: string; children: React.ReactNode }) {
-  const generated = React.useId();
-  const only = React.isValidElement(children) ? (children as React.ReactElement<{ id?: string; "aria-describedby"?: string; "aria-invalid"?: boolean }>) : null;
-  const id = htmlFor ?? only?.props.id ?? generated;
-  const describedBy = [hint ? `${id}-hint` : null, error ? `${id}-error` : null].filter(Boolean).join(" ") || undefined;
-  const control = only && !htmlFor
-    ? React.cloneElement(only, { id, "aria-describedby": only.props["aria-describedby"] ?? describedBy, "aria-invalid": error ? true : only.props["aria-invalid"] })
-    : children;
+/* Wraps one control with a label, a hint and an error. Passes the id onto the child unless htmlFor is given. */
+export function Field({ label, hint, error, htmlFor, children }: Props) {
+  const generated = useId()
+  const id = htmlFor ?? generated
+  const hintId = `${id}-hint`
+  const errorId = `${id}-error`
+  const describedBy = error ? errorId : hint ? hintId : undefined
+
+  const control =
+    !htmlFor && isValidElement(children)
+      ? cloneElement(children as React.ReactElement<Record<string, unknown>>, {
+          id,
+          "aria-describedby": describedBy,
+          "aria-invalid": error ? true : undefined,
+        })
+      : children
+
   return (
-    <div>
-      <div className="mb-1.5 flex items-baseline justify-between">
-        <label htmlFor={id} className="text-sm font-medium text-ink">
-          {label}
-        </label>
-        {hint && (
-          <span id={`${id}-hint`} className="text-2xs text-ink-subtle">
-            {hint}
-          </span>
-        )}
-      </div>
+    <div className="grid gap-1.5">
+      <label htmlFor={id} className="label">
+        {label}
+      </label>
       {control}
-      {error && (
-        <p id={`${id}-error`} role="alert" className="mt-1 text-xs text-error">
+      {hint && !error ? (
+        <p id={hintId} className="hint !mt-0">
+          {hint}
+        </p>
+      ) : null}
+      {error ? (
+        <p id={errorId} role="alert" className="hint hint--error !mt-0">
           {error}
         </p>
-      )}
+      ) : null}
     </div>
-  );
+  )
 }

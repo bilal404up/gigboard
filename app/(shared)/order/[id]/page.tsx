@@ -1,14 +1,15 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { MessageCircle, ChevronLeft } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { SellerMark } from "@/components/seller/SellerMark";
 import { OrderTimeline } from "@/components/order/order-timeline";
 import { OrderActions } from "@/components/order/order-actions";
 import { createClient } from "@/lib/supabase/server";
-import { formatMoney, formatDateTime, initials } from "@/lib/utils/format";
+import { formatMoney, formatDateTime } from "@/lib/utils/format";
 
 const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "success" | "warning" | "error" | "info"> = {
   pending_payment: "warning",
@@ -39,88 +40,58 @@ export default async function OrderDetailPage({ params }: { params: { id: string
     .single();
 
   const packageName = (order.package_snapshot as { name?: string } | null)?.name ?? "Order";
+  const statusLabel = String(order.status).replace(/_/g, " ");
 
   return (
     <>
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <Link
-          href={isBuyer ? "/dashboard" : "/seller/orders"}
-          className="inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink mb-4 transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          {isBuyer ? "Back to dashboard" : "Back to orders"}
+      <main id="main" className="wrap py-8 lg:py-12">
+        <Link href={isBuyer ? "/orders" : "/seller/orders"} className="link text-sm">
+          Back to orders
         </Link>
 
-        <header className="flex items-start justify-between mb-6 flex-wrap gap-4">
+        <header className="mt-4 flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <p className="font-mono text-2xs text-ink-subtle mb-1">{order.order_number}</p>
-            <h1 className="font-heading text-2xl sm:text-3xl text-ink mb-3 text-balance">{packageName}</h1>
-            {other && (
-              <div className="flex items-center gap-2.5">
-                <Avatar className="w-7 h-7 border border-line">
-                  {other.avatar_url && <AvatarImage src={other.avatar_url} />}
-                  <AvatarFallback className="text-2xs bg-canvas-subtle text-ink-muted">
-                    {initials(other.full_name)}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm text-ink-muted">
-                  {isBuyer ? "Seller " : "Buyer "}
-                  <Link href={`/seller/${other.username}`} className="font-semibold text-ink hover:underline">
-                    {other.full_name}
-                  </Link>
-                </span>
-              </div>
-            )}
+            <p className="num text-sm text-ink-muted">Order {order.order_number ?? order.id}</p>
+            <h1 className="t-sign mt-1">{packageName}</h1>
+            <p className="mt-2 text-sm text-ink-muted">Placed {formatDateTime(order.created_at)}</p>
           </div>
-          <Badge variant={STATUS_VARIANT[order.status] ?? "secondary"} className="capitalize shrink-0">
-            {order.status.replace(/_/g, " ")}
-          </Badge>
+          <div className="flex flex-col items-end gap-2">
+            <Badge variant={STATUS_VARIANT[order.status] ?? "default"} className="capitalize">
+              {statusLabel}
+            </Badge>
+            <p className="fig-price text-ink">{formatMoney(Number(isBuyer ? order.buyer_total_paid : order.seller_earnings))}</p>
+          </div>
         </header>
 
-        <OrderTimeline status={order.status} delivered={order.delivered_at} completed={order.completed_at} />
-
-        <div className="grid lg:grid-cols-3 gap-6 mt-8">
-          <div className="lg:col-span-2">
+        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+          <div className="grid gap-6">
+            {/* keep your existing timestamp fields here */}
+            <OrderTimeline status={order.status} delivered={order.delivered_at ?? null} completed={order.completed_at ?? null} />
             <OrderActions order={order} isBuyer={isBuyer} />
           </div>
-          <aside className="bg-white border border-line rounded-2xl h-fit overflow-hidden">
-            <div className="px-5 py-4 border-b border-line bg-canvas-subtle">
-              <h3 className="font-heading text-base text-ink">Order details</h3>
+
+          <aside className="tray p-5" aria-label={isBuyer ? "Seller" : "Buyer"}>
+            <p className="t-plate text-ink-muted">{isBuyer ? "Seller" : "Buyer"}</p>
+            <div className="mt-3 flex items-center gap-3">
+              <Avatar className="h-12 w-12 shadow-[0_0_0_1.5px_#C9A24A]">
+                {other?.avatar_url && <AvatarImage src={other.avatar_url} />}
+                <AvatarFallback className="bg-transparent p-0">
+                  <SellerMark username={other?.username ?? "user"} label={other?.full_name ?? "User"} size={48} />
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <p className="truncate font-semibold">{other?.full_name ?? "User"}</p>
+                {other?.username ? <p className="num truncate text-sm text-ink-muted">@{other.username}</p> : null}
+              </div>
             </div>
-            <dl className="px-5 py-4 space-y-2.5 text-sm">
-              <Row label="Package" value={packageName} />
-              <Row label="Buyer paid" value={formatMoney(order.buyer_total_paid)} mono />
-              {!isBuyer && <Row label="Your earnings" value={formatMoney(order.seller_earnings)} mono accent />}
-              <Row label="Delivery" value={`${order.delivery_days} days`} />
-              <Row label="Revisions" value={`${order.revisions_used}/${order.revisions_allowed}`} />
-              <Row label="Ordered" value={formatDateTime(order.created_at)} />
-              {order.delivery_due_at && <Row label="Due" value={formatDateTime(order.delivery_due_at)} />}
-            </dl>
-            <div className="px-5 py-3 border-t border-line bg-canvas-subtle">
-              <Link
-                href="/messages"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-primary-dark hover:underline"
-              >
-                <MessageCircle className="w-4 h-4" />
-                Open conversation
-              </Link>
-            </div>
+            <Button asChild variant="outline" className="mt-4 w-full">
+              <Link href="/messages">Message</Link>
+            </Button>
           </aside>
         </div>
       </main>
       <Footer />
     </>
-  );
-}
-
-function Row({ label, value, mono, accent }: { label: string; value: string; mono?: boolean; accent?: boolean }) {
-  return (
-    <div className="flex justify-between gap-3">
-      <dt className="text-ink-subtle">{label}</dt>
-      <dd className={`${mono ? "tabular-nums" : ""} ${accent ? "text-brand-primary-dark" : "text-ink"} font-semibold text-right`}>
-        {value}
-      </dd>
-    </div>
   );
 }

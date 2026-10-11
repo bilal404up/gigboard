@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Field } from "@/components/ui/field";
-import { Loader2, AtSign, AlertTriangle, Mail } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -10,6 +10,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { SellerMark } from "@/components/seller/SellerMark";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import type { User } from "@/types/database.types";
@@ -59,180 +61,84 @@ export default function SettingsPage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-        <header className="mb-8">
-          <p className="text-xs font-semibold text-ink-subtle mb-1">Account</p>
-          <h1 className="font-heading text-2xl sm:text-3xl text-ink">Settings</h1>
+      <main id="main" className="wrap py-8 lg:py-10">
+        <header className="flex items-center gap-4">
+          <SellerMark username={user.username ?? user.id} label={user.full_name} size={56} />
+          <div className="min-w-0">
+            <h1 className="t-sign truncate">Settings</h1>
+            <p className="num mt-1 text-sm text-ink-muted">@{user.username}</p>
+          </div>
         </header>
 
-        <Tabs defaultValue="profile">
-          <TabsList className="mb-6">
+        <Tabs defaultValue="profile" className="mt-8">
+          <TabsList>
             <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            {user.is_seller && <TabsTrigger value="seller">Seller</TabsTrigger>}
             <TabsTrigger value="account">Account</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile">
-            <Section title="Profile" description="Shown publicly on your seller profile and order pages.">
-              <div className="space-y-5">
-                <Field label="Full name">
-                  <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
-                </Field>
-                <Field label="Username" hint="Username can't be changed" htmlFor="settings-username">
-                  <div className="relative">
-                    <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-faint pointer-events-none" />
-                    <Input id="settings-username" value={user.username} disabled className="pl-9" />
-                  </div>
-                </Field>
-                <Field label="Bio" hint={`${bio.length}/600`}>
-                  <Textarea
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    rows={4}
-                    maxLength={600}
-                    placeholder="A short bio shown on your profile."
-                  />
-                </Field>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                saveProfile();
+              }}
+              className="drawer-card grid max-w-[36rem] gap-4"
+            >
+              <Field label="Full name" htmlFor="full_name">
+                <Input id="full_name" name="full_name" value={fullName} onChange={(e) => setFullName(e.target.value)} autoComplete="name" />
+              </Field>
+              <Field label="Bio" htmlFor="bio" hint="Shown on your profile.">
+                <Textarea id="bio" name="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={5} />
+              </Field>
+              <div>
+                <Button type="submit" variant="cta" disabled={saving}>
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save changes"}
+                </Button>
               </div>
-              <div className="pt-5 mt-5 border-t border-line flex justify-end">
-                <button
-                  onClick={saveProfile}
-                  disabled={saving}
-                  className="inline-flex h-10 px-5 items-center gap-2 rounded-md bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-dark transition-colors disabled:opacity-60"
-                >
-                  {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-                  Save changes
-                </button>
-              </div>
-            </Section>
+            </form>
           </TabsContent>
 
-          <TabsContent value="security">
-            <Section title="Security" description="Manage how you sign in.">
-              <div className="flex items-center justify-between gap-4 py-3 border-y border-line">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-ink">Password</p>
-                  <p className="text-xs text-ink-subtle">Last changed never</p>
+          <TabsContent value="account">
+            <div className="drawer-card grid max-w-[36rem] gap-4">
+              <dl className="grid gap-3 text-sm">
+                <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-dotted border-sand pb-3">
+                  <dt className="font-semibold">Email</dt>
+                  <dd className="num text-ink-muted">{(user as any).email ?? "Not shown"}</dd>
                 </div>
-                <Link
-                  href="/forgot-password"
-                  className="inline-flex h-9 px-4 items-center rounded-md border border-line-strong text-sm font-medium text-ink hover:bg-canvas-subtle transition-colors shrink-0"
-                >
-                  Reset password
-                </Link>
+                <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-dotted border-sand pb-3">
+                  <dt className="font-semibold">Username</dt>
+                  <dd className="num text-ink-muted">@{user.username}</dd>
+                </div>
+              </dl>
+              <div>
+                <Button asChild variant="outline">
+                  <Link href="/forgot-password">Change password</Link>
+                </Button>
               </div>
-              <p className="text-xs text-ink-subtle mt-4 leading-relaxed">
-                We use the forgot-password flow to verify ownership before letting you set a new
-                password.
-              </p>
-            </Section>
+            </div>
           </TabsContent>
 
           <TabsContent value="notifications">
-            <Section title="Notifications" description="What we email you about. Most users keep all on.">
-              <div className="divide-y divide-line">
-                {[
-                  { label: "New orders", description: "When someone orders one of your gigs" },
-                  { label: "Order updates", description: "Status changes, deliveries, revisions" },
-                  { label: "Messages", description: "New messages in your inbox" },
-                  { label: "Review reminders", description: "After an order completes" },
-                  { label: "Promotions", description: "Platform tips and feature updates" },
-                ].map(({ label, description }) => (
-                  <div key={label} className="flex items-center justify-between gap-4 py-3.5">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-ink">{label}</p>
-                      <p className="text-xs text-ink-subtle">{description}</p>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-ink-subtle mt-4 leading-relaxed flex items-start gap-1.5">
-                <Mail className="w-3.5 h-3.5 mt-0.5 text-ink-faint shrink-0" />
-                Transactional emails (password resets, payment receipts) are always sent.
-              </p>
-            </Section>
-          </TabsContent>
-
-          {user.is_seller && (
-            <TabsContent value="seller">
-              <Section title="Seller preferences" description="Control whether buyers can place new orders.">
-                <div className="divide-y divide-line">
-                  <Toggle
-                    label="Accepting new orders"
-                    description="When off, your gigs are paused and don't show in search."
-                    defaultChecked
-                  />
-                  <Toggle
-                    label="Vacation mode"
-                    description="Shows an away banner on your profile with a return date."
-                  />
-                </div>
-              </Section>
-            </TabsContent>
-          )}
-
-          <TabsContent value="account">
-            <Section title="Export" description="Download a copy of your account data.">
-              <button className="inline-flex h-10 px-4 items-center rounded-md border border-line-strong text-sm font-medium text-ink hover:bg-canvas-subtle transition-colors">
-                Export my data
-              </button>
-            </Section>
-            <Section
-              title="Danger zone"
-              description="Permanently delete your account and all associated data."
-              tone="danger"
-            >
-              <div className="flex items-start gap-3 text-sm bg-error/5 border border-error/20 rounded-lg p-3 mb-4">
-                <AlertTriangle className="w-4 h-4 text-error shrink-0 mt-0.5" />
-                <p className="text-ink-muted leading-relaxed">
-                  Deletion is irreversible. Active orders must be completed or cancelled first.
-                </p>
-              </div>
-              <button className="inline-flex h-10 px-4 items-center rounded-md bg-error text-white text-sm font-semibold hover:bg-red-700 transition-colors">
-                Delete account
-              </button>
-            </Section>
+            <div className="drawer-card grid max-w-[36rem] gap-2">
+              {[
+                ["order-updates", "Order updates", "Deliveries, approvals and revisions"],
+                ["messages", "Messages", "New messages from buyers and sellers"],
+                ["marketing", "Tips and news", "Occasional emails about Gigboard"],
+              ].map(([id, title, body]) => (
+                <label key={id} htmlFor={id} className="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-[6px] px-2 py-2 hover:bg-laminate-sunk">
+                  <span>
+                    <span className="block text-sm font-semibold">{title}</span>
+                    <span className="block text-xs text-ink-muted">{body}</span>
+                  </span>
+                  <Switch id={id} defaultChecked={id !== "marketing"} />
+                </label>
+              ))}
+            </div>
           </TabsContent>
         </Tabs>
       </main>
       <Footer />
     </>
-  );
-}
-
-function Section({
-  title,
-  description,
-  tone,
-  children,
-}: {
-  title: string;
-  description?: string;
-  tone?: "default" | "danger";
-  children: React.ReactNode;
-}) {
-  return (
-    <div className={`bg-white border rounded-2xl p-6 sm:p-7 mb-5 ${tone === "danger" ? "border-error/30" : "border-line"}`}>
-      <div className="mb-5">
-        <h2 className={`font-heading text-lg ${tone === "danger" ? "text-error" : "text-ink"}`}>{title}</h2>
-        {description && <p className="text-sm text-ink-subtle mt-1">{description}</p>}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function Toggle({ label, description, defaultChecked }: { label: string; description: string; defaultChecked?: boolean }) {
-  return (
-    <div className="flex items-center justify-between gap-4 py-3.5">
-      <div className="min-w-0">
-        <p className="text-sm font-medium text-ink">{label}</p>
-        <p className="text-xs text-ink-subtle">{description}</p>
-      </div>
-      <Switch defaultChecked={defaultChecked} />
-    </div>
   );
 }

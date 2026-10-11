@@ -12,13 +12,13 @@ const CATEGORIES: [string, string][] = [
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t-2 border-ink bg-white">
-      <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-12 text-[15px] leading-[22px] sm:px-6 md:grid-cols-[1.2fr_1fr_1fr]">
+    <footer className="booth booth--deep mt-auto">
+      <div className="wrap grid gap-8 py-12 text-[15px] leading-[22px] md:grid-cols-[1.2fr_1fr_1fr]">
         <div className="space-y-3">
-          <Link href="/" aria-label="Gigboard home">
+          <Link href="/" aria-label="Gigboard home" className="inline-block rounded-[4px] focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-4 focus-visible:outline-release">
             <WordMark />
           </Link>
-          <p className="max-w-[40ch] text-ink-muted">
+          <p className="max-w-[40ch] text-sand">
             Hire one freelancer for one defined job. Payment is held until you approve the work.
           </p>
         </div>
@@ -33,8 +33,9 @@ export function Footer() {
           <FooterLink href="/become-seller">Create a gig</FooterLink>
         </Col>
       </div>
-      <div className="border-t border-ink">
-        <div className="mx-auto max-w-[1200px] px-4 py-4 text-[13px] leading-[18px] text-ink-muted sm:px-6">
+      <div className="border-t border-brass-deep/60">
+        <div className="wrap flex items-center gap-3 py-4 text-[13px] leading-[18px] text-sand">
+          <span className="lamp lamp--on shrink-0" aria-hidden="true" />
           Gigboard is a demo. All gigs, sellers, ratings and reviews are sample data, and payments run in Stripe test mode.
         </div>
       </div>
@@ -45,15 +46,15 @@ export function Footer() {
 function Col({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h4 className="mb-3 text-[15px] font-semibold leading-[22px] text-ink">{title}</h4>
-      <div className="space-y-2 text-ink-muted">{children}</div>
+      <h4 className="t-plate mb-3 text-brass-light">{title}</h4>
+      <div className="space-y-1 text-sand">{children}</div>
     </div>
   );
 }
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="block py-1.5 hover:text-ink hover:underline underline-offset-4">
+    <Link href={href} className="link block py-1.5 hover:text-laminate focus-visible:text-laminate">
       {children}
     </Link>
   );

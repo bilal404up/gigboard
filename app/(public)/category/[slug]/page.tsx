@@ -1,9 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { GigCard, GigCardSkeleton, type GigCardData } from "@/components/gig/gig-card";
+import { GigCard, type GigCardData } from "@/components/gig/gig-card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Button } from "@/components/ui/button";
+import { CategoryBanner } from "@/components/search/category-banner";
+import { ResultsSill } from "@/components/search/results-sill";
 import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { createClient } from "@/lib/supabase/server";
 
@@ -80,49 +83,39 @@ export default async function CategoryPage({ params }: { params: { slug: string 
   return (
     <>
       <Navbar />
-      <main>
-        <div className="border-b border-line bg-canvas-subtle">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
-            <nav aria-label="Breadcrumb" className="text-xs text-ink-subtle mb-3 flex items-center gap-1.5">
-              <Link href="/" className="hover:text-ink transition-colors">Home</Link>
-              <ChevronRight className="w-3 h-3 text-ink-faint" />
-              <span className="text-ink-muted">{category.name}</span>
-            </nav>
-            <h1 className="font-heading text-3xl sm:text-4xl text-ink mb-2 text-balance">{category.name}</h1>
-            <p className="text-sm sm:text-base text-ink-muted max-w-2xl leading-relaxed">
-              {category.description ?? `Browse ${category.gig_count ?? gigs.length} services in ${category.name}.`}
-            </p>
-          </div>
-        </div>
+      <main id="main">
+        <CategoryBanner name={category.name} slug={category.slug} count={gigs.length} description={(category as any).description ?? null} />
 
-        {subcategories && subcategories.length > 0 && (
-          <div className="border-b border-line bg-white sticky top-16 z-30">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex gap-2 overflow-x-auto scrollbar-hide">
+        <div className="wrap py-10 lg:py-14">
+          {subcategories && subcategories.length > 0 && (
+            <nav aria-label="Subcategories" className="mb-8 flex flex-wrap gap-2">
               {subcategories.map((s) => (
-                <Link
-                  key={s.id}
-                  href={`/category/${s.slug}`}
-                  className="whitespace-nowrap inline-flex items-center h-8 px-3 rounded-full bg-white border border-line-strong text-xs font-medium text-ink-muted hover:border-brand-primary hover:text-brand-primary-dark hover:bg-brand-primary-50 transition-colors"
-                >
+                <Link key={s.id} href={`/category/${s.slug}`} className="chip min-h-10 hover:bg-sand focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany">
                   {s.name}
                 </Link>
               ))}
-            </div>
-          </div>
-        )}
+            </nav>
+          )}
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-          <p className="text-sm text-ink-subtle mb-5">
-            {gigs.length} {gigs.length === 1 ? "service" : "services"} available
-          </p>
-          {!gigRows || gigRows.length === 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {Array.from({ length: 8 }).map((_, i) => <GigCardSkeleton key={i} />)}
+          <ResultsSill count={gigs.length} />
+
+          {gigs.length > 0 ? (
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {gigs.map((gig) => (
+                <GigCard key={gig.id} gig={gig} />
+              ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {gigs.map((g) => <GigCard key={g.id} gig={g} />)}
-            </div>
+            <EmptyState
+              className="mt-8"
+              title="This window is closed for now"
+              description="No active gigs in this category yet. Browse the other windows or search for what you need."
+              action={
+                <Button asChild variant="cta">
+                  <Link href="/search">Browse all gigs</Link>
+                </Button>
+              }
+            />
           )}
         </div>
       </main>

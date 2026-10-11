@@ -15,23 +15,19 @@ export function MobileFilterTrigger({
       <SheetTrigger asChild>
         <button
           type="button"
-          className="lg:hidden inline-flex items-center gap-2 h-9 px-3 rounded-md border border-line-strong bg-white text-sm font-medium text-ink-muted hover:bg-canvas-subtle"
+          className="inline-flex h-11 items-center gap-2 rounded-[4px] px-3 text-sm font-semibold text-ink shadow-[inset_0_0_0_1.5px_#4B2320] transition-colors hover:bg-laminate-sunk focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany lg:hidden"
           aria-label="Open filters"
         >
-          <SlidersHorizontal className="w-4 h-4" />
+          <SlidersHorizontal className="h-4 w-4 text-brass-deep" />
           Filters
-          {activeCount > 0 && (
-            <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-brand-primary text-white text-2xs font-semibold leading-none">
-              {activeCount}
-            </span>
-          )}
+          {activeCount > 0 && <span className="plate t-plate min-h-5 px-1.5">{activeCount}</span>}
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="p-0">
-        <div className="px-5 h-14 flex items-center border-b border-line">
-          <h2 className="font-heading text-base text-ink">Filters</h2>
+      <SheetContent side="left" className="gap-0 p-0">
+        <div className="booth booth--plain flex h-14 items-center px-5">
+          <h2 className="t-head">Filters</h2>
         </div>
-        <div className="p-5">{children}</div>
+        <div className="overflow-y-auto p-5">{children}</div>
       </SheetContent>
     </Sheet>
   );

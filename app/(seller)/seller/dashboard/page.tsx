@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Plus, ArrowRight, Wallet, Clock, TrendingUp, Coins, Package, ShoppingBag, Star, Check } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { Button } from "@/components/ui/button";
 import { SellerLevelBadge } from "@/components/seller/seller-level-badge";
+import { SellerMark } from "@/components/seller/SellerMark";
+import { StatPlate, StatRow } from "@/components/dashboard/stat-plate";
 import { createClient } from "@/lib/supabase/server";
 import { formatMoney } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
@@ -41,227 +43,76 @@ export default async function SellerDashboardPage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <header className="flex items-start justify-between mb-8 flex-wrap gap-4">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold text-ink-subtle mb-1">Seller dashboard</p>
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="font-heading text-2xl sm:text-3xl text-ink">
-                Hi, {user.full_name.split(" ")[0]}
-              </h1>
+      <main id="main" className="wrap py-8 lg:py-10">
+        <header className="flex flex-wrap items-center gap-4">
+          <SellerMark username={user.username ?? user.id} level={profile.seller_level} size={56} />
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="t-sign truncate">{user.full_name}</h1>
               <SellerLevelBadge level={profile.seller_level} />
             </div>
-            <p className="text-sm text-ink-subtle mt-1">@{user.username}</p>
+            <p className="mt-1 text-sm text-ink-muted">Your window at the counter.</p>
           </div>
-          <Link
-            href="/seller/gigs/create"
-            className="inline-flex h-10 px-4 items-center gap-2 rounded-md bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-dark transition-colors shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            Create a gig
-          </Link>
+          <Button asChild variant="cta">
+            <Link href="/seller/gigs/create">Create a gig</Link>
+          </Button>
         </header>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <BalanceCard
-            label="Available balance"
-            value={formatMoney(profile.balance_available)}
-            icon={<Wallet className="w-4 h-4" />}
-            accent
-            cta={{ label: "Withdraw", href: "/seller/earnings" }}
-          />
-          <BalanceCard
-            label="Pending clearance"
-            value={formatMoney(profile.balance_pending_clearance)}
-            icon={<Clock className="w-4 h-4" />}
-          />
-          <BalanceCard
-            label="Last 30 days"
-            value={formatMoney(monthEarnings)}
-            icon={<TrendingUp className="w-4 h-4" />}
-          />
-          <BalanceCard
-            label="Lifetime earnings"
-            value={formatMoney(profile.total_earnings_lifetime)}
-            icon={<Coins className="w-4 h-4" />}
-          />
-        </div>
+        <StatRow className="mt-8">
+          <StatPlate label="Earnings, last 30 days" value={formatMoney(monthEarnings)} tone={monthEarnings > 0 ? "release" : "laminate"} />
+          <StatPlate label="Open orders" value={String(openOrders ?? 0)} tone={(openOrders ?? 0) > 0 ? "brass" : "laminate"} hint="Money waiting under the glass" />
+          <StatPlate label="Active gigs" value={String(activeGigs ?? 0)} />
+          <StatPlate label="Profile complete" value={`${completionPct}%`} hint={`${completedCount} of ${completion.length} done`} />
+        </StatRow>
 
-        <div className="grid md:grid-cols-3 gap-4 mb-8">
-          <NavCard
-            title="Active gigs"
-            value={activeGigs?.toString() ?? "0"}
-            href="/seller/gigs"
-            icon={<Package className="w-4 h-4" />}
-          />
-          <NavCard
-            title="Open orders"
-            value={openOrders?.toString() ?? "0"}
-            href="/seller/orders"
-            icon={<ShoppingBag className="w-4 h-4" />}
-          />
-          <NavCard
-            title="Avg rating"
-            value={profile.average_rating ? profile.average_rating.toFixed(2) : "n/a"}
-            href={`/seller/${user.username}`}
-            icon={<Star className="w-4 h-4" />}
-          />
-        </div>
-
-        {missing.length > 0 && (
-          <div className="bg-white border border-line rounded-2xl p-6 sm:p-7 mb-6">
-            <div className="flex items-baseline justify-between gap-3 mb-2 flex-wrap">
-              <h2 className="font-heading text-lg text-ink">Profile completeness</h2>
-              <span className="text-sm font-semibold text-brand-primary-dark tabular-nums">
-                {completionPct}% complete
-              </span>
+        <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
+          <section aria-labelledby="finish-title" className="tray p-5">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <h2 id="finish-title" className="t-head">
+                Finish setting up your window
+              </h2>
+              <span className="num text-sm text-ink-muted">{completionPct}%</span>
             </div>
-            <p className="text-sm text-ink-subtle mb-4">
-              Sellers with complete profiles get ~3× more orders. {missing.length} step{missing.length === 1 ? "" : "s"} left.
-            </p>
-            <div className="h-2 bg-canvas-subtle rounded-full overflow-hidden mb-5">
-              <div
-                className="h-full bg-brand-primary rounded-full transition-all"
-                style={{ width: `${completionPct}%` }}
-              />
+            <div className="mt-3 h-2.5 overflow-hidden rounded-pill bg-laminate-sunk" role="progressbar" aria-valuenow={completionPct} aria-valuemin={0} aria-valuemax={100} aria-label="Profile completion">
+              <div className="h-full rounded-pill bg-[linear-gradient(180deg,#E7C978,#C9A24A_60%,#B08A2C)]" style={{ width: `${completionPct}%` }} />
             </div>
-            <ul className="grid sm:grid-cols-2 gap-2">
+            <ul className="mt-4 grid gap-1">
               {completion.map((c) => (
                 <li key={c.label}>
                   <Link
                     href={c.href}
-                    className={cn(
-                      "group flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors",
-                      c.done ? "text-ink-subtle" : "hover:bg-canvas-subtle"
-                    )}
+                    className={cn("flex min-h-11 items-center gap-3 rounded-[4px] px-2 text-sm hover:bg-laminate-sunk focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany", c.done ? "text-ink-muted" : "text-ink")}
                   >
-                    <span
-                      className={cn(
-                        "w-4 h-4 rounded-full flex items-center justify-center shrink-0",
-                        c.done ? "bg-brand-primary text-white" : "bg-white border border-line"
-                      )}
-                    >
-                      {c.done && <Check className="w-2.5 h-2.5" strokeWidth={3} />}
-                    </span>
-                    <span className={cn("text-sm flex-1", c.done ? "line-through" : "text-ink")}>
-                      {c.label}
-                    </span>
-                    {!c.done && (
-                      <ArrowRight className="w-3.5 h-3.5 text-ink-faint group-hover:text-ink group-hover:translate-x-0.5 transition-all" />
-                    )}
+                    <span className={cn("lamp shrink-0", c.done && "lamp--release")} aria-hidden="true" />
+                    <span className={cn(c.done && "line-through")}>{c.label}</span>
+                    <span className="sr-only">{c.done ? ", done" : ", not done"}</span>
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
-        )}
+            {missing.length === 0 ? <p className="mt-3 text-sm text-release-deep">Your window is fully set up.</p> : null}
+          </section>
 
-        <div className="bg-white border border-line rounded-2xl p-6 sm:p-7">
-          <div className="flex items-baseline justify-between mb-1">
-            <h2 className="font-heading text-lg text-ink">Level progress</h2>
-            <SellerLevelBadge level={profile.seller_level} />
-          </div>
-          <p className="text-sm text-ink-subtle mb-6">
-            Hit each milestone below to qualify for the next seller level.
-          </p>
-          <div className="space-y-5">
-            <ProgressRow label="Orders completed" value={profile.total_orders_completed} target={10} unit="" />
-            <ProgressRow label="Lifetime earnings" value={profile.total_earnings_lifetime} target={400} unit="$" />
-            <ProgressRow label="Average rating" value={profile.average_rating} target={4.5} unit="★" precision={2} />
-          </div>
+          <aside className="grid gap-3">
+            {[
+              ["/seller/orders", "Orders", "Deliver and track"],
+              ["/seller/earnings", "Earnings", "Held, cleared, paid out"],
+              ["/seller/analytics", "Analytics", "Views, clicks, orders"],
+              ["/seller/gigs", "Your gigs", "Edit what is on the board"],
+              ["/messages", "Messages", "Buyers waiting on you"],
+            ].map(([href, title, body]) => (
+              <Link key={href} href={href} className="tray tray--hover flex min-h-11 items-center gap-3 p-4 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany">
+                <span className="lamp lamp--on shrink-0" aria-hidden="true" />
+                <span className="min-w-0">
+                  <span className="block font-semibold">{title}</span>
+                  <span className="block text-sm text-ink-muted">{body}</span>
+                </span>
+              </Link>
+            ))}
+          </aside>
         </div>
       </main>
       <Footer />
     </>
-  );
-}
-
-function BalanceCard({
-  label,
-  value,
-  icon,
-  accent,
-  cta,
-}: {
-  label: string;
-  value: string;
-  icon: React.ReactNode;
-  accent?: boolean;
-  cta?: { label: string; href: string };
-}) {
-  return (
-    <div
-      className={cn(
-        "rounded-2xl p-5 border",
-        accent ? "bg-brand-primary-50 border-brand-primary/25" : "bg-white border-line"
-      )}
-    >
-      <div className={cn("flex items-center gap-2 mb-2 text-xs font-semibold",
-        accent ? "text-brand-primary-dark" : "text-ink-subtle")}>
-        <span>{icon}</span>
-        <span>{label}</span>
-      </div>
-      <p className="num text-[32px] leading-[38px] text-ink">{value}</p>
-      {cta && (
-        <Link
-          href={cta.href}
-          className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-brand-primary-dark hover:underline"
-        >
-          {cta.label} <ArrowRight className="w-3 h-3" />
-        </Link>
-      )}
-    </div>
-  );
-}
-
-function NavCard({ title, value, href, icon }: { title: string; value: string; href: string; icon: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="group bg-white border border-line rounded-2xl p-5 hover:border-line-strong transition-all"
-    >
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2 text-2xs font-semibold text-ink-subtle">
-          <span className="text-brand-primary-dark">{icon}</span>
-          <span>{title}</span>
-        </div>
-        <ArrowRight className="w-4 h-4 text-ink-faint group-hover:text-ink group-hover:translate-x-0.5 transition-all" />
-      </div>
-      <p className="num text-[32px] leading-[38px] text-ink">{value}</p>
-    </Link>
-  );
-}
-
-function ProgressRow({
-  label,
-  value,
-  target,
-  unit,
-  precision = 0,
-}: {
-  label: string;
-  value: number;
-  target: number;
-  unit: string;
-  precision?: number;
-}) {
-  const pct = Math.min((value / target) * 100, 100);
-  const formatted = precision > 0 ? value.toFixed(precision) : value.toLocaleString();
-  const done = value >= target;
-  return (
-    <div>
-      <div className="flex justify-between items-baseline text-sm mb-1.5">
-        <span className="text-ink font-medium">{label}</span>
-        <span className={cn("tabular-nums", done ? "text-brand-primary-dark font-semibold" : "text-ink-subtle")}>
-          {unit === "$" ? `$${formatted}` : `${formatted}${unit ? " " + unit : ""}`} <span className="text-ink-faint">/ {unit === "$" ? `$${target}` : `${target}${unit ? " " + unit : ""}`}</span>
-        </span>
-      </div>
-      <div className="h-2 bg-canvas-subtle rounded-full overflow-hidden">
-        <div
-          className={cn("h-full rounded-full transition-all", done ? "bg-brand-primary" : "bg-brand-primary/70")}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
   );
 }

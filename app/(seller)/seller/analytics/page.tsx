@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
-import { TrendingUp } from "lucide-react";
+import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StatPlate, StatRow } from "@/components/dashboard/stat-plate";
 import { createClient } from "@/lib/supabase/server";
 import { AnalyticsChart } from "@/components/seller/analytics-chart";
 import { formatMoney } from "@/lib/utils/format";
-import { cn } from "@/lib/utils/cn";
 
 export default async function SellerAnalyticsPage() {
   const sb = createClient();
@@ -40,69 +41,66 @@ export default async function SellerAnalyticsPage() {
     .eq("seller_id", au.id)
     .order("total_orders", { ascending: false });
 
+  const totals = (gigs ?? []).reduce(
+    (acc, g: any) => ({ impressions: acc.impressions + Number(g.impressions ?? 0), clicks: acc.clicks + Number(g.clicks ?? 0), orders: acc.orders + Number(g.total_orders ?? 0) }),
+    { impressions: 0, clicks: 0, orders: 0 }
+  );
+
   return (
     <>
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <header className="mb-8">
-          <p className="text-xs font-semibold text-ink-subtle mb-1">Seller</p>
-          <h1 className="font-heading text-2xl sm:text-3xl text-ink">Analytics</h1>
-          <p className="text-sm text-ink-subtle mt-1">Performance across the last 30 days.</p>
-        </header>
+      <main id="main" className="wrap py-8 lg:py-10">
+        <h1 className="t-sign">Analytics</h1>
+        <p className="mt-2 text-sm text-ink-muted">Last 30 days at your window.</p>
 
-        <section className="bg-white border border-line rounded-2xl p-6 sm:p-7 mb-6">
-          <div className="flex items-start justify-between mb-5 flex-wrap gap-3">
-            <div>
-              <div className="flex items-center gap-2 text-2xs font-semibold text-ink-subtle mb-1">
-                <TrendingUp className="w-3.5 h-3.5 text-brand-primary-dark" />
-                <span>Earnings · 30 days</span>
-              </div>
-              <p className="font-heading text-3xl sm:text-4xl text-ink tabular-nums tracking-tight">
-                {formatMoney(total30)}
-              </p>
-            </div>
+        <StatRow className="mt-8">
+          <StatPlate label="Earnings, last 30 days" value={formatMoney(total30)} tone={total30 > 0 ? "release" : "laminate"} />
+          <StatPlate label="Impressions" value={String(totals.impressions)} />
+          <StatPlate label="Clicks" value={String(totals.clicks)} />
+          <StatPlate label="Orders" value={String(totals.orders)} />
+        </StatRow>
+
+        <section aria-labelledby="chart-title" className="tray mt-8 p-5">
+          <h2 id="chart-title" className="t-head">
+            Daily earnings
+          </h2>
+          <div className="mt-4">
+            {/* keep your existing AnalyticsChart props if they differ */}
+            <AnalyticsChart data={chartData} />
           </div>
-          <AnalyticsChart data={chartData} />
         </section>
 
-        <section className="bg-white border border-line rounded-2xl p-6 sm:p-7">
-          <h2 className="font-heading text-lg text-ink mb-4">Gig performance</h2>
-          {!gigs || gigs.length === 0 ? (
-            <p className="text-sm text-ink-subtle">No gigs yet.</p>
-          ) : (
-            <div className="overflow-x-auto -mx-2">
-              <table className="w-full text-sm">
+        <section aria-labelledby="gigs-title" className="mt-8">
+          <h2 id="gigs-title" className="t-head">
+            Gig by gig
+          </h2>
+          {gigs && gigs.length > 0 ? (
+            <div className="tray mt-4 overflow-x-auto">
+              <table className="w-full min-w-[40rem] text-left text-sm">
                 <thead>
-                  <tr className="text-left text-2xs font-semibold text-ink-subtle border-b border-line">
-                    <th className="py-2.5 px-2">Gig</th>
-                    <th className="py-2.5 px-2 text-right">Impressions</th>
-                    <th className="py-2.5 px-2 text-right">Clicks</th>
-                    <th className="py-2.5 px-2 text-right">CTR</th>
-                    <th className="py-2.5 px-2 text-right">Orders</th>
-                    <th className="py-2.5 px-2 text-right">Rating</th>
+                  <tr className="t-plate text-ink-muted">
+                    <th scope="col" className="px-4 py-3 font-bold">Gig</th>
+                    <th scope="col" className="px-4 py-3 text-right font-bold">Impressions</th>
+                    <th scope="col" className="px-4 py-3 text-right font-bold">Clicks</th>
+                    <th scope="col" className="px-4 py-3 text-right font-bold">Orders</th>
+                    <th scope="col" className="px-4 py-3 text-right font-bold">Rating</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {gigs.map((g) => {
-                    const impressions = g.impressions ?? 0;
-                    const clicks = g.clicks ?? 0;
-                    const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0;
-                    return (
-                      <tr key={g.id} className="border-b border-line-subtle last:border-0">
-                        <td className="py-3 px-2 max-w-xs truncate text-ink">{g.title}</td>
-                        <td className="py-3 px-2 text-right tabular-nums text-ink-muted">{impressions.toLocaleString()}</td>
-                        <td className="py-3 px-2 text-right tabular-nums text-ink-muted">{clicks.toLocaleString()}</td>
-                        <td className={cn("py-3 px-2 text-right tabular-nums", ctr > 0 ? "text-ink" : "text-ink-faint")}>
-                          {ctr.toFixed(1)}%
-                        </td>
-                        <td className="py-3 px-2 text-right tabular-nums font-semibold text-ink">{(g.total_orders ?? 0).toLocaleString()}</td>
-                        <td className="py-3 px-2 text-right tabular-nums text-ink-muted">{g.average_rating ? g.average_rating.toFixed(1) : "n/a"}</td>
-                      </tr>
-                    );
-                  })}
+                <tbody className="[&_tr+tr]:border-t-2 [&_tr+tr]:border-dotted [&_tr+tr]:border-sand">
+                  {gigs.map((g: any) => (
+                    <tr key={g.id}>
+                      <td className="px-4 py-3 font-semibold">{g.title}</td>
+                      <td className="num px-4 py-3 text-right">{g.impressions ?? 0}</td>
+                      <td className="num px-4 py-3 text-right">{g.clicks ?? 0}</td>
+                      <td className="num px-4 py-3 text-right">{g.total_orders ?? 0}</td>
+                      <td className="num px-4 py-3 text-right">{Number(g.average_rating) > 0 ? Number(g.average_rating).toFixed(1) : "Not rated"}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
+          ) : (
+            <EmptyState className="mt-4" title="No gigs on the board" description="Publish a gig and its views, clicks and orders will show up here." action={<Link href="/seller/gigs/create" className="btn btn-brass">Create a gig</Link>} />
           )}
         </section>
       </main>

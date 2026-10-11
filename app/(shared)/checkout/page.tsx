@@ -8,6 +8,8 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { EscrowDrawer } from "@/components/escrow/EscrowDrawer";
 import { createClient } from "@/lib/supabase/client";
 import { calculateOrderPricing, DEFAULT_PLATFORM_SETTINGS } from "@/lib/utils/fee-calculator";
 import { formatMoney } from "@/lib/utils/format";
@@ -21,13 +23,23 @@ export default function CheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="text-center py-16">
-          <Loader2 className="w-6 h-6 animate-spin mx-auto text-ink-faint" />
+        <div className="py-16 text-center">
+          <Loader2 className="mx-auto h-6 w-6 animate-spin text-ink-faint" />
         </div>
       }
     >
       <CheckoutInner />
     </Suspense>
+  );
+}
+
+function Line({ label, value, muted, bold }: { label: string; value: string; muted?: boolean; bold?: boolean }) {
+  return (
+    <div className="flex items-baseline gap-2 py-1">
+      <span className={cn("min-w-0 truncate", muted && "text-ink-muted", bold && "font-semibold")}>{label}</span>
+      <span aria-hidden="true" className="mb-1 min-w-3 flex-1 border-b-2 border-dotted border-sand" />
+      <span className={cn("num shrink-0", bold && "fig-price")}>{value}</span>
+    </div>
   );
 }
 
@@ -109,8 +121,8 @@ function CheckoutInner() {
     return (
       <>
         <Navbar />
-        <main className="max-w-4xl mx-auto px-4 py-16 text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto text-ink-faint" />
+        <main className="wrap py-16 text-center">
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-ink-faint" />
         </main>
         <Footer />
       </>
@@ -123,39 +135,36 @@ function CheckoutInner() {
   return (
     <>
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <Link
-          href={`/gig/${gig.slug}`}
-          className="inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink mb-4 transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" />
+      <main id="main" className="wrap py-8 lg:py-10">
+        <Link href={`/gig/${gig.slug}`} className="link inline-flex min-h-11 items-center gap-1 text-sm">
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           Back to gig
         </Link>
 
-        <h1 className="font-heading text-2xl sm:text-3xl text-ink mb-1">Secure checkout</h1>
-        <p className="text-sm text-ink-subtle mb-8">
+        <h1 className="t-sign mt-3">Secure checkout</h1>
+        <p className="mt-2 max-w-[52ch] text-sm text-ink-muted">
           Review your order, then complete payment to release the brief to your seller.
         </p>
 
-        <div className="grid lg:grid-cols-[1fr_380px] gap-6 lg:gap-8">
+        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start lg:gap-8">
           <section className="space-y-5">
             {useStripeFlow ? (
-              <div className="bg-brand-primary-50 border border-brand-primary/20 rounded-xl p-4 flex items-start gap-3">
-                <ShieldCheck className="w-5 h-5 text-brand-primary-dark shrink-0 mt-0.5" />
+              <div className="tray flex items-start gap-3 p-4">
+                <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-brass-deep" aria-hidden="true" />
                 <div className="text-sm">
-                  <p className="font-semibold text-ink mb-0.5">Test mode payment</p>
-                  <p className="text-ink-muted leading-relaxed">
-                    Use <code className="px-1.5 py-0.5 bg-white border border-line rounded text-xs">4242 4242 4242 4242</code>,
+                  <p className="mb-0.5 font-semibold text-ink">Test mode payment</p>
+                  <p className="leading-relaxed text-ink-muted">
+                    Use <code className="num rounded-[3px] bg-laminate-sunk px-1.5 py-0.5 text-xs">4242 4242 4242 4242</code>,
                     any future expiry, any CVC.
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="bg-info/5 border border-info/20 rounded-xl p-4 flex items-start gap-3">
-                <Info className="w-5 h-5 text-info shrink-0 mt-0.5" />
+              <div className="tray flex items-start gap-3 p-4">
+                <Info className="mt-0.5 h-5 w-5 shrink-0 text-brass-deep" aria-hidden="true" />
                 <div className="text-sm">
-                  <p className="font-semibold text-ink mb-0.5">Demo mode, no real charge</p>
-                  <p className="text-ink-muted leading-relaxed">
+                  <p className="mb-0.5 font-semibold text-ink">Demo mode, no real charge</p>
+                  <p className="leading-relaxed text-ink-muted">
                     Stripe isn&apos;t configured in this environment. Fill in any card details to
                     simulate placing the order.
                   </p>
@@ -163,8 +172,8 @@ function CheckoutInner() {
               </div>
             )}
 
-            <div className="bg-white border border-line rounded-2xl p-6 sm:p-7">
-              <h2 className="font-heading text-base text-ink mb-5">Payment details</h2>
+            <div className="drawer-card">
+              <h2 className="t-head mb-5">Payment details</h2>
               {useStripeFlow ? (
                 intent ? (
                   <StripePaymentForm
@@ -174,13 +183,13 @@ function CheckoutInner() {
                   />
                 ) : intentLoading ? (
                   <div className="py-10 text-center">
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto text-ink-faint" />
-                    <p className="text-sm text-ink-subtle mt-2">Preparing secure payment…</p>
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-ink-faint" />
+                    <p className="mt-2 text-sm text-ink-muted">Preparing secure payment…</p>
                   </div>
                 ) : intentError ? (
-                  <div className="py-8 text-center">
-                    <p className="text-sm text-error mb-1">Couldn&apos;t start payment</p>
-                    <p className="text-xs text-ink-subtle">{intentError}</p>
+                  <div className="well-error">
+                    <p className="font-semibold">Couldn&apos;t start payment</p>
+                    <p className="mt-1 text-xs">{intentError}</p>
                   </div>
                 ) : null
               ) : (
@@ -206,47 +215,34 @@ function CheckoutInner() {
             </div>
           </section>
 
-          <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="bg-white border border-line rounded-2xl overflow-hidden ">
-              <div className="p-5 border-b border-line bg-canvas-subtle">
-                <h2 className="font-heading text-base text-ink mb-2">Order summary</h2>
-                <p className="text-sm font-medium text-ink line-clamp-2">{gig.title}</p>
-                <p className="text-xs text-ink-subtle mt-1">
-                  {pkg.name} · {pkg.delivery_days} days · {pkg.revisions === -1 ? "Unlimited" : pkg.revisions} revisions
-                </p>
-              </div>
+          <aside className="drawer-card lg:sticky lg:top-[calc(var(--header-h)+1rem)] lg:self-start">
+            <h2 className="t-head">Order summary</h2>
+            <p className="mt-2 line-clamp-2 text-sm font-semibold text-ink">{gig.title}</p>
+            <dl className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-muted">
+              <div><dt className="sr-only">Package</dt><dd>{pkg.name}</dd></div>
+              <div className="num"><dt className="sr-only">Delivery</dt><dd>{pkg.delivery_days} days</dd></div>
+              <div className="num"><dt className="sr-only">Revisions</dt><dd>{pkg.revisions === -1 ? "Unlimited" : pkg.revisions} revisions</dd></div>
+            </dl>
 
-              <div className="p-5 space-y-2 text-sm border-b border-line">
-                <div className="flex justify-between text-ink-muted">
-                  <span>Package</span>
-                  <span className="tabular-nums">{formatMoney(Number(pkg.price))}</span>
-                </div>
-                {extras.length > 0 && (
-                  <>
-                    {extras.map((e) => (
-                      <div key={e.id} className="flex justify-between text-ink-muted">
-                        <span className="truncate pr-2">+ {e.title}</span>
-                        <span className="tabular-nums shrink-0">{formatMoney(Number(e.price))}</span>
-                      </div>
-                    ))}
-                  </>
-                )}
-                <div className="flex justify-between text-ink-subtle text-xs pt-2">
-                  <span>Service fee</span>
-                  <span className="tabular-nums">{formatMoney(pricing.buyerServiceFee)}</span>
-                </div>
-                {pricing.buyerSmallOrderFee > 0 && (
-                  <div className="flex justify-between text-ink-subtle text-xs">
-                    <span>Small order fee</span>
-                    <span className="tabular-nums">{formatMoney(pricing.buyerSmallOrderFee)}</span>
-                  </div>
-                )}
+            <div className="mt-4 border-t-2 border-dotted border-sand pt-3 text-sm">
+              <Line label="Package" value={formatMoney(Number(pkg.price))} muted />
+              {extras.map((e) => (
+                <Line key={e.id} label={`+ ${e.title}`} value={formatMoney(Number(e.price))} muted />
+              ))}
+              <Line label="Service fee" value={formatMoney(pricing.buyerServiceFee)} muted />
+              {pricing.buyerSmallOrderFee > 0 && <Line label="Small order fee" value={formatMoney(pricing.buyerSmallOrderFee)} muted />}
+              <div className="mt-2 border-t-2 border-dotted border-sand pt-2">
+                <Line label="Total" value={formatMoney(pricing.buyerTotalPaid)} bold />
               </div>
+            </div>
 
-              <div className="p-5 flex justify-between text-base font-semibold text-ink">
-                <span>Total</span>
-                <span className="tabular-nums">{formatMoney(pricing.buyerTotalPaid)}</span>
-              </div>
+            <div className="mt-5 rounded-[8px] bg-mahogany-deep p-3">
+              <EscrowDrawer
+                state="held"
+                size="sm"
+                amount={formatMoney(pricing.buyerTotalPaid)}
+                note={<span className="text-laminate">Goes under the glass when you pay. Moves only when you approve.</span>}
+              />
             </div>
           </aside>
         </div>
@@ -320,7 +316,7 @@ function DemoCardForm({
               autoComplete="cc-number"
               className="pr-14"
             />
-            <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-faint pointer-events-none" />
+            <Lock className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brass-deep" aria-hidden="true" />
           </div>
         </Field>
 
@@ -334,32 +330,24 @@ function DemoCardForm({
         </div>
       </div>
 
-      <div className="flex items-start gap-2 mt-5 text-xs text-ink-subtle">
-        <ShieldCheck className="w-4 h-4 shrink-0 text-brand-primary-dark mt-0.5" />
+      <div className="mt-5 flex items-start gap-2 text-xs text-ink-muted">
+        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-brass-deep" aria-hidden="true" />
         <p>
           Your payment is held in escrow by Gigboard until you approve the delivery.
           Card details are not saved.
         </p>
       </div>
 
-      <button
-        onClick={submit}
-        disabled={loading}
-        className={cn(
-          "w-full h-12 mt-5 inline-flex items-center justify-center gap-2 rounded-md text-sm font-semibold transition-colors",
-          "bg-brand-primary text-white hover:bg-brand-primary-dark disabled:opacity-60 disabled:cursor-not-allowed"
-        )}
-      >
+      <Button type="button" variant="cta" size="lg" onClick={submit} disabled={loading} className="mt-5 w-full">
         {loading ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
           <>
-            <Lock className="w-4 h-4" />
+            <Lock className="h-4 w-4" aria-hidden="true" />
             Pay {formatMoney(totalPaid)}
           </>
         )}
-      </button>
+      </Button>
     </>
   );
 }
-

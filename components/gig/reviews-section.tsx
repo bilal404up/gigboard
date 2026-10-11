@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import { RatingStars } from "@/components/ui/rating-stars";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { fromNow, initials } from "@/lib/utils/format";
+import { ReviewSummary } from "@/components/gig/review-summary";
+import { SellerMark } from "@/components/seller/SellerMark";
+import { fromNow } from "@/lib/utils/format";
 import type { Review } from "@/types/database.types";
 
 export function ReviewsSection({
@@ -23,64 +24,70 @@ export function ReviewsSection({
   });
 
   return (
-    <div className="border-t border-neutral-200 pt-6">
-      <h2 className="font-heading text-2xl mb-4">Reviews</h2>
-
-      <div className="grid md:grid-cols-2 gap-6 mb-6">
+    <div className="tray p-5 md:p-6">
+      <div className="grid gap-6 md:grid-cols-2">
         <div>
-          <div className="flex items-baseline gap-2 mb-2">
-            <p className="font-heading text-5xl">{averageRating.toFixed(1)}</p>
-            <div>
-              <RatingStars value={averageRating} size={18} />
-              <p className="text-xs text-neutral-500">{totalReviews} reviews</p>
+          <ReviewSummary average={averageRating} total={totalReviews} />
+          {totalReviews > 0 && reviews.length === 0 ? (
+            <p className="mt-3 max-w-[40ch] text-sm text-ink-muted">
+              The score is this gig&apos;s recorded average. Individual reviews are not available yet.
+            </p>
+          ) : null}
+        </div>
+
+        {/* the breakdown counts only the reviews loaded here, so it is labelled that way */}
+        {reviews.length > 0 ? (
+          <div>
+            <p className="t-plate mb-2 text-ink-muted">Breakdown of {reviews.length} loaded</p>
+            <div className="space-y-1.5">
+              {ratingBuckets.map((b) => (
+                <div key={b.star} className="flex items-center gap-2 text-xs">
+                  <span className="num w-5">{b.star}</span>
+                  <div className="h-2.5 flex-1 overflow-hidden rounded-pill bg-laminate-sunk" aria-hidden="true">
+                    <div className="h-full rounded-pill bg-[linear-gradient(180deg,#E7C978,#C9A24A_60%,#B08A2C)]" style={{ width: `${b.pct}%` }} />
+                  </div>
+                  <span className="num w-8 text-right text-ink-muted">{b.count}</span>
+                  <span className="sr-only">
+                    {b.count} {b.count === 1 ? "review" : "reviews"} with {b.star} stars
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-        <div className="space-y-1">
-          {ratingBuckets.map((b) => (
-            <div key={b.star} className="flex items-center gap-2 text-xs">
-              <span className="w-6">{b.star}★</span>
-              <div className="flex-1 h-2 bg-neutral-100 rounded-full overflow-hidden">
-                <div className="h-full bg-warning" style={{ width: `${b.pct}%` }} />
-              </div>
-              <span className="w-8 text-right text-neutral-500">{b.count}</span>
-            </div>
-          ))}
-        </div>
+        ) : null}
       </div>
 
       {reviews.length === 0 ? (
-        <p className="text-neutral-500 text-sm">No reviews yet.</p>
+        totalReviews > 0 ? null : (
+          <p className="mt-5 border-t-2 border-dotted border-sand pt-5 text-sm text-ink-muted">
+            No reviews yet. The first buyer to approve a delivery can leave one.
+          </p>
+        )
       ) : (
-        <div className="space-y-4">
+        <div className="mt-6 space-y-4 border-t-2 border-dotted border-sand pt-6">
           {reviews.slice(0, visible).map((r) => (
-            <div key={r.id} className="border-b border-neutral-100 pb-4">
-              <div className="flex items-center gap-3 mb-2">
-                <Avatar className="w-8 h-8 shrink-0">
-                  <AvatarFallback className="text-xs">U</AvatarFallback>
-                </Avatar>
+            <article key={r.id} className="border-b-2 border-dotted border-sand pb-4 last:border-b-0 last:pb-0">
+              <div className="mb-2 flex items-center gap-3">
+                <SellerMark username={(r as any).buyer_id ?? r.id} label="Buyer" size={32} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium truncate">Buyer</p>
-                  <p className="text-xs text-neutral-500">{fromNow(r.created_at)}</p>
+                  <p className="truncate text-sm font-semibold">Buyer</p>
+                  <p className="text-xs text-ink-muted">{fromNow(r.created_at)}</p>
                 </div>
                 <div className="shrink-0">
-                  <RatingStars value={r.overall_rating} size={12} />
+                  <RatingStars value={r.overall_rating} size={13} />
                 </div>
               </div>
-              <p className="text-sm text-neutral-700">{r.review_text}</p>
+              <p className="text-sm text-ink">{r.review_text}</p>
               {r.seller_response && (
-                <div className="mt-3 pl-4 border-l-2 border-neutral-200">
-                  <p className="text-xs font-medium text-neutral-500 mb-1">Seller&apos;s response</p>
-                  <p className="text-sm text-neutral-700">{r.seller_response}</p>
+                <div className="mt-3 rounded-[6px] bg-laminate-sunk px-4 py-3">
+                  <p className="mb-1 text-xs font-semibold text-ink-muted">Seller&apos;s response</p>
+                  <p className="text-sm text-ink">{r.seller_response}</p>
                 </div>
               )}
-            </div>
+            </article>
           ))}
           {visible < reviews.length && (
-            <button
-              onClick={() => setVisible(reviews.length)}
-              className="text-sm text-brand-primary hover:underline"
-            >
+            <button onClick={() => setVisible(reviews.length)} className="btn-text text-brass-deep">
               Show all {reviews.length} reviews
             </button>
           )}

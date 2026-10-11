@@ -1,12 +1,23 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Check, X, Clock, RotateCcw, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PackageDrawer } from "@/components/gig/package-drawer";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils/cn";
 import { formatMoney } from "@/lib/utils/format";
 import { calculateOrderPricing, DEFAULT_PLATFORM_SETTINGS } from "@/lib/utils/fee-calculator";
 import type { GigPackage, GigExtra } from "@/types/database.types";
+
+function Row({ label, value, muted, bold }: { label: string; value: string; muted?: boolean; bold?: boolean }) {
+  return (
+    <div className="flex items-baseline gap-2 py-1">
+      <span className={cn("shrink-0", muted && "text-ink-muted", bold && "font-semibold")}>{label}</span>
+      <span aria-hidden="true" className="mb-1 min-w-3 flex-1 border-b-2 border-dotted border-sand" />
+      <span className={cn("num shrink-0", bold && "fig-price")}>{value}</span>
+    </div>
+  );
+}
 
 export function OrderCard({
   gigId,
@@ -30,152 +41,68 @@ export function OrderCard({
   const orderUrl = `/checkout?gig=${gigId}&pkg=${currentPkg?.id}&extras=${selectedExtras.join(",")}`;
 
   return (
-    <div className="overflow-hidden rounded-lg border border-ink bg-white">
-      <div role="tablist" aria-label="Package tiers" className="flex border-b border-ink bg-canvas-subtle">
-        {packages.map((p) => {
-          const active = p.package_type === pkgType;
-          return (
-            <button
-              key={p.package_type}
-              role="tab"
-              aria-selected={active}
-              onClick={() => setPkgType(p.package_type)}
-              className={cn(
-                "relative flex-1 h-12 text-sm font-medium capitalize transition-colors",
-                active
-                  ? "bg-white text-ink border-b-2 border-ink -mb-px"
-                  : "text-ink-subtle hover:text-ink hover:bg-white/60"
-              )}
-            >
-              {p.package_type}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="p-5 space-y-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h3 className="font-heading text-base text-ink truncate">{currentPkg?.name}</h3>
-            {currentPkg?.description && (
-              <p className="text-xs text-ink-subtle mt-1 line-clamp-2">{currentPkg.description}</p>
-            )}
+    <PackageDrawer
+      packages={packages}
+      selected={(currentPkg?.package_type ?? "basic") as GigPackage["package_type"]}
+      onSelect={(t) => setPkgType(t)}
+      total={pricing.buyerTotalPaid}
+      extras={
+        extras.length > 0 ? (
+          <div className="grid gap-2">
+            <p className="text-xs font-semibold text-ink-muted">Add-ons</p>
+            {extras.map((ex) => {
+              const checked = selectedExtras.includes(ex.id);
+              const id = `extra-${ex.id}`;
+              return (
+                <label
+                  key={ex.id}
+                  htmlFor={id}
+                  className={cn(
+                    "flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-[6px] px-3 py-2 text-sm transition-colors duration-120",
+                    checked ? "bg-brass-tint" : "hover:bg-laminate-sunk"
+                  )}
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <Checkbox
+                      id={id}
+                      checked={checked}
+                      onCheckedChange={() =>
+                        setSelectedExtras((s) =>
+                          s.includes(ex.id) ? s.filter((x) => x !== ex.id) : [...s, ex.id]
+                        )
+                      }
+                    />
+                    <span className="truncate text-ink">{ex.title}</span>
+                  </span>
+                  <span className="num shrink-0 font-semibold text-ink">+{formatMoney(Number(ex.price))}</span>
+                </label>
+              );
+            })}
           </div>
-          <p className="num shrink-0 text-[24px] leading-[28px] text-ink">
-            {formatMoney(Number(currentPkg?.price ?? 0))}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 py-3 border-y border-line text-xs">
-          <div className="flex items-center gap-1.5 text-ink-muted">
-            <Clock className="w-3.5 h-3.5" />
-            <span>
-              <span className="font-semibold text-ink">{currentPkg?.delivery_days}</span> {currentPkg?.delivery_days === 1 ? "day" : "days"} delivery
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 text-ink-muted">
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>
-              <span className="font-semibold text-ink">
-                {currentPkg?.revisions === -1 ? "Unlimited" : currentPkg?.revisions}
-              </span>{" "}
-              {currentPkg?.revisions === 1 ? "revision" : "revisions"}
-            </span>
+        ) : undefined
+      }
+      receipt={
+        <div className="text-sm">
+          <Row label="Package" value={formatMoney(pricing.gigBasePrice)} muted />
+          {pricing.extrasPrice > 0 && <Row label="Add-ons" value={`+${formatMoney(pricing.extrasPrice)}`} muted />}
+          <Row label="Service fee" value={formatMoney(pricing.buyerServiceFee)} muted />
+          {pricing.buyerSmallOrderFee > 0 && <Row label="Small order fee" value={formatMoney(pricing.buyerSmallOrderFee)} muted />}
+          <div className="mt-2 border-t-2 border-dotted border-sand pt-2">
+            <Row label="Total" value={formatMoney(pricing.buyerTotalPaid)} bold />
           </div>
         </div>
-
-        <ul className="space-y-2 text-sm">
-          {(currentPkg?.features ?? []).map((f, i) => (
-            <li key={i} className="flex items-start gap-2">
-              {f.included ? (
-                <Check className="w-4 h-4 text-brand-primary shrink-0 mt-0.5" />
-              ) : (
-                <X className="w-4 h-4 text-ink-faint shrink-0 mt-0.5" />
-              )}
-              <span className={f.included ? "text-ink" : "text-ink-faint line-through"}>{f.name}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {extras.length > 0 && (
-        <div className="border-t border-line p-5 space-y-2.5 bg-canvas-subtle">
-          <p className="text-2xs font-semibold text-ink-subtle flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3" />
-            Add-ons
-          </p>
-          {extras.map((ex) => {
-            const checked = selectedExtras.includes(ex.id);
-            return (
-              <label
-                key={ex.id}
-                className={cn(
-                  "flex items-center justify-between gap-3 p-2.5 -mx-1 rounded-md text-sm cursor-pointer transition-colors",
-                  checked ? "bg-brand-primary-50" : "hover:bg-white"
-                )}
-              >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() =>
-                      setSelectedExtras((s) =>
-                        s.includes(ex.id) ? s.filter((x) => x !== ex.id) : [...s, ex.id]
-                      )
-                    }
-                    className="w-4 h-4 accent-brand-primary"
-                  />
-                  <span className="text-ink truncate">{ex.title}</span>
-                </div>
-                <span className="font-semibold text-ink tabular-nums shrink-0">
-                  +{formatMoney(Number(ex.price))}
-                </span>
-              </label>
-            );
-          })}
-        </div>
-      )}
-
-      <div className="border-t border-line p-5 space-y-1.5 text-sm">
-        <div className="flex justify-between text-ink-muted">
-          <span>Package</span>
-          <span className="tabular-nums">{formatMoney(pricing.gigBasePrice)}</span>
-        </div>
-        {pricing.extrasPrice > 0 && (
-          <div className="flex justify-between text-ink-muted">
-            <span>Add-ons</span>
-            <span className="tabular-nums">+{formatMoney(pricing.extrasPrice)}</span>
-          </div>
-        )}
-        <div className="flex justify-between text-ink-subtle text-xs">
-          <span>Service fee</span>
-          <span className="tabular-nums">{formatMoney(pricing.buyerServiceFee)}</span>
-        </div>
-        {pricing.buyerSmallOrderFee > 0 && (
-          <div className="flex justify-between text-ink-subtle text-xs">
-            <span>Small order fee</span>
-            <span className="num">{formatMoney(pricing.buyerSmallOrderFee)}</span>
-          </div>
-        )}
-        <div className="flex justify-between font-semibold text-ink pt-2 mt-2 border-t border-line text-base">
-          <span>Total</span>
-          <span className="num">{formatMoney(pricing.buyerTotalPaid)}</span>
-        </div>
-      </div>
-
-      <div className="p-5 pt-0 space-y-2">
-        <Link href={orderUrl} className="block">
-          <Button variant="default" size="lg" className="w-full">
-            Continue for {formatMoney(pricing.buyerTotalPaid)}
+      }
+      action={
+        <div className="grid gap-2">
+          <Button asChild variant="cta" size="lg" className="w-full">
+            <Link href={orderUrl}>Continue for {formatMoney(pricing.buyerTotalPaid)}</Link>
           </Button>
-        </Link>
-        <Button variant="secondary" className="w-full">
-          Contact seller
-        </Button>
-        <p className="pt-1 text-[13px] leading-[18px] text-ink-muted">
-          Payment is held until you approve the work.
-        </p>
-      </div>
-    </div>
+          <Button variant="secondary" className="w-full">
+            Contact seller
+          </Button>
+          <p className="pt-1 text-[13px] leading-[18px] text-ink-muted">Payment is held until you approve the work.</p>
+        </div>
+      }
+    />
   );
 }

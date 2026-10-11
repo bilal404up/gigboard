@@ -1,15 +1,6 @@
-import { initials } from "@/lib/utils/format";
-import { cn } from "@/lib/utils/cn";
+import { SellerMark } from "@/components/seller/SellerMark"
 
-/** Square initials avatar. One color for everyone, so color stays reserved for level and status. */
+/* No photo: a lit window sign seeded by the name, with the plain frame. Works for buyers and sellers. */
 export function InitialAvatar({ name, size = 32, className }: { name: string; size?: number; className?: string }) {
-  return (
-    <span
-      aria-hidden
-      className={cn("inline-flex shrink-0 items-center justify-center rounded-xs bg-brand-primary-100 font-semibold text-brand-primary-dark", className)}
-      style={{ width: size, height: size, fontSize: size <= 24 ? 10 : size >= 56 ? 18 : 13 }}
-    >
-      {initials(name)}
-    </span>
-  );
+  return <SellerMark username={name} size={size} label={name} className={className} />
 }

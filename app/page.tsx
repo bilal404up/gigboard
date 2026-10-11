@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { GigRow, GigBoardHeader, type GigCardData } from "@/components/gig/gig-card";
+import { GigCard, type GigCardData } from "@/components/gig/gig-card";
 import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { SellerCard } from "@/components/seller/seller-card";
-import { PinTile } from "@/components/ui/pin-tile";
-import { COVER_STYLES, type CoverCategory } from "@/components/gig/gig-cover";
 import { SearchAutocomplete } from "@/components/search/search-autocomplete";
+import { CounterHero } from "@/components/home/counter-hero";
+import { CategoryWindows } from "@/components/home/category-windows";
+import { EscrowStrip } from "@/components/home/escrow-strip";
 import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 3600;
@@ -137,100 +138,60 @@ export default async function HomePage() {
   return (
     <>
       <Navbar />
-      <main>
-        <section className="border-b border-ink">
-          <div className="mx-auto max-w-[1200px] px-4 pb-14 pt-16 sm:px-6 sm:pt-24">
-            <div className="max-w-[900px]">
-              <h1 className="text-[32px] leading-[38px] sm:text-[56px] sm:leading-[60px]">
-                Small jobs. Fixed prices. Money held until you say it&apos;s done.
-              </h1>
-              <p className="mt-5 max-w-[56ch] text-[17px] leading-6 text-ink-muted">
-                Hire one freelancer for one defined job. Pay into escrow. Approve the work, then they are paid.
-              </p>
-              <div className="mt-8 max-w-[640px]">
-                <SearchAutocomplete size="lg" placeholder="What do you need done?" />
-              </div>
-              <p className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-[15px] leading-[22px]">
-                {EXAMPLES.map(([label, q]) => (
-                  <Link key={q} href={`/search?q=${encodeURIComponent(q)}`} className="inline-block py-2 underline underline-offset-4 hover:decoration-2">
-                    {label}
-                  </Link>
-                ))}
-              </p>
+      <main id="main">
+        <CounterHero />
+
+        {/* the search counter: a tray pulled onto the sill under the window */}
+        <section aria-labelledby="search-title" className="wrap relative z-10 -mt-7">
+          <div className="tray p-4 md:p-5">
+            <h2 id="search-title" className="sr-only">
+              Search gigs
+            </h2>
+            <SearchAutocomplete placeholder="What service are you looking for?" size="lg" />
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="text-sm text-ink-muted">Try</span>
+              {EXAMPLES.map(([label, q]) => (
+                <Link key={q} href={`/search?q=${encodeURIComponent(q)}`} className="chip min-h-9 hover:bg-sand focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany">
+                  {label}
+                </Link>
+              ))}
+              <span className="num ml-auto hidden text-sm text-ink-muted md:inline">
+                {data.activeGigs} gigs on the board, {data.verifiedSellers} sellers
+              </span>
             </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1200px] px-4 py-14 sm:px-6">
-          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-[24px] leading-[30px]">On the board now</h2>
-            <p className="num text-[13px] leading-[18px] text-ink-muted">
-              {data.featuredGigs.length > 0
-                ? `Showing ${data.featuredGigs.length} of ${data.activeGigs} gigs, sorted by orders`
-                : "No gigs yet"}
-            </p>
-          </div>
-          {data.featuredGigs.length === 0 ? (
-            <div className="border-y-2 border-ink py-12">
-              <p className="text-[24px] leading-[30px]">Nothing is on the board yet.</p>
-              <p className="mt-2 text-[15px] leading-[22px] text-ink-muted">Gigs appear here as soon as sellers publish them.</p>
-              <Link href="/become-seller" className="btn-secondary mt-5">Create a gig</Link>
+        <CategoryWindows
+          categories={(data.categories as any[]).map((c) => ({ slug: c.slug, name: c.name, count: typeof c.gig_count === "number" ? c.gig_count : null }))}
+        />
+
+        {data.featuredGigs.length > 0 && (
+          <section aria-labelledby="featured-title" className="wrap pb-14 lg:pb-20">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <h2 id="featured-title" className="t-sign">
+                On the counter now
+              </h2>
+              <Link href="/search" className="link font-semibold">
+                Browse every gig
+              </Link>
             </div>
-          ) : (
-            <div className="border-t-2 border-ink">
-              <GigBoardHeader />
-              {data.featuredGigs.map((g) => (
-                <GigRow key={g.id} gig={g} />
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {data.featuredGigs.map((gig) => (
+                <GigCard key={gig.id} gig={gig} />
               ))}
             </div>
-          )}
-          <p className="mt-4 text-[15px] leading-[22px]">
-            <Link href="/search" className="inline-block py-2 underline underline-offset-4 hover:decoration-2">See every gig</Link>
-          </p>
-        </section>
+          </section>
+        )}
 
-        <section className="border-t border-ink bg-canvas-subtle">
-          <div className="mx-auto grid max-w-[1200px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-2">
-            <div>
-              <h2 className="mb-4 text-[24px] leading-[30px]">How your money moves</h2>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-4">
-                  <span className="w-24 shrink-0"><PinTile tone="held">Held</PinTile></span>
-                  <p className="text-[15px] leading-[22px]">You pay when you order. Gigboard holds the money. The seller cannot touch it yet.</p>
-                </li>
-                <li className="flex items-start gap-4">
-                  <span className="w-24 shrink-0"><PinTile tone="delivered">Delivered</PinTile></span>
-                  <p className="text-[15px] leading-[22px]">The seller sends the work by the delivery date. You can ask for a revision.</p>
-                </li>
-                <li className="flex items-start gap-4">
-                  <span className="w-24 shrink-0"><PinTile tone="approved">Approved</PinTile></span>
-                  <p className="text-[15px] leading-[22px]">You approve the work, and only then does the seller get paid.</p>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h2 className="mb-4 text-[24px] leading-[30px]">Browse by category</h2>
-              <ul className="divide-y divide-ink border-y border-ink">
-                {data.categories.map((c: any) => {
-                  const style = COVER_STYLES[c.slug as CoverCategory];
-                  return (
-                    <li key={c.id}>
-                      <Link href={`/category/${c.slug}`} className="flex items-center gap-3 py-3 text-[15px] leading-[22px] hover:bg-white">
-                        <span aria-hidden className="h-3 w-3 shrink-0" style={{ background: style?.bg ?? "#151A2B" }} />
-                        <span>{c.name}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </div>
-        </section>
+        <EscrowStrip />
 
         {data.topSellers.length > 0 && (
-          <section className="mx-auto max-w-[1200px] px-4 py-14 sm:px-6">
-            <h2 className="mb-4 text-[24px] leading-[30px]">Top sellers</h2>
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <section aria-labelledby="sellers-title" className="wrap py-14 lg:py-20">
+            <h2 id="sellers-title" className="t-sign">
+              Sellers at the window
+            </h2>
+            <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
               {data.topSellers.map((s) => (
                 <SellerCard
                   key={s.username}
@@ -246,16 +207,6 @@ export default async function HomePage() {
             </div>
           </section>
         )}
-
-        <section className="border-t-2 border-ink">
-          <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-4 px-4 py-10 sm:px-6">
-            <div>
-              <h2 className="text-[24px] leading-[30px]">Sell what you already do well</h2>
-              <p className="mt-1 text-[15px] leading-[22px] text-ink-muted">Publish a gig with three packages and set your own prices.</p>
-            </div>
-            <Link href="/become-seller" className="btn-cta">Create a gig</Link>
-          </div>
-        </section>
       </main>
       <Footer />
     </>

@@ -6,6 +6,9 @@ import { ChevronLeft, ChevronRight, X, Maximize2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { GigCover } from "@/components/gig/gig-cover";
 
+const CTRL =
+  "inline-flex h-11 w-11 items-center justify-center rounded-pill bg-laminate-raised text-ink shadow-[0_1px_0_#D5CBBD,0_4px_0_-2px_#E4DCCF] transition-opacity hover:bg-laminate focus-visible:opacity-100 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany";
+
 export function GigGallery({
   thumbnail,
   images,
@@ -40,7 +43,7 @@ export function GigGallery({
 
   if (total === 0) {
     return (
-      <div className="relative aspect-[16/9] overflow-hidden rounded-lg border border-ink">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-tray">
         <GigCover seed={seed ?? title} category={category} />
       </div>
     );
@@ -48,7 +51,7 @@ export function GigGallery({
 
   return (
     <div className="space-y-3">
-      <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-canvas-subtle border border-line group">
+      <div className="group relative aspect-[16/9] overflow-hidden rounded-tray bg-laminate-sunk">
         <Image
           src={all[index]}
           alt={`${title}, image ${index + 1} of ${total}`}
@@ -60,47 +63,32 @@ export function GigGallery({
 
         {total > 1 && (
           <>
-            <button
-              onClick={prev}
-              aria-label="Previous image"
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
-            >
-              <ChevronLeft className="w-5 h-5" />
+            <button onClick={prev} aria-label="Previous image" className={cn(CTRL, "absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100")}>
+              <ChevronLeft className="h-5 w-5" />
             </button>
-            <button
-              onClick={next}
-              aria-label="Next image"
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
-            >
-              <ChevronRight className="w-5 h-5" />
+            <button onClick={next} aria-label="Next image" className={cn(CTRL, "absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100")}>
+              <ChevronRight className="h-5 w-5" />
             </button>
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 px-2.5 py-1 rounded-full bg-ink/60 backdrop-blur-sm">
+            <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5 rounded-pill bg-mahogany-deep/80 px-2.5 py-1.5">
               {all.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setIndex(i)}
                   aria-label={`Go to image ${i + 1}`}
-                  className={cn(
-                    "h-1.5 rounded-full transition-all",
-                    i === index ? "w-5 bg-white" : "w-1.5 bg-white/50 hover:bg-white/70"
-                  )}
+                  className={cn("h-2 rounded-pill transition-all", i === index ? "w-5 bg-brass-light" : "w-2 bg-laminate/50 hover:bg-laminate/80")}
                 />
               ))}
             </div>
           </>
         )}
 
-        <button
-          onClick={() => setLightbox(true)}
-          aria-label="Expand image"
-          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
-        >
-          <Maximize2 className="w-4 h-4" />
+        <button onClick={() => setLightbox(true)} aria-label="Expand image" className={cn(CTRL, "absolute right-3 top-3 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100")}>
+          <Maximize2 className="h-4 w-4" />
         </button>
       </div>
 
       {total > 1 && (
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-hide">
           {all.map((src, i) => (
             <button
               key={i}
@@ -108,8 +96,8 @@ export function GigGallery({
               aria-label={`Show image ${i + 1}`}
               aria-current={i === index}
               className={cn(
-                "relative shrink-0 w-20 h-14 sm:w-24 sm:h-16 rounded-md overflow-hidden border-2 transition-all bg-canvas-subtle",
-                i === index ? "border-brand-primary opacity-100" : "border-transparent opacity-60 hover:opacity-100"
+                "relative h-14 w-20 shrink-0 overflow-hidden rounded-[6px] bg-laminate-sunk transition-all sm:h-16 sm:w-24",
+                i === index ? "opacity-100 shadow-[0_0_0_2.5px_#C9A24A]" : "opacity-60 hover:opacity-100"
               )}
             >
               <Image src={src} alt="" fill className="object-cover" sizes="100px" />
@@ -119,45 +107,21 @@ export function GigGallery({
       )}
 
       {lightbox && (
-        <div
-          className="fixed inset-0 z-50 bg-ink/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8"
-          onClick={() => setLightbox(false)}
-        >
-          <button
-            onClick={() => setLightbox(false)}
-            aria-label="Close"
-            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-          >
-            <X className="w-5 h-5" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-mahogany-deep/95 p-4 sm:p-8" onClick={() => setLightbox(false)}>
+          <button onClick={() => setLightbox(false)} aria-label="Close" className="absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-pill bg-laminate/10 text-laminate transition-colors hover:bg-laminate/20 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release">
+            <X className="h-5 w-5" />
           </button>
-          <div
-            className="relative w-full max-w-5xl aspect-[16/10]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Image
-              src={all[index]}
-              alt={`${title}, image ${index + 1} of ${total}`}
-              fill
-              className="object-contain"
-              sizes="100vw"
-            />
+          <div className="relative aspect-[16/10] w-full max-w-5xl" onClick={(e) => e.stopPropagation()}>
+            <Image src={all[index]} alt={`${title}, image ${index + 1} of ${total}`} fill className="object-contain" sizes="100vw" />
             {total > 1 && (
               <>
-                <button
-                  onClick={prev}
-                  aria-label="Previous image"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-                >
-                  <ChevronLeft className="w-6 h-6" />
+                <button onClick={prev} aria-label="Previous image" className="absolute left-2 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-pill bg-laminate/10 text-laminate hover:bg-laminate/20 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release">
+                  <ChevronLeft className="h-6 w-6" />
                 </button>
-                <button
-                  onClick={next}
-                  aria-label="Next image"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-                >
-                  <ChevronRight className="w-6 h-6" />
+                <button onClick={next} aria-label="Next image" className="absolute right-2 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-pill bg-laminate/10 text-laminate hover:bg-laminate/20 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release">
+                  <ChevronRight className="h-6 w-6" />
                 </button>
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-white/10 text-white text-xs font-medium tabular-nums">
+                <div className="num absolute bottom-4 left-1/2 -translate-x-1/2 rounded-pill bg-laminate/10 px-3 py-1 text-xs font-medium text-laminate">
                   {index + 1} / {total}
                 </div>
               </>

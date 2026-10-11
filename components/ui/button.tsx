@@ -1,46 +1,50 @@
-import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils/cn";
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils/cn"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:pointer-events-none disabled:opacity-50",
+  [
+    "inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-[4px] font-sans text-[0.9375rem] font-semibold leading-none",
+    "transition-[transform,background-color,color] duration-120 ease-out",
+    "hover:-translate-y-px focus-visible:-translate-y-px active:translate-y-px",
+    "focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany",
+    "disabled:pointer-events-none disabled:translate-y-0 disabled:opacity-50",
+    "[&_svg]:h-4 [&_svg]:w-4 [&_svg]:shrink-0",
+  ].join(" "),
   {
     variants: {
       variant: {
-        default: "bg-brand-primary text-white hover:bg-brand-primary-dark",
-        cta: "bg-brand-accent text-white hover:bg-brand-accent-dark font-semibold focus-visible:ring-brand-accent",
-        secondary: "bg-white border border-line-strong text-ink hover:bg-canvas-subtle hover:border-ink-faint",
-        ghost: "text-ink-muted hover:bg-ink/5 hover:text-ink",
-        link: "text-brand-primary hover:text-brand-primary-dark underline-offset-4 hover:underline h-auto px-0",
-        danger: "bg-error text-white hover:bg-red-600 focus-visible:ring-error",
-        outline: "border border-line-strong bg-white text-ink hover:bg-canvas-subtle",
+        default:
+          "bg-mahogany text-laminate shadow-[0_2px_0_#2E1414] hover:bg-mahogany-raised focus-visible:bg-mahogany-raised focus-visible:outline-release active:shadow-[0_0_0_#2E1414,inset_0_2px_0_rgba(0,0,0,0.3)]",
+        cta: "bg-[linear-gradient(180deg,#E7C978_0%,#C9A24A_55%,#B08A2C_100%)] text-ink shadow-[0_2px_0_#7A5A14,inset_0_1px_0_#E7C978] hover:shadow-[0_3px_0_#7A5A14,inset_0_1px_0_#E7C978] focus-visible:shadow-[0_3px_0_#7A5A14,inset_0_1px_0_#E7C978] active:shadow-[0_0_0_#7A5A14,inset_0_2px_0_rgba(0,0,0,0.18)]",
+        secondary: "bg-laminate-sunk text-ink shadow-[0_2px_0_#D5CBBD] hover:bg-sand/60 active:shadow-none",
+        ghost: "bg-transparent text-ink hover:bg-laminate-sunk",
+        link: "h-auto min-h-0 rounded-none p-0 text-ink underline decoration-ink/45 decoration-[1.5px] underline-offset-[3px] hover:translate-y-0 hover:decoration-ink focus-visible:translate-y-0 active:translate-y-0",
+        danger: "bg-transparent text-alarm shadow-[inset_0_0_0_1.5px_#B8281C] hover:bg-alarm-tint",
+        outline: "bg-transparent text-ink shadow-[inset_0_0_0_1.5px_#4B2320] hover:bg-laminate-sunk",
       },
       size: {
-        default: "h-10 px-4",
-        sm: "h-8 px-3 text-xs",
-        lg: "h-11 px-5 text-base",
-        xl: "h-12 px-6 text-base",
-        icon: "h-10 w-10",
-        "icon-sm": "h-8 w-8",
+        default: "h-11 px-[18px]",
+        sm: "h-11 px-3 text-sm md:h-9",
+        lg: "h-12 px-6 text-base",
+        xl: "h-14 px-7 text-base",
+        icon: "h-11 w-11 md:h-10 md:w-10",
+        "icon-sm": "h-11 w-11 md:h-8 md:w-8",
       },
     },
     defaultVariants: { variant: "default", size: "default" },
   }
-);
+)
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+  asChild?: boolean
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    return <Comp className={cn(buttonVariants({ variant, size }), className)} ref={ref} {...props} />;
-  }
-);
-Button.displayName = "Button";
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, size, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "button"
+  return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+})
+Button.displayName = "Button"
 
-export { Button, buttonVariants };
+export { Button, buttonVariants }

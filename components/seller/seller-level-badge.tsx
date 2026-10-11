@@ -1,23 +1,7 @@
-import { LEVEL_LABELS } from "@/lib/utils/seller-levels";
-import type { SellerLevel } from "@/types/database.types";
-import { PinTile, type PinTileTone } from "@/components/ui/pin-tile";
+import { LevelPlate } from "@/components/seller/SellerMark"
+import type { SellerLevel } from "@/types/database.types"
 
-interface Props {
-  level: SellerLevel;
-  className?: string;
-}
-
-const tones: Record<SellerLevel, PinTileTone> = {
-  new_seller: "new",
-  level_one: "level-one",
-  level_two: "level-two",
-  top_rated: "top-rated",
-};
-
-export function SellerLevelBadge({ level, className }: Props) {
-  return (
-    <PinTile tone={tones[level]} className={className}>
-      {LEVEL_LABELS[level]}
-    </PinTile>
-  );
+/* new_seller, level_one, level_two, top_rated. Renders the level plate; the mapping lives in normalizeLevel. */
+export function SellerLevelBadge({ level, className }: { level: SellerLevel; className?: string }) {
+  return <LevelPlate level={level} className={className} />
 }
