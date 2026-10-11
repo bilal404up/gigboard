@@ -1,4 +1,4 @@
-/* Counter story (loop 3). Prefix: cs-
+/* Counter story (loop 4). Prefix: cs-
    Transform and opacity only. Money travels the upper lane and waits under
    the glass. Work travels the tray in the lower lane. */
 
@@ -16,9 +16,19 @@
   --cs-track-off: #d3cdc1;
   --cs-display: var(--font-display), "Arial Narrow", sans-serif;
   --cs-sans: var(--font-body), system-ui, sans-serif;
-  /* Point this at the JetBrains Mono variable from app/fonts.ts */
   --cs-mono: var(--font-mono), ui-monospace, monospace;
-  /* Lane stops, kept clear of the edges on narrow screens */
+
+  /* Stage geometry (scaled up at 1024) */
+  --cs-stage-h: 280px;
+  --cs-track-b: 64px;
+  --cs-track-h: 10px;
+  --cs-ticket-w: 116px;
+  --cs-ticket-top: 40px;
+  --cs-work-w: 124px;
+  --cs-amount: 26px;
+  --cs-stamp: 13px;
+  --cs-side: 15px;
+  --cs-glass-w: clamp(96px, 16cqw, 180px);
   --cs-you: max(14cqw, 72px);
   --cs-seller: min(86cqw, calc(100cqw - 72px));
 
@@ -36,7 +46,6 @@
   margin-bottom: 24px;
   padding-inline: 4px;
 }
-
 .cs-h2 {
   margin: 0;
   font-family: var(--cs-display);
@@ -46,7 +55,6 @@
   line-height: 1;
   letter-spacing: -0.01em;
 }
-
 .cs-intro {
   margin: 0;
   max-width: 40ch;
@@ -60,7 +68,7 @@
 .cs-stage {
   container-type: inline-size;
   position: relative;
-  height: 280px;
+  height: var(--cs-stage-h);
   overflow: hidden;
   border-radius: 12px;
   background: var(--cs-mahogany);
@@ -71,7 +79,7 @@
   position: absolute;
   top: 14px;
   z-index: 4;
-  font-size: 15px;
+  font-size: var(--cs-side);
   font-weight: 600;
   line-height: 1.3;
 }
@@ -100,9 +108,9 @@
   position: absolute;
   left: 3%;
   right: 3%;
-  bottom: 64px;
+  bottom: var(--cs-track-b);
   z-index: 1;
-  height: 10px;
+  height: var(--cs-track-h);
   border-radius: 2px;
   background: var(--cs-brass);
   box-shadow: inset 0 -3px 0 var(--cs-brass-dark), inset 0 1px 0 rgb(255 255 255 / 0.35);
@@ -111,10 +119,10 @@
 .cs-glass {
   position: absolute;
   top: 12px;
-  bottom: 74px;
+  bottom: calc(var(--cs-track-b) + var(--cs-track-h));
   left: 50%;
   z-index: 3;
-  width: clamp(96px, 16cqw, 180px);
+  width: var(--cs-glass-w);
   overflow: hidden;
   border-radius: 4px 4px 0 0;
   background: rgb(214 226 219 / 0.14);
@@ -142,8 +150,8 @@
 
 .cs-ticket {
   --x: var(--cs-you);
-  top: 40px;
-  width: 116px;
+  top: var(--cs-ticket-top);
+  width: var(--cs-ticket-w);
   padding: 9px 10px 11px;
   font-family: var(--cs-mono);
   transition: transform 760ms cubic-bezier(0.65, 0, 0.35, 1);
@@ -157,15 +165,15 @@
 .cs-amount {
   display: block;
   margin-top: 6px;
-  font-size: 26px;
+  font-size: var(--cs-amount);
   font-weight: 700;
   line-height: 1;
 }
 
 .cs-work {
   --x: var(--cs-seller);
-  bottom: 74px;
-  width: 124px;
+  bottom: calc(var(--cs-track-b) + var(--cs-track-h));
+  width: var(--cs-work-w);
   padding: 9px 10px 10px;
   opacity: 0;
   transition: transform 900ms cubic-bezier(0.65, 0, 0.35, 1), opacity 300ms ease;
@@ -197,7 +205,7 @@
   font-family: var(--cs-display);
   font-weight: 800;
   font-variation-settings: "wdth" 75;
-  font-size: 13px;
+  font-size: var(--cs-stamp);
   line-height: 1.1;
   opacity: 0;
   transform: rotate(-9deg) scale(1.5);
@@ -210,7 +218,7 @@
 .cs-fee {
   position: absolute;
   left: 50%;
-  bottom: 84px;
+  bottom: calc(var(--cs-track-b) + var(--cs-track-h) + 10px);
   z-index: 4;
   padding: 5px 9px;
   border-radius: 3px;
@@ -393,19 +401,59 @@
 
 @media (min-width: 768px) {
   .cs { padding: 96px 24px 104px; }
-  .cs-stage { height: 300px; }
   .cs-progress { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .cs-caption { min-height: 3em; }
 }
 
-/* The intro and the rules both start on the glass line */
+/* Desktop: the stage gets about a third more scale */
 @media (min-width: 1024px) {
+  .cs {
+    --cs-stage-h: 380px;
+    --cs-track-b: 78px;
+    --cs-track-h: 14px;
+    --cs-ticket-w: 160px;
+    --cs-ticket-top: 54px;
+    --cs-work-w: 176px;
+    --cs-amount: 36px;
+    --cs-stamp: 16px;
+    --cs-side: 18px;
+    --cs-glass-w: clamp(140px, 18cqw, 240px);
+  }
   .cs-head {
     grid-template-columns: 1fr 1fr;
     column-gap: 0;
     align-items: end;
   }
   .cs-rules { margin-left: 50%; }
+
+  .cs-side { top: 18px; }
+  .cs-side--you { left: 22px; }
+  .cs-side--seller { right: 22px; }
+  .cs-seller-note {
+    top: 44px;
+    right: 22px;
+    font-size: 14px;
+  }
+  .cs-ticket { padding: 12px 14px 14px; }
+  .cs-ticket-no { font-size: 12px; }
+  .cs-work { padding: 12px 14px 13px; }
+  .cs-work svg {
+    width: 48px;
+    height: 48px;
+  }
+  .cs-work-title { font-size: 14px; }
+  .cs-stamp { padding: 3px 8px; }
+  .cs-fee {
+    padding: 6px 11px;
+    font-size: 14px;
+  }
+  .cs .cs-approve {
+    left: 20px;
+    bottom: 14px;
+    min-height: 48px;
+    padding: 0 22px;
+    font-size: 17px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

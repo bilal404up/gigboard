@@ -65,7 +65,7 @@ const GIGS: Array<[string, string, string, [number, number, number]]> = [
   ["tomasWebb", MOBILE, "I will build a React Native app for iOS and Android", [300, 700, 1400]],
   ["tomasWebb", MOBILE, "I will fix crashes and slow screens in your mobile app", [60, 140, 300]],
   ["tomasWebb", MOBILE, "I will build a Flutter app with a Firebase backend", [280, 650, 1300]],
-  ["ishaRao", MOBILE, "I will make your website work as an installable app", [90, 200, 400]],
+  ["ishaRao", WEB, "I will make your website work as an installable app", [90, 200, 400]],
   ["lenaOrtiz", AI, "I will automate your invoice emails with a small script", [70, 150, 320]],
   ["lenaOrtiz", AI, "I will build a support chatbot that answers from your FAQ", [150, 320, 640]],
   ["lenaOrtiz", AI, "I will connect your forms, sheets and email with Zapier", [50, 120, 260]],
@@ -73,11 +73,11 @@ const GIGS: Array<[string, string, string, [number, number, number]]> = [
   ["samOkafor", MARKETING, "I will audit your site and fix the top ten SEO problems", [80, 180, 380]],
   ["samOkafor", MARKETING, "I will set up and tune your first Google Ads campaign", [120, 260, 520]],
   ["samOkafor", MARKETING, "I will write and schedule a 30-day content calendar", [60, 140, 300]],
-  ["aylaDemir", MARKETING, "I will design email newsletter templates that render everywhere", [55, 120, 240]],
+  ["aylaDemir", DESIGN, "I will design email newsletter templates that render everywhere", [55, 120, 240]],
   ["priyaNair", BUSINESS, "I will set up a clean spreadsheet and weekly report for your business", [40, 100, 220]],
   ["priyaNair", BUSINESS, "I will research and list 100 qualified leads for you", [60, 140, 300]],
   ["priyaNair", BUSINESS, "I will manage your inbox and calendar for a week", [70, 160, 340]],
-  ["priyaNair", BUSINESS, "I will transcribe and summarize your meetings", [30, 80, 170]],
+  ["priyaNair", AI, "I will transcribe and summarize your meetings", [30, 80, 170]],
 ];
 
 

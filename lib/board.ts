@@ -60,7 +60,30 @@ export type BoardGig = {
 
 /* Hand-set flap text, keyed by gig slug. Everything else is derived. */
 export const BOARD_TEXT_OVERRIDES: Record<string, { board?: string; short?: string; seller?: string }> = {
-  // "logo-for-a-bakery": { board: "BAKERY LOGO", short: "BAKERY LOGO" },
+  "i-will-design-a-logo-that-still-reads-at-16px-fb6n": { board: "LOGO AT 16PX", short: "LOGO 16PX" },
+  "i-will-create-a-brand-guide-with-colors-fonts-and-rules-u36u": { board: "BRAND GUIDE", short: "BRAND GUIDE" },
+  "i-will-transcribe-and-summarize-your-meetings-t7pv": { board: "MEETING NOTES", short: "MTG NOTES" },
+  "i-will-set-up-a-clean-spreadsheet-and-weekly-report-for-your-business-lwae": { board: "WEEKLY REPORT", short: "WEEKLY RPT" },
+  "i-will-research-and-list-100-qualified-leads-for-you-5obr": { board: "100 LEADS", short: "100 LEADS" },
+  "i-will-manage-your-inbox-and-calendar-for-a-week-e098": { board: "INBOX & CALENDAR", short: "INBOX WEEK" },
+  "i-will-turn-your-figma-design-into-a-fast-react-site-1683": { board: "FIGMA TO REACT", short: "FIGMA REACT" },
+  "i-will-make-your-website-work-as-an-installable-app-6hoe": { board: "SITE AS AN APP", short: "SITE TO APP" },
+  "i-will-build-your-landing-page-in-nextjs-in-three-days-qu4m": { board: "NEXT.JS LANDING", short: "LANDING PG" },
+  "i-will-build-a-flutter-app-with-a-firebase-backend-b4he": { board: "FLUTTER APP", short: "FLUTTER APP" },
+  "i-will-add-openai-features-to-your-existing-app-an70": { board: "OPENAI FEATURES", short: "AI FEATURES" },
+  "i-will-build-a-react-native-app-for-ios-and-android-14q4": { board: "REACT NATIVE APP", short: "NATIVE APP" },
+  "i-will-fix-crashes-and-slow-screens-in-your-mobile-app-wxj1": { board: "APP CRASH FIX", short: "CRASH FIX" },
+  "i-will-connect-your-forms-sheets-and-email-with-zapier-6zo4": { board: "ZAPIER SETUP", short: "ZAPIER" },
+  "i-will-automate-your-invoice-emails-with-a-small-script-2ain": { board: "INVOICE EMAILS", short: "INVOICE BOT" },
+  "i-will-build-a-support-chatbot-that-answers-from-your-faq-cm0g": { board: "FAQ CHATBOT", short: "FAQ CHATBOT" },
+  "i-will-write-and-schedule-a-30-day-content-calendar-yokj": { board: "CONTENT CALENDAR", short: "CONTENT CAL" },
+  "i-will-audit-your-site-and-fix-the-top-ten-seo-problems-d6bz": { board: "SEO AUDIT & FIX", short: "SEO AUDIT" },
+  "i-will-set-up-and-tune-your-first-google-ads-campaign-ntis": { board: "GOOGLE ADS SETUP", short: "GOOGLE ADS" },
+  "i-will-build-a-wordpress-site-for-your-small-business-qu1q": { board: "WORDPRESS SITE", short: "WP SITE" },
+  "i-will-set-up-a-webflow-site-you-can-edit-yourself-npno": { board: "WEBFLOW SITE", short: "WEBFLOW" },
+  "i-will-design-email-newsletter-templates-that-render-everywhere-lyiq": { board: "EMAIL TEMPLATES", short: "NEWSLETTER" },
+  "i-will-draw-a-set-of-icons-for-your-app-or-site-1ye6": { board: "ICON SET", short: "ICON SET" },
+  "i-will-design-a-month-of-social-media-posts-5zz5": { board: "SOCIAL POSTS", short: "SOCIAL SET" },
 };
 
 const gigHref = (slug: string) => `/gig/${slug}`;
@@ -176,7 +199,14 @@ function hash(s: string) {
   return h >>> 0;
 }
 
+/* "I will design a logo..." becomes "Design a logo..." for display. */
+function displayTitle(t: string) {
+  const s = t.replace(/^\s*i\s+will\s+/i, "").trim();
+  return s ? s[0].toUpperCase() + s.slice(1) : t;
+}
+
 function toBoard(src: BoardSource): BoardGig {
+  const title = displayTitle(src.title);
   const issues: string[] = [];
   const warn = (m: string) => issues.push(m);
   const o = BOARD_TEXT_OVERRIDES[src.slug] ?? {};
@@ -225,7 +255,7 @@ function toBoard(src: BoardSource): BoardGig {
   return {
     id: src.slug,
     href: gigHref(src.slug),
-    title: src.title,
+    title,
     board: wide.text,
     short: compact.text,
     window,
@@ -240,8 +270,8 @@ function toBoard(src: BoardSource): BoardGig {
     statusWide,
     statusCompact,
     tone,
-    label: `${src.title} by ${src.sellerName}, ${done} jobs done. Window ${window}, ${windowName}. Ready in ${dayWords}. ${priceSpoken}. ${spoken}.`,
-    hay: [src.title, src.category, windowName, src.sellerName, ...(src.tags ?? [])]
+    label: `${title} by ${src.sellerName}, ${done} jobs done. Window ${window}, ${windowName}. Ready in ${dayWords}. ${priceSpoken}. ${spoken}.`,
+    hay: [src.title, title, src.category, windowName, src.sellerName, ...(src.tags ?? [])]
       .join(" ")
       .toLowerCase(),
   };

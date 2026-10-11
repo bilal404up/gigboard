@@ -8,6 +8,7 @@ import { SearchAutocomplete } from "@/components/search/search-autocomplete";
 import GigBoard from "@/components/board/GigBoard";
 import { toBoardGigs } from "@/lib/board";
 import WindowsFacade from "@/components/home/WindowsFacade";
+import SellerRoster from "@/components/home/SellerRoster";
 import CounterStory from "@/components/home/CounterStory";
 import { CategoryWindows } from "@/components/home/category-windows";
 import { EscrowStrip } from "@/components/home/escrow-strip";
@@ -162,27 +163,18 @@ export default async function HomePage() {
           <CounterStory title={storyGig.title} price={storyGig.price} days={storyGig.days} sellerName={storyGig.seller} />
         )}
 
-        {data.topSellers.length > 0 && (
-          <section aria-labelledby="sellers-title" className="wrap py-14 lg:py-20">
-            <h2 id="sellers-title" className="t-sign">
-              Sellers at the window
-            </h2>
-            <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-              {data.topSellers.map((s) => (
-                <SellerCard
-                  key={s.username}
-                  username={s.username}
-                  fullName={s.full_name}
-                  avatarUrl={s.avatar_url}
-                  level={s.seller_level}
-                  rating={s.rating}
-                  totalOrders={s.total_orders}
-                  tagline={s.tagline}
-                />
-              ))}
-            </div>
-          </section>
-        )}
+        <SellerRoster
+          gigs={boardGigs}
+          sellers={data.topSellers.map((s) => ({
+            username: s.username,
+            fullName: s.full_name,
+            avatarUrl: s.avatar_url,
+            level: s.seller_level,
+            rating: s.rating,
+            totalOrders: s.total_orders,
+            tagline: s.tagline,
+          }))}
+        />
       </main>
       <Footer />
     </>

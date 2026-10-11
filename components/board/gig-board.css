@@ -148,7 +148,7 @@
   color: var(--gb-muted);
 }
 .gb-try { margin: 10px 0 0; }
-.gb-counter { margin: 14px 2px 0; }
+.gb-counter { margin: 16px 2px 0; font-size: 17px; color: var(--gb-ink); }
 
 .gb-try a,
 .gb-counter a {
@@ -502,10 +502,11 @@
 
 @media (min-width: 1024px) {
   .gb-plate {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 600px);
+    column-gap: 48px;
     align-items: end;
-    column-gap: 40px;
   }
+  .gb-h1 { font-size: clamp(40px, 4.2vw, 64px); }
   .gb-rail { flex-wrap: nowrap; }
 }
 
