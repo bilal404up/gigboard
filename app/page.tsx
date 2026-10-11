@@ -1,17 +1,12 @@
-import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { GigCard, type GigCardData } from "@/components/gig/gig-card";
+import { type GigCardData } from "@/components/gig/gig-card";
 import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
-import { SellerCard } from "@/components/seller/seller-card";
-import { SearchAutocomplete } from "@/components/search/search-autocomplete";
 import GigBoard from "@/components/board/GigBoard";
 import { toBoardGigs } from "@/lib/board";
 import WindowsFacade from "@/components/home/WindowsFacade";
 import SellerRoster from "@/components/home/SellerRoster";
 import CounterStory from "@/components/home/CounterStory";
-import { CategoryWindows } from "@/components/home/category-windows";
-import { EscrowStrip } from "@/components/home/escrow-strip";
 import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 3600;
