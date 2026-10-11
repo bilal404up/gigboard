@@ -87,8 +87,8 @@ export function Navbar() {
   const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
 
   return (
-    <header className="header">
-      <div className="wrap flex min-h-[var(--header-h)] items-center gap-4">
+    <header className="header site-nav">
+      <div className="wrap nav-inner flex min-h-[var(--header-h)] items-center gap-4">
         <Link href="/" className="shrink-0 whitespace-nowrap rounded-[4px] text-laminate focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-4 focus-visible:outline-release" aria-label="Gigboard home">
           <WordMark />
         </Link>
@@ -186,7 +186,7 @@ export function Navbar() {
               </Link>
               <Link
                 href="/signup"
-                className="inline-flex h-10 items-center rounded-[4px] bg-[linear-gradient(180deg,#E7C978_0%,#C9A24A_55%,#B08A2C_100%)] px-4 text-sm font-semibold text-ink shadow-[0_2px_0_#7A5A14,inset_0_1px_0_#E7C978] transition-transform hover:-translate-y-px focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release active:translate-y-px"
+                className="nav-join inline-flex h-10 items-center rounded-[4px] bg-[linear-gradient(180deg,#E7C978_0%,#C9A24A_55%,#B08A2C_100%)] px-4 text-sm font-semibold text-ink shadow-[0_2px_0_#7A5A14,inset_0_1px_0_#E7C978] transition-transform hover:-translate-y-px focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release active:translate-y-px"
               >
                 Join
               </Link>

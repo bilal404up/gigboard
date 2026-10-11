@@ -1,0 +1,219 @@
+/* =====================================================================
+   Professional pass (loop 5). Import after globals.css.
+   Calmer palette, flat controls, tighter type, one spacing rhythm,
+   nav and footer aligned to the 1440 content width.
+   ===================================================================== */
+
+/* Palette: deeper, less saturated window colours, a quieter brass ------ */
+
+.gb, .wf, .cs, .sr, .site-footer, .site-nav {
+  --w1: #1f5f54;
+  --w2: #2f4c8a;
+  --w3: #5a3a78;
+  --w4: #b88a1e;
+  --w5: #9e3a2e;
+  --w6: #5e4632;
+  --brass: #c49a3c;
+  --brass-hover: #b48b33;
+  --hall: #eae7e0;
+  --hall-line: #d8d2c6;
+  --ink: #16201a;
+  --mahogany: #3b1a12;
+}
+
+.gb { --gb-w1: var(--w1); --gb-w2: var(--w2); --gb-w3: var(--w3); --gb-w4: var(--w4); --gb-w5: var(--w5); --gb-w6: var(--w6); --gb-brass: var(--brass); }
+.wf { --wf-w1: var(--w1); --wf-w2: var(--w2); --wf-w3: var(--w3); --wf-w4: var(--w4); --wf-w5: var(--w5); --wf-w6: var(--w6); --wf-brass: var(--brass); }
+.sr { --sr-w1: var(--w1); --sr-w2: var(--w2); --sr-w3: var(--w3); --sr-w4: var(--w4); --sr-w5: var(--w5); --sr-w6: var(--w6); --sr-brass: var(--brass); }
+.cs { --cs-brass: var(--brass); }
+
+/* Type: narrower headings, tighter tracking ----------------------------- */
+
+.wf.wf .wf-h2,
+.cs.cs .cs-h2,
+.sr.sr .sr-h2 {
+  font-variation-settings: "wdth" 118;
+  font-size: clamp(26px, 2.6vw, 36px);
+  letter-spacing: -0.015em;
+}
+.gb.gb .gb-h1 { font-variation-settings: "wdth" 124; }
+@media (min-width: 1024px) {
+  .gb.gb .gb-h1 { font-size: clamp(36px, 3.8vw, 56px); }
+}
+.wf.wf .wf-intro,
+.cs.cs .cs-intro,
+.sr.sr .sr-intro {
+  max-width: 44ch;
+  font-size: 17px;
+}
+
+/* Spacing: one rhythm for every section ---------------------------------- */
+
+.wf.wf, .cs.cs, .sr.sr {
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+.wf.wf .wf-head,
+.cs.cs .cs-head,
+.sr.sr .sr-head { margin-bottom: 28px; }
+@media (min-width: 768px) {
+  .wf.wf, .cs.cs, .sr.sr {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+}
+
+/* Radii: 8px on every large surface ------------------------------------- */
+
+.gb.gb .gb-frame,
+.wf.wf .wf-wall,
+.cs.cs .cs-stage,
+.sr.sr .sr-strip { border-radius: 8px; }
+@media (min-width: 768px) {
+  .gb.gb .gb-plate { border-radius: 8px 8px 0 0; }
+  .gb.gb .gb-frame { border-radius: 0 0 8px 8px; }
+}
+
+/* Controls: flat brass, no hard drop shadows ------------------------------ */
+
+.gb.gb .gb-go,
+.cs.cs .cs-approve:not(:disabled):not([data-variant="again"]),
+.site-nav .nav-join {
+  background: var(--brass);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.2);
+}
+.gb.gb .gb-go:hover,
+.cs.cs .cs-approve:not(:disabled):not([data-variant="again"]):hover,
+.site-nav .nav-join:hover { background: var(--brass-hover); }
+.gb.gb .gb-go:active,
+.cs.cs .cs-approve:active {
+  transform: none;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.3), inset 0 2px 0 rgb(0 0 0 / 0.12);
+}
+
+/* Board rail: window tabs go neutral with a colour dot, so the hero shows
+   one colour per row instead of seven blocks at the bottom */
+.gb.gb .gb-tab[data-w] {
+  padding: 0 12px 0 24px;
+  background: var(--gb-tab);
+  color: var(--gb-flap-ink);
+}
+.gb.gb .gb-tab[data-w]::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-top: -3.5px;
+  border-radius: 50%;
+  background: var(--dot);
+}
+.gb.gb .gb-tab[data-w="1"] { --dot: var(--w1); }
+.gb.gb .gb-tab[data-w="2"] { --dot: var(--w2); }
+.gb.gb .gb-tab[data-w="3"] { --dot: var(--w3); }
+.gb.gb .gb-tab[data-w="4"] { --dot: var(--w4); }
+.gb.gb .gb-tab[data-w="5"] { --dot: var(--w5); }
+.gb.gb .gb-tab[data-w="6"] { --dot: var(--w6); }
+.gb.gb .gb-tab[aria-pressed="true"] { box-shadow: inset 0 0 0 1px var(--brass); }
+.gb.gb .gb-tab[aria-pressed="true"]::after { display: none; }
+
+/* Windows: a hairline on the sign instead of the double enamel line */
+.wf.wf .wf-sign {
+  min-height: 48px;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
+}
+.wf.wf .wf-bay[data-w="4"] .wf-sign { box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.18); }
+.wf.wf .wf-count { font-size: 24px; }
+
+/* Counter story: paper casts a soft shadow, not a hard edge */
+.cs.cs .cs-ticket,
+.cs.cs .cs-work,
+.cs.cs .cs-fee { box-shadow: 0 1px 2px rgb(0 0 0 / 0.35); }
+
+/* Nav: map these class names onto your header markup ---------------------- */
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--hall);
+  border-bottom: 1px solid var(--hall-line);
+}
+.site-nav .nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: 1488px;          /* 1440 content + 24px each side, so it lines up with the board */
+  height: 64px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.site-nav .nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-variation-settings: "wdth" 120;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--ink);
+  text-decoration: none;
+}
+.site-nav .nav-brand::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #1f7a4d;
+}
+.site-nav .site-nav-search {
+  flex: 1;
+  max-width: 420px;
+  height: 40px;
+}
+.site-nav .site-nav-search input {
+  height: 40px;
+  border: 1px solid #a39a8c;
+  border-radius: 6px;
+  background: #f7f5f0;
+  font-size: 15px;
+}
+.site-nav .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-left: auto;
+}
+.site-nav .nav-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.site-nav .nav-links a:hover,
+.site-nav .nav-links a:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--brass);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+.site-nav .nav-join {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+.site-nav .nav-join:hover { text-decoration: none; }
+@media (min-width: 768px) {
+  .site-nav .nav-inner {
+    gap: 28px;
+    height: 68px;
+    padding: 0 24px;
+  }
+  .site-nav .nav-brand { font-size: 22px; }
+}

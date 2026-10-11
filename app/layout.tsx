@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import type { CSSProperties, ReactNode } from "react"
 import "./globals.css"
+import "./polish.css"
 import { display, body, mono } from "./fonts"
 import { Toaster } from "@/components/ui/toaster"
 import { DemoStrip } from "@/components/layout/demo-strip"
