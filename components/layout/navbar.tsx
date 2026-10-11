@@ -93,7 +93,7 @@ export function Navbar() {
           <WordMark />
         </Link>
 
-        <div className="hidden min-w-0 max-w-xl flex-1 md:block">
+        <div className="site-nav-search hidden min-w-0 max-w-xl flex-1 md:block">
           <SearchAutocomplete placeholder="What service are you looking for?" />
         </div>
 

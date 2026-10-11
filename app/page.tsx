@@ -5,7 +5,10 @@ import { GigCard, type GigCardData } from "@/components/gig/gig-card";
 import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { SellerCard } from "@/components/seller/seller-card";
 import { SearchAutocomplete } from "@/components/search/search-autocomplete";
-import { CounterHero } from "@/components/home/counter-hero";
+import GigBoard from "@/components/board/GigBoard";
+import { toBoardGigs } from "@/lib/board";
+import WindowsFacade from "@/components/home/WindowsFacade";
+import CounterStory from "@/components/home/CounterStory";
 import { CategoryWindows } from "@/components/home/category-windows";
 import { EscrowStrip } from "@/components/home/escrow-strip";
 import { createClient } from "@/lib/supabase/server";
@@ -38,7 +41,7 @@ async function loadHomeData() {
       .select("id, slug, title, thumbnail_url, average_rating, total_reviews, seller_id, category_id")
       .eq("status", "active")
       .order("total_orders", { ascending: false })
-      .limit(8);
+      .limit(24);
 
     const { data: topSellerRows } = await sb
       .from("public_seller_profiles")
@@ -135,56 +138,29 @@ const EXAMPLES: [string, string][] = [
 export default async function HomePage() {
   const data = await loadHomeData();
 
+  const boardGigs = toBoardGigs(data.featuredGigs.map((g) => ({
+    slug: g.slug,
+    title: g.title,
+    category: g.category_slug ?? "business",
+    price: g.starting_price,
+    deliveryDays: g.delivery_days ?? 3,
+    sellerName: g.seller.full_name,
+  })));
+  const storyGig = boardGigs.find((g) => g.window === 3) ?? boardGigs[0];
+
   return (
     <>
       <Navbar />
       <main id="main">
-        <CounterHero />
+        <div className="gb-hero">
+          <GigBoard gigs={boardGigs} searchAction="/search" howHref="#how-the-counter-works" />
+        </div>
 
-        {/* the search counter: a tray pulled onto the sill under the window */}
-        <section aria-labelledby="search-title" className="wrap relative z-10 -mt-7">
-          <div className="tray p-4 md:p-5">
-            <h2 id="search-title" className="sr-only">
-              Search gigs
-            </h2>
-            <SearchAutocomplete placeholder="What service are you looking for?" size="lg" />
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="text-sm text-ink-muted">Try</span>
-              {EXAMPLES.map(([label, q]) => (
-                <Link key={q} href={`/search?q=${encodeURIComponent(q)}`} className="chip min-h-9 hover:bg-sand focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany">
-                  {label}
-                </Link>
-              ))}
-              <span className="num ml-auto hidden text-sm text-ink-muted md:inline">
-                {data.activeGigs} gigs on the board, {data.verifiedSellers} sellers
-              </span>
-            </div>
-          </div>
-        </section>
+        <WindowsFacade gigs={boardGigs} />
 
-        <CategoryWindows
-          categories={(data.categories as any[]).map((c) => ({ slug: c.slug, name: c.name, count: typeof c.gig_count === "number" ? c.gig_count : null }))}
-        />
-
-        {data.featuredGigs.length > 0 && (
-          <section aria-labelledby="featured-title" className="wrap pb-14 lg:pb-20">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <h2 id="featured-title" className="t-sign">
-                On the counter now
-              </h2>
-              <Link href="/search" className="link font-semibold">
-                Browse every gig
-              </Link>
-            </div>
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {data.featuredGigs.map((gig) => (
-                <GigCard key={gig.id} gig={gig} />
-              ))}
-            </div>
-          </section>
+        {storyGig && (
+          <CounterStory title={storyGig.title} price={storyGig.price} days={storyGig.days} sellerName={storyGig.seller} />
         )}
-
-        <EscrowStrip />
 
         {data.topSellers.length > 0 && (
           <section aria-labelledby="sellers-title" className="wrap py-14 lg:py-20">
