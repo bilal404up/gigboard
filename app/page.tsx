@@ -7,6 +7,7 @@ import { toBoardGigs } from "@/lib/board";
 import WindowsFacade from "@/components/home/WindowsFacade";
 import SellerRoster from "@/components/home/SellerRoster";
 import CounterStory from "@/components/home/CounterStory";
+import { TestOrder, BuildNotes } from "@/components/home/BuildProof";
 import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 3600;
@@ -55,7 +56,7 @@ async function loadHomeData() {
         ? sb.from("public_profiles").select("id, username, full_name, avatar_url").in("id", allSellerIds)
         : Promise.resolve({ data: [] as any[] }),
       sellerIdsForGigs.length > 0
-        ? sb.from("public_seller_profiles").select("user_id, seller_level").in("user_id", sellerIdsForGigs)
+        ? sb.from("public_seller_profiles").select("user_id, seller_level, total_orders_completed").in("user_id", sellerIdsForGigs)
         : Promise.resolve({ data: [] as any[] }),
       gigIds.length > 0
         ? sb.from("gig_packages").select("gig_id, price, delivery_days").in("gig_id", gigIds)
@@ -74,6 +75,14 @@ async function loadHomeData() {
       const dd = Number((p as any).delivery_days);
       const cd = minDeliveryByGig.get((p as any).gig_id);
       if (cd == null || dd < cd) minDeliveryByGig.set((p as any).gig_id, dd);
+    }
+
+    // Real completed-order counts, so the board and the seller list show the same number.
+    const jobsByUsername: Record<string, number> = {};
+    for (const id of sellerIdsForGigs) {
+      const u = userById.get(id) as any;
+      const p = profileById.get(id) as any;
+      if (u?.username && p) jobsByUsername[u.username] = Number(p.total_orders_completed ?? 0);
     }
 
     const featuredGigs: FeaturedGig[] = (gigRows ?? []).map((g: any) => {
@@ -117,32 +126,32 @@ async function loadHomeData() {
       verifiedSellers: verifiedSellers ?? 0,
       featuredGigs,
       topSellers,
+      jobsByUsername,
     };
   } catch {
-    return { categories: [], activeGigs: 0, verifiedSellers: 0, featuredGigs: [], topSellers: [] };
+    return { categories: [], activeGigs: 0, verifiedSellers: 0, featuredGigs: [], topSellers: [], jobsByUsername: {} as Record<string, number> };
   }
 }
 
-const EXAMPLES: [string, string][] = [
-  ["Logo", "logo"],
-  ["Landing page", "landing page"],
-  ["Bug fix", "bug fix"],
-  ["Translation", "translation"],
-  ["Video edit", "video edit"],
-];
-
 export default async function HomePage() {
   const data = await loadHomeData();
+  const demo = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
-  const boardGigs = toBoardGigs(data.featuredGigs.map((g) => ({
-    slug: g.slug,
-    title: g.title,
-    category: g.category_slug ?? "business",
-    price: g.starting_price,
-    deliveryDays: g.delivery_days ?? 3,
-    sellerName: g.seller.full_name,
-  })));
+  const boardGigs = toBoardGigs(
+    data.featuredGigs.map((g) => ({
+      slug: g.slug,
+      title: g.title,
+      category: g.category_slug ?? "business",
+      price: g.starting_price,
+      deliveryDays: g.delivery_days ?? 3,
+      sellerName: g.seller.full_name,
+      sellerJobsDone: data.jobsByUsername[g.seller.username],
+      rating: g.average_rating,
+      reviews: g.total_reviews,
+    }))
+  );
   const storyGig = boardGigs.find((g) => g.window === 3) ?? boardGigs[0];
+  const cheapest = boardGigs.length ? boardGigs.reduce((a, b) => (b.price < a.price ? b : a)) : null;
 
   return (
     <>
@@ -152,11 +161,13 @@ export default async function HomePage() {
           <GigBoard gigs={boardGigs} searchAction="/search" howHref="#how-the-counter-works" />
         </div>
 
-        <WindowsFacade gigs={boardGigs} />
-
         {storyGig && (
           <CounterStory title={storyGig.title} price={storyGig.price} days={storyGig.days} sellerName={storyGig.seller} />
         )}
+
+        {demo && cheapest && <TestOrder gig={{ title: cheapest.title, href: cheapest.href, price: cheapest.price }} />}
+
+        <WindowsFacade gigs={boardGigs} />
 
         <SellerRoster
           gigs={boardGigs}
@@ -170,6 +181,8 @@ export default async function HomePage() {
             tagline: s.tagline,
           }))}
         />
+
+        <BuildNotes />
       </main>
       <Footer />
     </>

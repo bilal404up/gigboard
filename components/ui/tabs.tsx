@@ -6,17 +6,9 @@ import { cn } from "@/lib/utils/cn"
 
 const Tabs = TabsPrimitive.Root
 
+/* segmented control: the .tabs and .tab styles live in globals.css */
 const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.List>, React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>>(
-  ({ className, ...props }, ref) => (
-    <TabsPrimitive.List
-      ref={ref}
-      className={cn(
-        "inline-flex max-w-full gap-0.5 overflow-x-auto bg-[linear-gradient(180deg,#E7C978,#C9A24A_40%,#7A5A14)] bg-[length:100%_4px] bg-bottom bg-no-repeat pb-1.5",
-        className
-      )}
-      {...props}
-    />
-  )
+  ({ className, ...props }, ref) => <TabsPrimitive.List ref={ref} className={cn("tabs max-w-full overflow-x-auto", className)} {...props} />
 )
 TabsList.displayName = TabsPrimitive.List.displayName
 
@@ -27,11 +19,7 @@ TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
 const TabsContent = React.forwardRef<React.ElementRef<typeof TabsPrimitive.Content>, React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>>(
   ({ className, ...props }, ref) => (
-    <TabsPrimitive.Content
-      ref={ref}
-      className={cn("mt-4 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany", className)}
-      {...props}
-    />
+    <TabsPrimitive.Content ref={ref} className={cn("mt-4 rounded-[8px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink", className)} {...props} />
   )
 )
 TabsContent.displayName = TabsPrimitive.Content.displayName

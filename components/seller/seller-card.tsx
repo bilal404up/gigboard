@@ -13,7 +13,6 @@ type Props = {
   tagline?: string | null
 }
 
-/* The seller's window: lit sign, name plate, level, rating with real counts. */
 export function SellerCard({ username, fullName, avatarUrl, level, rating, totalOrders, tagline }: Props) {
   const hasRating = rating > 0
   return (
@@ -21,7 +20,7 @@ export function SellerCard({ username, fullName, avatarUrl, level, rating, total
       <div className="flex items-start gap-4">
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={avatarUrl} alt="" width={56} height={56} className="h-14 w-14 shrink-0 rounded-[22%] object-cover" />
+          <img src={avatarUrl} alt="" width={56} height={56} className="h-14 w-14 shrink-0 rounded-full object-cover" />
         ) : (
           <SellerMark username={username} level={level} size={56} />
         )}
@@ -32,19 +31,19 @@ export function SellerCard({ username, fullName, avatarUrl, level, rating, total
             </Link>
             <LevelPlate level={level} />
           </div>
-          <p className="num mt-0.5 text-sm text-ink-muted">@{username}</p>
+          <p className="mt-0.5 text-sm text-ink-muted">@{username}</p>
           {tagline ? <p className="mt-2 text-sm text-ink">{tagline}</p> : null}
         </div>
       </div>
 
-      <dl className="mt-4 grid grid-cols-2 gap-3 border-t-2 border-dotted border-sand pt-4">
+      <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-line pt-4">
         <div>
           <dt className="text-xs font-semibold text-ink-muted">Rating</dt>
           <dd className="mt-1 flex items-center gap-2">
             {hasRating ? (
               <>
                 <RatingStars value={rating} size={14} />
-                <span className="num text-sm">{rating.toFixed(1)}</span>
+                <span className="text-sm tabular-nums">{rating.toFixed(1)}</span>
               </>
             ) : (
               <span className="text-sm text-ink-muted">Not rated yet</span>
@@ -53,7 +52,7 @@ export function SellerCard({ username, fullName, avatarUrl, level, rating, total
         </div>
         <div>
           <dt className="text-xs font-semibold text-ink-muted">Orders completed</dt>
-          <dd className="num mt-1 text-sm">{totalOrders}</dd>
+          <dd className="mt-1 text-sm tabular-nums">{totalOrders}</dd>
         </div>
       </dl>
     </div>

@@ -12,7 +12,9 @@ import { cn } from "@/lib/utils/cn";
 
 export default async function SellerDashboardPage() {
   const sb = createClient();
-  const { data: { user: au } } = await sb.auth.getUser();
+  const {
+    data: { user: au },
+  } = await sb.auth.getUser();
   if (!au) redirect("/login");
   const { data: user } = await sb.from("users").select("*").eq("id", au.id).single();
   if (!user?.is_seller) redirect("/become-seller");
@@ -30,8 +32,8 @@ export default async function SellerDashboardPage() {
   const completion = [
     { label: "Add a profile photo", done: Boolean(user.avatar_url), href: "/settings" },
     { label: "Write a tagline", done: Boolean(profile.tagline && profile.tagline.length > 10), href: "/settings" },
-    { label: "Write a bio (120+ chars)", done: Boolean(profile.description && profile.description.length >= 120), href: "/settings" },
-    { label: "Add 3+ skills", done: Boolean(profile.skills && profile.skills.length >= 3), href: "/settings" },
+    { label: "Write a bio (120+ characters)", done: Boolean(profile.description && profile.description.length >= 120), href: "/settings" },
+    { label: "Add 3 or more skills", done: Boolean(profile.skills && profile.skills.length >= 3), href: "/settings" },
     { label: "Publish your first gig", done: (activeGigs ?? 0) > 0, href: "/seller/gigs/create" },
     { label: "Add portfolio items", done: Boolean((profile.portfolio_items as any[] | null)?.length), href: "/settings" },
     { label: "Connect your bank", done: Boolean(profile.stripe_onboarding_complete), href: "/become-seller" },
@@ -45,22 +47,27 @@ export default async function SellerDashboardPage() {
       <Navbar />
       <main id="main" className="wrap py-8 lg:py-10">
         <header className="flex flex-wrap items-center gap-4">
-          <SellerMark username={user.username ?? user.id} level={profile.seller_level} size={56} />
+          {user.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={user.avatar_url} alt="" width={56} height={56} className="h-14 w-14 shrink-0 rounded-full object-cover" />
+          ) : (
+            <SellerMark username={user.username ?? user.id} level={profile.seller_level} size={56} />
+          )}
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="t-sign truncate">{user.full_name}</h1>
               <SellerLevelBadge level={profile.seller_level} />
             </div>
-            <p className="mt-1 text-sm text-ink-muted">Your window at the counter.</p>
+            <p className="mt-1 text-sm text-ink-muted">Your seller dashboard.</p>
           </div>
-          <Button asChild variant="cta">
+          <Button asChild>
             <Link href="/seller/gigs/create">Create a gig</Link>
           </Button>
         </header>
 
         <StatRow className="mt-8">
           <StatPlate label="Earnings, last 30 days" value={formatMoney(monthEarnings)} tone={monthEarnings > 0 ? "release" : "laminate"} />
-          <StatPlate label="Open orders" value={String(openOrders ?? 0)} tone={(openOrders ?? 0) > 0 ? "brass" : "laminate"} hint="Money waiting under the glass" />
+          <StatPlate label="Open orders" value={String(openOrders ?? 0)} tone={(openOrders ?? 0) > 0 ? "brass" : "laminate"} hint="Payment held until buyers approve" />
           <StatPlate label="Active gigs" value={String(activeGigs ?? 0)} />
           <StatPlate label="Profile complete" value={`${completionPct}%`} hint={`${completedCount} of ${completion.length} done`} />
         </StatRow>
@@ -69,19 +76,22 @@ export default async function SellerDashboardPage() {
           <section aria-labelledby="finish-title" className="tray p-5">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <h2 id="finish-title" className="t-head">
-                Finish setting up your window
+                Finish setting up your profile
               </h2>
-              <span className="num text-sm text-ink-muted">{completionPct}%</span>
+              <span className="text-sm tabular-nums text-ink-muted">{completionPct}%</span>
             </div>
-            <div className="mt-3 h-2.5 overflow-hidden rounded-pill bg-laminate-sunk" role="progressbar" aria-valuenow={completionPct} aria-valuemin={0} aria-valuemax={100} aria-label="Profile completion">
-              <div className="h-full rounded-pill bg-[linear-gradient(180deg,#E7C978,#C9A24A_60%,#B08A2C)]" style={{ width: `${completionPct}%` }} />
+            <div className="mt-3 h-2 overflow-hidden rounded-pill bg-laminate-sunk" role="progressbar" aria-valuenow={completionPct} aria-valuemin={0} aria-valuemax={100} aria-label="Profile completion">
+              <div className="h-full rounded-pill bg-ink" style={{ width: `${completionPct}%` }} />
             </div>
             <ul className="mt-4 grid gap-1">
               {completion.map((c) => (
                 <li key={c.label}>
                   <Link
                     href={c.href}
-                    className={cn("flex min-h-11 items-center gap-3 rounded-[4px] px-2 text-sm hover:bg-laminate-sunk focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany", c.done ? "text-ink-muted" : "text-ink")}
+                    className={cn(
+                      "flex min-h-11 items-center gap-3 rounded-[8px] px-2 text-sm hover:bg-laminate-sunk focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink",
+                      c.done ? "text-ink-muted" : "text-ink"
+                    )}
                   >
                     <span className={cn("lamp shrink-0", c.done && "lamp--release")} aria-hidden="true" />
                     <span className={cn(c.done && "line-through")}>{c.label}</span>
@@ -90,7 +100,7 @@ export default async function SellerDashboardPage() {
                 </li>
               ))}
             </ul>
-            {missing.length === 0 ? <p className="mt-3 text-sm text-release-deep">Your window is fully set up.</p> : null}
+            {missing.length === 0 ? <p className="mt-3 text-sm text-release-deep">Your profile is fully set up.</p> : null}
           </section>
 
           <aside className="grid gap-3">
@@ -101,12 +111,9 @@ export default async function SellerDashboardPage() {
               ["/seller/gigs", "Your gigs", "Edit what is on the board"],
               ["/messages", "Messages", "Buyers waiting on you"],
             ].map(([href, title, body]) => (
-              <Link key={href} href={href} className="tray tray--hover flex min-h-11 items-center gap-3 p-4 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany">
-                <span className="lamp lamp--on shrink-0" aria-hidden="true" />
-                <span className="min-w-0">
-                  <span className="block font-semibold">{title}</span>
-                  <span className="block text-sm text-ink-muted">{body}</span>
-                </span>
+              <Link key={href} href={href} className="tray tray--hover block min-h-11 p-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink">
+                <span className="block font-semibold">{title}</span>
+                <span className="block text-sm text-ink-muted">{body}</span>
               </Link>
             ))}
           </aside>

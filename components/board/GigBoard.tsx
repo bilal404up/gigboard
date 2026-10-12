@@ -50,6 +50,7 @@ const TITLE_COMPACT = 11;
 const ARRIVAL_MS = 15_000;
 const DEBOUNCE_MS = 150;
 const PAUSE_KEY = "gigboard:board-paused";
+const TAB_NAMES: Record<WindowNo, string> = { 1: "Web", 2: "Mobile", 3: "Design", 4: "AI", 5: "Marketing", 6: "Business" };
 
 /* Must match the media queries in gig-board.css */
 const BP_COMPACT = 768;
@@ -405,6 +406,7 @@ const Row = memo(function Row({
             className="gb-strip-compact gb-col--status"
           />
         </span>
+        {gig && <span className="gb-plain" aria-hidden="true">{gig.title}</span>}
       </a>
     </li>
   );
@@ -412,9 +414,8 @@ const Row = memo(function Row({
 
 function statusTone(t: string): string | undefined {
   if (!t) return undefined;
-  if (t === "OPEN") return "open";
-  if (t === "BUSY" || t.startsWith("QUEUE")) return "queue";
-  return "away";
+  if (t === "NEW") return "away";
+  return Number(t) >= 4.8 ? "open" : "queue";
 }
 
 function buildDrums(gigs: BoardGig[]): Drums {
@@ -710,8 +711,8 @@ export default function GigBoard({
       >
         <div className="gb-plate">
           <h1 id="gb-title" className="gb-h1">
-            <span className="gb-h1-line">Pick a gig</span>{" "}
-            <span className="gb-h1-line">off the board.</span>
+            <span className="gb-h1-line">Fixed price, fixed date.</span>{" "}
+            <span className="gb-h1-line">Paid when you approve.</span>
           </h1>
 
           <div className="gb-find">
@@ -773,7 +774,7 @@ export default function GigBoard({
                 <span className="gb-head gb-strip-wide gb-col--done">Jobs done</span>
                 <span className="gb-head gb-strip-wide gb-col--ready">Ready in</span>
                 <span className="gb-head gb-col--price">Price</span>
-                <span className="gb-head gb-col--status">Status</span>
+                <span className="gb-head gb-col--status">Rating</span>
               </div>
 
               <ul className="gb-rows" aria-label="Gigs on the board">
@@ -802,7 +803,14 @@ export default function GigBoard({
                   aria-label={n ? `Window ${n}, ${WINDOWS[n as WindowNo]}` : "All windows"}
                   onClick={() => onTab(n)}
                 >
-                  {n || "All"}
+                  {n ? (
+                    <>
+                      <span className="gb-tab-n">{n}</span>
+                      <span className="gb-tab-name">{TAB_NAMES[n as WindowNo]}</span>
+                    </>
+                  ) : (
+                    "All"
+                  )}
                 </button>
               ))}
             </div>

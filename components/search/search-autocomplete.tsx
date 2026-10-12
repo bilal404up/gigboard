@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Search, Tag, Star } from "lucide-react";
+import { Search, Star } from "lucide-react";
 import { GigArt } from "@/components/gig/GigArt";
 import { cn } from "@/lib/utils/cn";
 
@@ -20,12 +20,7 @@ interface Props {
   initialQuery?: string;
 }
 
-export function SearchAutocomplete({
-  placeholder = "What service are you looking for?",
-  size = "md",
-  className,
-  initialQuery = "",
-}: Props) {
+export function SearchAutocomplete({ placeholder = "What do you need done?", size = "md", className, initialQuery = "" }: Props) {
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
   const [open, setOpen] = useState(false);
@@ -67,20 +62,9 @@ export function SearchAutocomplete({
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const items: Array<{ kind: "category" | "gig"; href: string; label: string; meta?: string; thumb?: string | null; rating?: number | null }> = [
-    ...data.categories.map((c) => ({
-      kind: "category" as const,
-      href: `/category/${c.slug}`,
-      label: c.name,
-      meta: c.gig_count ? `${c.gig_count} gigs` : undefined,
-    })),
-    ...data.gigs.map((g) => ({
-      kind: "gig" as const,
-      href: `/gig/${g.slug}`,
-      label: g.title,
-      thumb: g.thumbnail_url,
-      rating: g.average_rating,
-    })),
+  const items: Array<{ kind: "category" | "gig"; href: string }> = [
+    ...data.categories.map((c) => ({ kind: "category" as const, href: `/category/${c.slug}` })),
+    ...data.gigs.map((g) => ({ kind: "gig" as const, href: `/gig/${g.slug}` })),
   ];
 
   function submit(e?: React.FormEvent) {
@@ -117,7 +101,7 @@ export function SearchAutocomplete({
   return (
     <div ref={wrapRef} className={cn("relative", className)}>
       <form onSubmit={submit} className="relative">
-        <Search className={cn("pointer-events-none absolute top-1/2 -translate-y-1/2 text-brass-deep", lg ? "left-4 h-5 w-5" : "left-3 h-4 w-4")} />
+        <Search className={cn("pointer-events-none absolute top-1/2 -translate-y-1/2 text-ink-muted", lg ? "left-4 h-5 w-5" : "left-3 h-4 w-4")} />
         <input
           ref={inputRef}
           value={query}
@@ -131,39 +115,30 @@ export function SearchAutocomplete({
           placeholder={placeholder}
           aria-label={placeholder}
           autoComplete="off"
-          className={cn("field", lg ? "h-14 pl-12 pr-16 text-base" : "h-11 pl-10 pr-14 text-sm md:h-10")}
+          className={cn("field", lg ? "h-14 pl-12 pr-24 text-base" : "h-11 pl-10 pr-20 text-sm md:h-10")}
         />
         <button
           type="submit"
-          aria-label="Search"
           className={cn(
-            "absolute right-1.5 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-[3px] bg-[linear-gradient(180deg,#E7C978_0%,#C9A24A_55%,#B08A2C_100%)] text-ink shadow-[0_1px_0_#7A5A14] focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany",
-            lg ? "h-11 w-11" : "h-8 w-9"
+            "absolute right-1.5 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-[7px] bg-ink px-3 text-sm font-semibold text-white transition-colors hover:bg-[#2A2D32] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink",
+            lg ? "h-11" : "h-8 md:h-7"
           )}
         >
-          <Search className="h-4 w-4" />
+          Find
         </button>
       </form>
 
       {showDropdown && (
-        <div
-          role="listbox"
-          className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-[8px] bg-laminate-raised text-ink shadow-[0_2px_0_#D5CBBD,0_10px_0_-4px_#E4DCCF,0_18px_24px_-14px_rgba(26,20,18,0.5)] ring-1 ring-sand"
-        >
+        <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-[12px] bg-white text-ink shadow-[0_0_0_1px_#E3E4E6,0_18px_40px_-20px_rgba(18,20,23,0.35)]">
           {loading && items.length === 0 ? (
-            <div className="px-4 py-3 text-sm text-ink-muted">Searching…</div>
+            <div className="px-4 py-3 text-sm text-ink-muted">Searching</div>
           ) : items.length === 0 ? (
-            <div className="px-4 py-4 text-sm text-ink-muted">
-              No matches. Press Enter to search anyway.
-            </div>
+            <div className="px-4 py-4 text-sm text-ink-muted">No matches. Press Enter to search anyway.</div>
           ) : (
             <>
               {data.categories.length > 0 && (
                 <div>
-                  <p className="t-plate flex items-center gap-1.5 px-4 pb-1 pt-3 text-ink-muted">
-                    <Tag className="h-3 w-3" />
-                    Categories
-                  </p>
+                  <p className="px-4 pb-1 pt-3 text-xs font-semibold text-ink-muted">Categories</p>
                   {data.categories.map((c, i) => (
                     <SuggestionRow
                       key={c.id}
@@ -171,7 +146,7 @@ export function SearchAutocomplete({
                       active={active === i}
                       onMouseEnter={() => setActive(i)}
                       onClick={() => setOpen(false)}
-                      icon={<span className="sign flex h-7 w-9 items-center justify-center"><span className="lamp lamp--on h-2 w-2" /></span>}
+                      icon={<span className="grid h-7 w-9 place-items-center rounded-[6px] bg-laminate-sunk text-xs font-semibold text-ink-muted">All</span>}
                       label={c.name}
                       meta={c.gig_count ? `${c.gig_count} gigs` : undefined}
                     />
@@ -179,8 +154,8 @@ export function SearchAutocomplete({
                 </div>
               )}
               {data.gigs.length > 0 && (
-                <div className="border-t-2 border-dotted border-sand">
-                  <p className="t-plate flex items-center gap-1.5 px-4 pb-1 pt-3 text-ink-muted">Top gigs</p>
+                <div className="border-t border-line">
+                  <p className="px-4 pb-1 pt-3 text-xs font-semibold text-ink-muted">Top gigs</p>
                   {data.gigs.map((g, i) => {
                     const idx = data.categories.length + i;
                     return (
@@ -192,20 +167,20 @@ export function SearchAutocomplete({
                         onClick={() => setOpen(false)}
                         icon={
                           g.thumbnail_url ? (
-                            <div className="relative h-7 w-9 shrink-0 overflow-hidden rounded-[4px] bg-laminate-sunk">
+                            <div className="relative h-7 w-9 shrink-0 overflow-hidden rounded-[6px] bg-laminate-sunk">
                               <Image src={g.thumbnail_url} alt="" fill className="object-cover" sizes="36px" />
                             </div>
                           ) : (
-                            <div className="h-7 w-9 shrink-0 overflow-hidden rounded-[4px]">
-                              <GigArt seed={g.id} cover />
+                            <div className="h-7 w-9 shrink-0 overflow-hidden rounded-[6px]">
+                              <GigArt seed={g.slug} cover />
                             </div>
                           )
                         }
                         label={g.title}
                         meta={
                           g.average_rating && g.average_rating > 0 ? (
-                            <span className="num inline-flex items-center gap-1">
-                              <Star className="h-3 w-3 fill-brass text-brass-deep" />
+                            <span className="inline-flex items-center gap-1 tabular-nums">
+                              <Star className="h-3 w-3 fill-ink text-ink" />
                               {g.average_rating.toFixed(1)}
                             </span>
                           ) : undefined
@@ -218,7 +193,7 @@ export function SearchAutocomplete({
               <Link
                 href={`/search?q=${encodeURIComponent(query.trim())}`}
                 onClick={() => setOpen(false)}
-                className="block border-t-2 border-dotted border-sand px-4 py-3 text-center text-sm font-semibold text-brass-deep hover:bg-laminate-sunk"
+                className="block border-t border-line px-4 py-3 text-center text-sm font-semibold text-ink hover:bg-laminate-sunk"
               >
                 See all results for &quot;{query.trim()}&quot;
               </Link>

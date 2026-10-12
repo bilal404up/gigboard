@@ -25,7 +25,9 @@ const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "succ
 
 export default async function OrderDetailPage({ params }: { params: { id: string } }) {
   const sb = createClient();
-  const { data: { user } } = await sb.auth.getUser();
+  const {
+    data: { user },
+  } = await sb.auth.getUser();
   if (!user) redirect(`/login?redirect=/order/${params.id}`);
 
   const { data: order } = await sb.from("orders").select("*").eq("id", params.id).single();
@@ -33,11 +35,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
 
   const isBuyer = order.buyer_id === user.id;
   const otherId = isBuyer ? order.seller_id : order.buyer_id;
-  const { data: other } = await sb
-    .from("public_profiles")
-    .select("full_name, username, avatar_url")
-    .eq("id", otherId)
-    .single();
+  const { data: other } = await sb.from("public_profiles").select("full_name, username, avatar_url").eq("id", otherId).single();
 
   const packageName = (order.package_snapshot as { name?: string } | null)?.name ?? "Order";
   const statusLabel = String(order.status).replace(/_/g, " ");
@@ -52,7 +50,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
 
         <header className="mt-4 flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <p className="num text-sm text-ink-muted">Order {order.order_number ?? order.id}</p>
+            <p className="text-sm tabular-nums text-ink-muted">Order {order.order_number ?? order.id}</p>
             <h1 className="t-sign mt-1">{packageName}</h1>
             <p className="mt-2 text-sm text-ink-muted">Placed {formatDateTime(order.created_at)}</p>
           </div>
@@ -72,9 +70,9 @@ export default async function OrderDetailPage({ params }: { params: { id: string
           </div>
 
           <aside className="tray p-5" aria-label={isBuyer ? "Seller" : "Buyer"}>
-            <p className="t-plate text-ink-muted">{isBuyer ? "Seller" : "Buyer"}</p>
+            <p className="text-xs font-semibold text-ink-muted">{isBuyer ? "Seller" : "Buyer"}</p>
             <div className="mt-3 flex items-center gap-3">
-              <Avatar className="h-12 w-12 shadow-[0_0_0_1.5px_#C9A24A]">
+              <Avatar className="h-12 w-12 ring-1 ring-line">
                 {other?.avatar_url && <AvatarImage src={other.avatar_url} />}
                 <AvatarFallback className="bg-transparent p-0">
                   <SellerMark username={other?.username ?? "user"} label={other?.full_name ?? "User"} size={48} />
@@ -82,7 +80,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
               </Avatar>
               <div className="min-w-0">
                 <p className="truncate font-semibold">{other?.full_name ?? "User"}</p>
-                {other?.username ? <p className="num truncate text-sm text-ink-muted">@{other.username}</p> : null}
+                {other?.username ? <p className="truncate text-sm text-ink-muted">@{other.username}</p> : null}
               </div>
             </div>
             <Button asChild variant="outline" className="mt-4 w-full">

@@ -1,8 +1,7 @@
 "use client"
 
-import type { ReactNode } from "react"
+import { useId, useRef, type KeyboardEvent, type ReactNode } from "react"
 import { EscrowDrawer } from "@/components/escrow/EscrowDrawer"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils/cn"
 import { formatMoney } from "@/lib/utils/format"
 import type { GigPackage } from "@/types/database.types"
@@ -13,7 +12,7 @@ type Props = {
   packages: GigPackage[]
   selected: PackageType
   onSelect: (type: PackageType) => void
-  /** running total in dollars, shown on the drawer lid */
+  /** running total in dollars */
   total: number
   /** the buy button and anything else that posts; keeps its own handlers */
   action: ReactNode
@@ -24,85 +23,120 @@ type Props = {
 
 const NAME: Record<PackageType, string> = { basic: "Basic", standard: "Standard", premium: "Premium" }
 
-/* The buy box as a drawer pulled out of the counter. Keep it a direct child of the page grid: no transformed ancestor. */
+/* The buy box. Keep it a direct child of the page grid: no transformed ancestor, so sticky works. */
 export function PackageDrawer({ packages, selected, onSelect, total, action, extras, receipt, className = "" }: Props) {
+  const uid = useId()
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
   const active = packages.filter((p) => p.is_active !== false)
   const current = active.find((p) => p.package_type === selected) ?? active[0]
+  const tabbed = active.length > 1
+
+  function onKey(e: KeyboardEvent<HTMLDivElement>) {
+    const i = active.findIndex((p) => p.package_type === current?.package_type)
+    let n = -1
+    if (e.key === "ArrowRight") n = (i + 1) % active.length
+    else if (e.key === "ArrowLeft") n = (i - 1 + active.length) % active.length
+    else if (e.key === "Home") n = 0
+    else if (e.key === "End") n = active.length - 1
+    if (n < 0) return
+    e.preventDefault()
+    onSelect(active[n].package_type)
+    tabRefs.current[n]?.focus()
+  }
 
   return (
     <aside className={cn("drawer-card lg:sticky lg:top-[calc(var(--header-h)+1rem)]", className)} aria-label="Packages and price">
-      <Tabs value={current?.package_type ?? selected} onValueChange={(v) => onSelect(v as PackageType)}>
-        <TabsList className="w-full [&>button]:flex-1">
-          {active.map((p) => (
-            <TabsTrigger key={p.id} value={p.package_type}>
-              {NAME[p.package_type] ?? p.package_type}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      {tabbed ? (
+        <div role="tablist" aria-label="Packages" className="tabs" onKeyDown={onKey}>
+          {active.map((p, i) => {
+            const on = p.package_type === current?.package_type
+            return (
+              <button
+                key={p.id}
+                ref={(el) => {
+                  tabRefs.current[i] = el
+                }}
+                type="button"
+                role="tab"
+                id={`${uid}-tab-${p.package_type}`}
+                aria-selected={on}
+                aria-controls={`${uid}-panel`}
+                tabIndex={on ? 0 : -1}
+                onClick={() => onSelect(p.package_type)}
+                className="tab"
+              >
+                {NAME[p.package_type] ?? p.package_type}
+              </button>
+            )
+          })}
+        </div>
+      ) : null}
 
-        {active.map((p) => (
-          <TabsContent key={p.id} value={p.package_type} className="mt-5">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <p className="t-head">{p.name}</p>
-                {p.description ? <p className="mt-1 text-sm text-ink-muted">{p.description}</p> : null}
-              </div>
-              <span className="plate shrink-0">
-                <span className="num text-base font-bold">{formatMoney(Number(p.price))}</span>
-              </span>
+      {current ? (
+        <div
+          id={`${uid}-panel`}
+          role={tabbed ? "tabpanel" : undefined}
+          aria-labelledby={tabbed ? `${uid}-tab-${current.package_type}` : undefined}
+          className={tabbed ? "mt-5" : undefined}
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="t-head">{current.name}</p>
+              {current.description ? <p className="mt-1 text-sm text-ink-muted">{current.description}</p> : null}
             </div>
+            <span className="shrink-0 text-xl font-bold tabular-nums">{formatMoney(Number(current.price))}</span>
+          </div>
 
-            <dl className="mt-4 grid grid-cols-2 gap-3 border-t-2 border-dotted border-sand pt-4 text-sm">
-              <div>
-                <dt className="text-xs font-semibold text-ink-muted">Delivery</dt>
-                <dd className="num mt-0.5">
-                  {p.delivery_days} {p.delivery_days === 1 ? "day" : "days"}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs font-semibold text-ink-muted">Revisions</dt>
-                <dd className="num mt-0.5">{p.revisions === -1 ? "Unlimited" : p.revisions}</dd>
-              </div>
-            </dl>
+          <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-line pt-4 text-sm">
+            <div>
+              <dt className="text-xs font-semibold text-ink-muted">Delivery</dt>
+              <dd className="mt-0.5 tabular-nums">
+                {current.delivery_days} {current.delivery_days === 1 ? "day" : "days"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold text-ink-muted">Revisions</dt>
+              <dd className="mt-0.5 tabular-nums">{current.revisions === -1 ? "Unlimited" : current.revisions}</dd>
+            </div>
+          </dl>
 
-            {p.features?.length ? (
-              <ul className="mt-4 grid gap-1.5 text-sm">
-                {p.features.map((f, i) => (
-                  <li key={`${f.name}-${i}`} className={cn("flex items-start gap-2", !f.included && "text-ink-muted")}>
-                    <span
-                      aria-hidden="true"
-                      className={cn("mt-1 inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px]", f.included ? "bg-brass text-ink" : "bg-laminate-sunk")}
-                    >
-                      {f.included ? (
-                        <svg viewBox="0 0 12 12" width="10" height="10">
-                          <path d="M2 6.5l2.5 2.5L10 3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      ) : null}
-                    </span>
-                    <span>
-                      {f.name}
-                      <span className="sr-only">{f.included ? ", included" : ", not included"}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </TabsContent>
-        ))}
-      </Tabs>
+          {current.features?.length ? (
+            <ul className="mt-4 grid gap-1.5 text-sm">
+              {current.features.map((f, i) => (
+                <li key={`${f.name}-${i}`} className={cn("flex items-start gap-2", !f.included && "text-ink-muted")}>
+                  <span
+                    aria-hidden="true"
+                    className={cn("mt-1 inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full", f.included ? "bg-release-tint text-release-deep" : "bg-laminate-sunk")}
+                  >
+                    {f.included ? (
+                      <svg viewBox="0 0 12 12" width="9" height="9">
+                        <path d="M2 6.5l2.5 2.5L10 3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : null}
+                  </span>
+                  <span>
+                    {f.name}
+                    <span className="sr-only">{f.included ? ", included" : ", not included"}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
 
-      {extras ? <div className="mt-5 border-t-2 border-dotted border-sand pt-4">{extras}</div> : null}
-      {receipt ? <div className="mt-5 border-t-2 border-dotted border-sand pt-4">{receipt}</div> : null}
+      {extras ? <div className="mt-5 border-t border-line pt-4">{extras}</div> : null}
+      {receipt ? <div className="mt-5 border-t border-line pt-4">{receipt}</div> : null}
 
-      <div className="mt-5 rounded-[8px] bg-mahogany-deep p-3">
+      <div className="mt-5 rounded-[12px] p-3 shadow-[inset_0_0_0_1px_#E3E4E6]">
         <EscrowDrawer
           state="held"
           size="sm"
           amount={formatMoney(total)}
           note={
-            <span className="text-laminate">
-              <span className="font-semibold">Held until you approve.</span> Paid out only when you say the work is good.
-            </span>
+            <>
+              <span className="font-semibold text-ink">Held by Gigboard.</span> <span className="text-ink-muted">Paid out only when you approve the work.</span>
+            </>
           }
         />
       </div>

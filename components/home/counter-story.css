@@ -1,40 +1,34 @@
-/* Counter story (loop 4). Prefix: cs-
-   Transform and opacity only. Money travels the upper lane and waits under
-   the glass. Work travels the tray in the lower lane. */
+/* How payment works. Prefix: cs-
+   Transform and opacity only. Money travels the upper lane and waits in the
+   held zone. Work travels the lower lane. */
 
 .cs {
-  --cs-ink: #16201a;
-  --cs-muted: #5a5248;
-  --cs-paper: #f7f5f0;
-  --cs-mahogany: #3b1a12;
-  --cs-brass: #c9992f;
-  --cs-brass-dark: #8c6118;
-  --cs-flap-ink: #f1ede2;
-  --cs-rail-ink: #cfc6b8;
-  --cs-rule: #9a887a;
-  --cs-open: #1f7a4d;
-  --cs-track-off: #d3cdc1;
-  --cs-display: var(--font-display), "Arial Narrow", sans-serif;
+  --cs-ink: #121417;
+  --cs-muted: #565b63;
+  --cs-line: #e3e4e6;
+  --cs-paper: #ffffff;
+  --cs-lit: #2bb673;
+  --cs-lit-deep: #0c5c37;
+  --cs-lit-tint: #eef7f2;
+  --cs-display: var(--font-display), sans-serif;
   --cs-sans: var(--font-body), system-ui, sans-serif;
-  --cs-mono: var(--font-mono), ui-monospace, monospace;
 
-  /* Stage geometry (scaled up at 1024) */
   --cs-stage-h: 280px;
   --cs-track-b: 64px;
-  --cs-track-h: 10px;
+  --cs-track-h: 2px;
   --cs-ticket-w: 116px;
-  --cs-ticket-top: 40px;
+  --cs-ticket-top: 46px;
   --cs-work-w: 124px;
   --cs-amount: 26px;
-  --cs-stamp: 13px;
+  --cs-stamp: 12px;
   --cs-side: 15px;
-  --cs-glass-w: clamp(96px, 16cqw, 180px);
+  --cs-glass-w: clamp(104px, 18cqw, 200px);
   --cs-you: max(14cqw, 72px);
   --cs-seller: min(86cqw, calc(100cqw - 72px));
 
-  max-width: 1440px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 64px 12px 80px;
+  padding: 64px 16px 72px;
   scroll-margin-top: 88px;
   font-family: var(--cs-sans);
   color: var(--cs-ink);
@@ -44,21 +38,19 @@
   display: grid;
   gap: 10px;
   margin-bottom: 24px;
-  padding-inline: 4px;
 }
 .cs-h2 {
   margin: 0;
   font-family: var(--cs-display);
-  font-weight: 800;
-  font-variation-settings: "wdth" 130;
+  font-weight: 700;
   font-size: clamp(28px, 3vw, 40px);
-  line-height: 1;
-  letter-spacing: -0.01em;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 .cs-intro {
   margin: 0;
-  max-width: 40ch;
-  font-size: 16px;
+  max-width: 44ch;
+  font-size: 17px;
   line-height: 1.5;
   color: var(--cs-muted);
 }
@@ -70,9 +62,10 @@
   position: relative;
   height: var(--cs-stage-h);
   overflow: hidden;
-  border-radius: 12px;
-  background: var(--cs-mahogany);
-  color: var(--cs-flap-ink);
+  border-radius: 16px;
+  background: var(--cs-paper);
+  color: var(--cs-ink);
+  box-shadow: 0 0 0 1px var(--cs-line);
 }
 
 .cs-side {
@@ -86,7 +79,7 @@
 .cs-side--you { left: 16px; }
 .cs-side--seller {
   right: 16px;
-  max-width: 45%;
+  max-width: 34%;
   text-align: right;
 }
 
@@ -95,11 +88,11 @@
   top: 36px;
   right: 16px;
   z-index: 4;
-  max-width: 45%;
+  max-width: 34%;
   font-size: 13px;
   line-height: 1.35;
   text-align: right;
-  color: var(--cs-rail-ink);
+  color: var(--cs-muted);
   opacity: 0;
   transition: opacity 300ms ease;
 }
@@ -111,40 +104,47 @@
   bottom: var(--cs-track-b);
   z-index: 1;
   height: var(--cs-track-h);
-  border-radius: 2px;
-  background: var(--cs-brass);
-  box-shadow: inset 0 -3px 0 var(--cs-brass-dark), inset 0 1px 0 rgb(255 255 255 / 0.35);
+  border-radius: 1px;
+  background: var(--cs-line);
 }
 
+/* The held zone in the middle */
 .cs-glass {
   position: absolute;
   top: 12px;
   bottom: calc(var(--cs-track-b) + var(--cs-track-h));
   left: 50%;
-  z-index: 3;
+  z-index: 0;
   width: var(--cs-glass-w);
-  overflow: hidden;
-  border-radius: 4px 4px 0 0;
-  background: rgb(214 226 219 / 0.14);
-  box-shadow: inset 0 0 0 1px rgb(241 237 226 / 0.35);
+  border: 1.5px dashed #9fd3b9;
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+  background: var(--cs-lit-tint);
   transform: translateX(-50%);
 }
-.cs-glass-glint {
+.cs-glass::after {
+  content: "Held by Gigboard";
   position: absolute;
-  inset: 0;
-  background: rgb(255 255 255 / 0.1);
-  clip-path: polygon(58% 0, 74% 0, 34% 100%, 18% 100%);
+  left: 0;
+  right: 0;
+  top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--cs-lit-deep);
 }
+.cs-glass-glint { display: none; }
 
 .cs-ticket,
 .cs-work {
   position: absolute;
   left: 0;
   z-index: 2;
-  border-radius: 3px;
+  border-radius: 10px;
   background: var(--cs-paper);
   color: var(--cs-ink);
-  box-shadow: 0 2px 0 rgb(0 0 0 / 0.35);
+  box-shadow: 0 0 0 1px var(--cs-line), 0 10px 22px -14px rgb(18 20 23 / 0.35);
   transform: translateX(calc(var(--x) - 50%));
 }
 
@@ -153,7 +153,6 @@
   top: var(--cs-ticket-top);
   width: var(--cs-ticket-w);
   padding: 9px 10px 11px;
-  font-family: var(--cs-mono);
   transition: transform 760ms cubic-bezier(0.65, 0, 0.35, 1);
 }
 .cs-ticket-no {
@@ -168,11 +167,13 @@
   font-size: var(--cs-amount);
   font-weight: 700;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 .cs-work {
   --x: var(--cs-seller);
-  bottom: calc(var(--cs-track-b) + var(--cs-track-h));
+  bottom: calc(var(--cs-track-b) + var(--cs-track-h) + 6px);
   width: var(--cs-work-w);
   padding: 9px 10px 10px;
   opacity: 0;
@@ -194,36 +195,33 @@
   -webkit-box-orient: vertical;
 }
 
-/* Rubber stamps: sentence case, a thump on landing */
 .cs-stamp {
   position: absolute;
-  top: 7px;
-  right: 7px;
-  padding: 2px 6px;
-  border: 2px solid currentColor;
-  border-radius: 3px;
-  font-family: var(--cs-display);
-  font-weight: 800;
-  font-variation-settings: "wdth" 75;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
   font-size: var(--cs-stamp);
+  font-weight: 600;
   line-height: 1.1;
   opacity: 0;
-  transform: rotate(-9deg) scale(1.5);
-  transition: opacity 140ms ease, transform 220ms cubic-bezier(0.2, 0.9, 0.3, 1.3);
+  transform: scale(0.85);
+  transition: opacity 140ms ease, transform 200ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
 }
-.cs-stamp--held { color: var(--cs-brass-dark); }
-.cs-stamp--delivered { color: var(--cs-ink); }
-.cs-stamp--approved { color: var(--cs-open); }
+.cs-stamp--held { background: #f0f1f2; color: var(--cs-ink); }
+.cs-stamp--delivered { background: var(--cs-ink); color: #ffffff; }
+.cs-stamp--approved { background: #e5f2ea; color: var(--cs-lit-deep); }
 
 .cs-fee {
   position: absolute;
   left: 50%;
-  bottom: calc(var(--cs-track-b) + var(--cs-track-h) + 10px);
+  bottom: calc(var(--cs-track-b) + var(--cs-track-h) + 12px);
   z-index: 4;
-  padding: 5px 9px;
-  border-radius: 3px;
+  padding: 5px 10px;
+  border-radius: 999px;
   background: var(--cs-paper);
   color: var(--cs-ink);
+  box-shadow: 0 0 0 1px var(--cs-line);
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
@@ -232,7 +230,6 @@
   transition: opacity 300ms ease;
 }
 
-/* Odometer: each digit is a strip of 0 to 9 */
 .cs-odo {
   display: inline-flex;
   align-items: flex-start;
@@ -262,30 +259,29 @@
   min-height: 44px;
   padding: 0 18px;
   border: 0;
-  border-radius: 6px;
-  background: var(--cs-brass);
+  border-radius: 10px;
+  background: var(--cs-lit);
   color: var(--cs-ink);
-  font-family: var(--cs-display);
-  font-weight: 800;
-  font-variation-settings: "wdth" 110;
-  font-size: 16px;
+  font-family: var(--cs-sans);
+  font-weight: 600;
+  font-size: 15px;
   line-height: 1;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), 0 2px 0 #1f0c08;
 }
+.cs .cs-approve:hover:not(:disabled) { background: #26a366; }
 .cs .cs-approve:disabled {
   background: transparent;
-  color: var(--cs-rail-ink);
-  box-shadow: inset 0 0 0 1px var(--cs-rule);
+  color: var(--cs-muted);
+  box-shadow: inset 0 0 0 1px var(--cs-line);
   cursor: default;
 }
 .cs .cs-approve[data-variant="again"] {
   background: transparent;
-  color: var(--cs-flap-ink);
-  box-shadow: inset 0 0 0 1px var(--cs-rule);
+  color: var(--cs-ink);
+  box-shadow: inset 0 0 0 1px #8a9096;
 }
 .cs .cs-approve:focus-visible {
-  outline: 3px solid var(--cs-brass);
+  outline: 3px solid var(--cs-ink);
   outline-offset: 2px;
 }
 
@@ -297,6 +293,8 @@
 .cs-stage[data-step="4"] .cs-ticket { --x: var(--cs-seller); }
 
 .cs-stage[data-step="2"] .cs-work { opacity: 0.55; }
+.cs-stage[data-step="0"] .cs-work,
+.cs-stage[data-step="1"] .cs-work { opacity: 0.3; }
 .cs-stage[data-step="3"] .cs-work,
 .cs-stage[data-step="4"] .cs-work {
   --x: var(--cs-you);
@@ -307,18 +305,18 @@
 .cs-stage[data-step="2"] .cs-stamp--held,
 .cs-stage[data-step="3"] .cs-stamp--held {
   opacity: 1;
-  transform: rotate(-9deg) scale(1);
+  transform: scale(1);
   transition-delay: 640ms;
 }
 .cs-stage[data-step="3"] .cs-stamp--delivered,
 .cs-stage[data-step="4"] .cs-stamp--delivered {
   opacity: 1;
-  transform: rotate(-9deg) scale(1);
+  transform: scale(1);
   transition-delay: 820ms;
 }
 .cs-stage[data-step="4"] .cs-stamp--approved {
   opacity: 1;
-  transform: rotate(-9deg) scale(1);
+  transform: scale(1);
   transition-delay: 700ms;
 }
 
@@ -351,20 +349,20 @@
 }
 .cs-progress li::before {
   content: "";
-  height: 4px;
+  height: 3px;
   border-radius: 2px;
-  background: var(--cs-track-off);
+  background: var(--cs-line);
 }
-.cs-progress li[data-done="true"]::before,
-.cs-progress li[aria-current="step"]::before { background: var(--cs-brass-dark); }
+.cs-progress li[data-done="true"]::before { background: var(--cs-lit-deep); }
+.cs-progress li[aria-current="step"]::before { background: var(--cs-ink); }
 .cs-progress li[aria-current="step"] {
   color: var(--cs-ink);
-  font-weight: 700;
+  font-weight: 600;
 }
 .cs-n {
   margin-right: 2px;
-  font-family: var(--cs-display);
-  font-weight: 800;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .cs-caption {
@@ -379,15 +377,14 @@
   display: grid;
   gap: 10px;
   max-width: 46ch;
-  margin-top: 36px;
+  margin-top: 32px;
 }
 .cs-h3 {
   margin: 0;
-  font-family: var(--cs-display);
-  font-weight: 800;
-  font-variation-settings: "wdth" 110;
-  font-size: 20px;
-  line-height: 1.2;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
 }
 .cs-rules ul {
   display: grid;
@@ -397,34 +394,43 @@
   list-style: disc;
   font-size: 16px;
   line-height: 1.5;
+  color: var(--cs-muted);
 }
 
 @media (min-width: 768px) {
-  .cs { padding: 96px 24px 104px; }
+  .cs { padding: 88px 24px 96px; }
   .cs-progress { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .cs-caption { min-height: 3em; }
 }
 
-/* Desktop: the stage gets about a third more scale */
 @media (min-width: 1024px) {
   .cs {
     --cs-stage-h: 380px;
     --cs-track-b: 78px;
-    --cs-track-h: 14px;
     --cs-ticket-w: 160px;
-    --cs-ticket-top: 54px;
+    --cs-ticket-top: 58px;
     --cs-work-w: 176px;
     --cs-amount: 36px;
-    --cs-stamp: 16px;
-    --cs-side: 18px;
-    --cs-glass-w: clamp(140px, 18cqw, 240px);
+    --cs-stamp: 13px;
+    --cs-side: 17px;
+    --cs-glass-w: clamp(150px, 20cqw, 260px);
   }
   .cs-head {
     grid-template-columns: 1fr 1fr;
-    column-gap: 0;
+    column-gap: 40px;
     align-items: end;
   }
-  .cs-rules { margin-left: 50%; }
+  .cs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 40px;
+    align-items: start;
+  }
+  .cs-head,
+  .cs-stage,
+  .cs-progress { grid-column: 1 / -1; }
+  .cs-caption { grid-column: 1; }
+  .cs-rules { grid-column: 2; margin-top: 18px; }
 
   .cs-side { top: 18px; }
   .cs-side--you { left: 22px; }
@@ -442,17 +448,16 @@
     height: 48px;
   }
   .cs-work-title { font-size: 14px; }
-  .cs-stamp { padding: 3px 8px; }
   .cs-fee {
-    padding: 6px 11px;
+    padding: 6px 12px;
     font-size: 14px;
   }
   .cs .cs-approve {
     left: 20px;
-    bottom: 14px;
+    bottom: 16px;
     min-height: 48px;
     padding: 0 22px;
-    font-size: 17px;
+    font-size: 16px;
   }
 }
 

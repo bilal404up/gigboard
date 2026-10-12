@@ -32,6 +32,9 @@ export type BoardSource = {
   /** Completed orders, if your data has them. Otherwise a stable fake number is used. */
   sellerJobsDone?: number;
   tags?: string[];
+  /** Gig rating, 0 when not rated yet. Drives the board's Rating column. */
+  rating?: number;
+  reviews?: number;
 };
 
 export type BoardTone = "open" | "queue" | "away";
@@ -149,6 +152,13 @@ const SHORTER: Record<string, string> = {
   PRESENTATION: "DECK",
 };
 
+/* The seed adds a random 4-character suffix to every slug, so a re-seed changes it.
+   Matching on the slug without the suffix keeps the hand-set flap text working. */
+const baseSlug = (slug: string) => slug.replace(/-[a-z0-9]{4}$/, "");
+const OVERRIDES_BY_TITLE: Record<string, { board?: string; short?: string; seller?: string }> = Object.fromEntries(
+  Object.entries(BOARD_TEXT_OVERRIDES).map(([k, v]) => [baseSlug(k), v])
+);
+
 function clean(s: string) {
   return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 }
@@ -209,7 +219,7 @@ function toBoard(src: BoardSource): BoardGig {
   const title = displayTitle(src.title);
   const issues: string[] = [];
   const warn = (m: string) => issues.push(m);
-  const o = BOARD_TEXT_OVERRIDES[src.slug] ?? {};
+  const o = BOARD_TEXT_OVERRIDES[src.slug] ?? OVERRIDES_BY_TITLE[baseSlug(src.slug)] ?? {};
 
   const window = windowFor(src.category, warn);
   const windowName = WINDOWS[window];
@@ -227,14 +237,12 @@ function toBoard(src: BoardSource): BoardGig {
   const price = Math.round(src.price);
   if (price >= 1000) warn("price needs more than four flap characters");
 
-  const h = hash(src.slug);
-  const roll = h % 10;
-  const queueN = 1 + ((h >>> 8) % 2);
-  const tone: BoardTone = roll < 7 ? "open" : roll < 9 ? "queue" : "away";
-  const statusWide = tone === "open" ? "OPEN" : tone === "queue" ? `QUEUE ${queueN}` : "BACK MON";
-  const statusCompact = tone === "open" ? "OPEN" : tone === "queue" ? "BUSY" : "AWAY";
-  const spoken =
-    tone === "open" ? "Open" : tone === "queue" ? `${queueN} in the queue` : "Back on Monday";
+  // The last column shows the gig's real rating. 4.8 and up is lit; unrated gigs say NEW.
+  const rating = src.rating && src.rating > 0 ? Math.round(src.rating * 10) / 10 : 0;
+  const tone: BoardTone = rating === 0 ? "away" : rating >= 4.8 ? "open" : "queue";
+  const statusWide = rating ? rating.toFixed(1) : "NEW";
+  const statusCompact = statusWide;
+  const spoken = rating ? `Rated ${statusWide}${src.reviews ? ` from ${src.reviews} reviews` : ""}` : "Not rated yet";
 
   const done = src.sellerJobsDone ?? 8 + (hash(src.sellerName) % 52);
   const dayWords = `${days} ${days === 1 ? "day" : "days"}`;

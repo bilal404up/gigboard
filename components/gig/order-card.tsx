@@ -11,31 +11,19 @@ import type { GigPackage, GigExtra } from "@/types/database.types";
 
 function Row({ label, value, muted, bold }: { label: string; value: string; muted?: boolean; bold?: boolean }) {
   return (
-    <div className="flex items-baseline gap-2 py-1">
+    <div className="flex items-baseline justify-between gap-3 py-1">
       <span className={cn("shrink-0", muted && "text-ink-muted", bold && "font-semibold")}>{label}</span>
-      <span aria-hidden="true" className="mb-1 min-w-3 flex-1 border-b-2 border-dotted border-sand" />
-      <span className={cn("num shrink-0", bold && "fig-price")}>{value}</span>
+      <span className={cn("shrink-0 tabular-nums", bold && "fig-price")}>{value}</span>
     </div>
   );
 }
 
-export function OrderCard({
-  gigId,
-  packages,
-  extras,
-}: {
-  gigId: string;
-  packages: GigPackage[];
-  extras: GigExtra[];
-}) {
+export function OrderCard({ gigId, packages, extras }: { gigId: string; packages: GigPackage[]; extras: GigExtra[] }) {
   const [pkgType, setPkgType] = useState<string>(packages[0]?.package_type ?? "basic");
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
 
   const currentPkg = packages.find((p) => p.package_type === pkgType) ?? packages[0];
-  const extrasTotal = useMemo(
-    () => extras.filter((e) => selectedExtras.includes(e.id)).reduce((sum, e) => sum + Number(e.price), 0),
-    [extras, selectedExtras]
-  );
+  const extrasTotal = useMemo(() => extras.filter((e) => selectedExtras.includes(e.id)).reduce((sum, e) => sum + Number(e.price), 0), [extras, selectedExtras]);
 
   const pricing = calculateOrderPricing(Number(currentPkg?.price ?? 0), extrasTotal, DEFAULT_PLATFORM_SETTINGS);
   const orderUrl = `/checkout?gig=${gigId}&pkg=${currentPkg?.id}&extras=${selectedExtras.join(",")}`;
@@ -58,23 +46,15 @@ export function OrderCard({
                   key={ex.id}
                   htmlFor={id}
                   className={cn(
-                    "flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-[6px] px-3 py-2 text-sm transition-colors duration-120",
-                    checked ? "bg-brass-tint" : "hover:bg-laminate-sunk"
+                    "flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-[8px] px-3 py-2 text-sm transition-colors duration-120",
+                    checked ? "bg-release-tint" : "hover:bg-laminate-sunk"
                   )}
                 >
                   <span className="flex min-w-0 items-center gap-3">
-                    <Checkbox
-                      id={id}
-                      checked={checked}
-                      onCheckedChange={() =>
-                        setSelectedExtras((s) =>
-                          s.includes(ex.id) ? s.filter((x) => x !== ex.id) : [...s, ex.id]
-                        )
-                      }
-                    />
+                    <Checkbox id={id} checked={checked} onCheckedChange={() => setSelectedExtras((s) => (s.includes(ex.id) ? s.filter((x) => x !== ex.id) : [...s, ex.id]))} />
                     <span className="truncate text-ink">{ex.title}</span>
                   </span>
-                  <span className="num shrink-0 font-semibold text-ink">+{formatMoney(Number(ex.price))}</span>
+                  <span className="shrink-0 font-semibold tabular-nums text-ink">+{formatMoney(Number(ex.price))}</span>
                 </label>
               );
             })}
@@ -87,7 +67,7 @@ export function OrderCard({
           {pricing.extrasPrice > 0 && <Row label="Add-ons" value={`+${formatMoney(pricing.extrasPrice)}`} muted />}
           <Row label="Service fee" value={formatMoney(pricing.buyerServiceFee)} muted />
           {pricing.buyerSmallOrderFee > 0 && <Row label="Small order fee" value={formatMoney(pricing.buyerSmallOrderFee)} muted />}
-          <div className="mt-2 border-t-2 border-dotted border-sand pt-2">
+          <div className="mt-2 border-t border-line pt-2">
             <Row label="Total" value={formatMoney(pricing.buyerTotalPaid)} bold />
           </div>
         </div>
@@ -100,7 +80,6 @@ export function OrderCard({
           <Button variant="secondary" className="w-full">
             Contact seller
           </Button>
-          <p className="pt-1 text-[13px] leading-[18px] text-ink-muted">Payment is held until you approve the work.</p>
         </div>
       }
     />

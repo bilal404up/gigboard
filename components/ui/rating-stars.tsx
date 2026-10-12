@@ -10,8 +10,10 @@ type Props = {
 }
 
 const STAR = "M8 1.2l2.06 4.3 4.74.6-3.48 3.3.9 4.7L8 11.8l-4.22 2.3.9-4.7L1.2 6.1l4.74-.6z"
+const EMPTY = "#DCDDE0"
+const FULL = "#121417"
 
-/* Brass stars. Partial stars are clipped, so 4.9 reads as 4.9, not as 5 or 4. */
+/* Ink stars on a grey track. Partial stars are clipped, so 4.9 reads as 4.9, not as 5 or 4. */
 function Star({ fill, size, id }: { fill: number; size: number; id: string }) {
   const w = Math.max(0, Math.min(1, fill)) * 16
   return (
@@ -21,8 +23,8 @@ function Star({ fill, size, id }: { fill: number; size: number; id: string }) {
           <rect x="0" y="0" width={w} height="16" />
         </clipPath>
       </defs>
-      <path d={STAR} fill="#B9AFA4" />
-      <path d={STAR} fill="#C9A24A" stroke="#7A5A14" strokeWidth="0.6" clipPath={`url(#${id})`} />
+      <path d={STAR} fill={EMPTY} />
+      <path d={STAR} fill={FULL} clipPath={`url(#${id})`} />
     </svg>
   )
 }
@@ -41,7 +43,7 @@ export function RatingStars({ value, max = 5, size = 16, className, onChange, in
             onClick={() => onChange?.(n)}
             aria-label={`${n} ${n === 1 ? "star" : "stars"}`}
             aria-pressed={n === Math.round(value)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-[4px] transition-transform duration-120 hover:-translate-y-px focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-[8px] transition-colors duration-120 hover:bg-laminate-sunk focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
           >
             <Star fill={n <= value ? 1 : 0} size={Math.max(size, 22)} id={`${base}-i${n}`} />
           </button>

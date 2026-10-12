@@ -7,7 +7,15 @@ import { cn } from "@/lib/utils/cn";
 import { GigCover } from "@/components/gig/gig-cover";
 
 const CTRL =
-  "inline-flex h-11 w-11 items-center justify-center rounded-pill bg-laminate-raised text-ink shadow-[0_1px_0_#D5CBBD,0_4px_0_-2px_#E4DCCF] transition-opacity hover:bg-laminate focus-visible:opacity-100 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany";
+  "inline-flex h-11 w-11 items-center justify-center rounded-pill bg-white text-ink shadow-[0_0_0_1px_#E3E4E6,0_6px_16px_-8px_rgba(18,20,23,0.35)] transition-opacity hover:bg-laminate focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
+
+const LIGHTBOX_BTN =
+  "inline-flex h-11 w-11 items-center justify-center rounded-pill bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
+
+function coverWords(title: string) {
+  const s = title.replace(/^\s*i\s+will\s+/i, "").trim();
+  return s ? s[0].toUpperCase() + s.slice(1) : title;
+}
 
 export function GigGallery({
   thumbnail,
@@ -44,7 +52,7 @@ export function GigGallery({
   if (total === 0) {
     return (
       <div className="relative aspect-[16/9] overflow-hidden rounded-tray">
-        <GigCover seed={seed ?? title} category={category} />
+        <GigCover seed={seed ?? title} category={category} text={coverWords(title)} />
       </div>
     );
   }
@@ -52,14 +60,7 @@ export function GigGallery({
   return (
     <div className="space-y-3">
       <div className="group relative aspect-[16/9] overflow-hidden rounded-tray bg-laminate-sunk">
-        <Image
-          src={all[index]}
-          alt={`${title}, image ${index + 1} of ${total}`}
-          fill
-          className="object-cover"
-          priority={index === 0}
-          sizes="(min-width: 1024px) 720px, 100vw"
-        />
+        <Image src={all[index]} alt={`${title}, image ${index + 1} of ${total}`} fill className="object-cover" priority={index === 0} sizes="(min-width: 1024px) 720px, 100vw" />
 
         {total > 1 && (
           <>
@@ -69,13 +70,13 @@ export function GigGallery({
             <button onClick={next} aria-label="Next image" className={cn(CTRL, "absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100")}>
               <ChevronRight className="h-5 w-5" />
             </button>
-            <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5 rounded-pill bg-mahogany-deep/80 px-2.5 py-1.5">
+            <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5 rounded-pill bg-ink/80 px-2.5 py-1.5">
               {all.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setIndex(i)}
                   aria-label={`Go to image ${i + 1}`}
-                  className={cn("h-2 rounded-pill transition-all", i === index ? "w-5 bg-brass-light" : "w-2 bg-laminate/50 hover:bg-laminate/80")}
+                  className={cn("h-2 rounded-pill transition-all", i === index ? "w-5 bg-white" : "w-2 bg-white/50 hover:bg-white/80")}
                 />
               ))}
             </div>
@@ -96,8 +97,8 @@ export function GigGallery({
               aria-label={`Show image ${i + 1}`}
               aria-current={i === index}
               className={cn(
-                "relative h-14 w-20 shrink-0 overflow-hidden rounded-[6px] bg-laminate-sunk transition-all sm:h-16 sm:w-24",
-                i === index ? "opacity-100 shadow-[0_0_0_2.5px_#C9A24A]" : "opacity-60 hover:opacity-100"
+                "relative h-14 w-20 shrink-0 overflow-hidden rounded-[8px] bg-laminate-sunk transition-all sm:h-16 sm:w-24",
+                i === index ? "opacity-100 shadow-[0_0_0_2px_#121417]" : "opacity-60 hover:opacity-100"
               )}
             >
               <Image src={src} alt="" fill className="object-cover" sizes="100px" />
@@ -107,21 +108,21 @@ export function GigGallery({
       )}
 
       {lightbox && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-mahogany-deep/95 p-4 sm:p-8" onClick={() => setLightbox(false)}>
-          <button onClick={() => setLightbox(false)} aria-label="Close" className="absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-pill bg-laminate/10 text-laminate transition-colors hover:bg-laminate/20 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/95 p-4 sm:p-8" onClick={() => setLightbox(false)}>
+          <button onClick={() => setLightbox(false)} aria-label="Close" className={cn(LIGHTBOX_BTN, "absolute right-4 top-4")}>
             <X className="h-5 w-5" />
           </button>
           <div className="relative aspect-[16/10] w-full max-w-5xl" onClick={(e) => e.stopPropagation()}>
             <Image src={all[index]} alt={`${title}, image ${index + 1} of ${total}`} fill className="object-contain" sizes="100vw" />
             {total > 1 && (
               <>
-                <button onClick={prev} aria-label="Previous image" className="absolute left-2 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-pill bg-laminate/10 text-laminate hover:bg-laminate/20 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release">
+                <button onClick={prev} aria-label="Previous image" className={cn(LIGHTBOX_BTN, "absolute left-2 top-1/2 -translate-y-1/2")}>
                   <ChevronLeft className="h-6 w-6" />
                 </button>
-                <button onClick={next} aria-label="Next image" className="absolute right-2 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-pill bg-laminate/10 text-laminate hover:bg-laminate/20 focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release">
+                <button onClick={next} aria-label="Next image" className={cn(LIGHTBOX_BTN, "absolute right-2 top-1/2 -translate-y-1/2")}>
                   <ChevronRight className="h-6 w-6" />
                 </button>
-                <div className="num absolute bottom-4 left-1/2 -translate-x-1/2 rounded-pill bg-laminate/10 px-3 py-1 text-xs font-medium text-laminate">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-pill bg-white/10 px-3 py-1 text-xs font-medium tabular-nums text-white">
                   {index + 1} / {total}
                 </div>
               </>

@@ -108,8 +108,8 @@ export default async function CategoryPage({ params }: { params: { slug: string 
           ) : (
             <EmptyState
               className="mt-8"
-              title="This window is closed for now"
-              description="No active gigs in this category yet. Browse the other windows or search for what you need."
+              title="No gigs here yet"
+              description="No active gigs in this category yet. Browse the other categories or search for what you need."
               action={
                 <Button asChild variant="cta">
                   <Link href="/search">Browse all gigs</Link>

@@ -1,23 +1,10 @@
-import { Anybody, Albert_Sans, JetBrains_Mono } from 'next/font/google'
+import { Archivo } from "next/font/google";
 
-/* Anybody: variable, wdth 50 to 150 and wght. Set wide for signage. */
-export const display = Anybody({
-  subsets: ['latin'],
-  axes: ['wdth'],
-  display: 'swap',
-  variable: '--font-display',
-})
-
-/* Albert Sans: variable wght, for everything you read. */
-export const body = Albert_Sans({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-body',
-})
-
-/* JetBrains Mono: variable wght, for money, ids, times. */
-export const mono = JetBrains_Mono({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-mono',
-})
+/**
+ * One family for the whole site. Archivo's width axis gives the board its condensed flap
+ * letters (wdth 62); headings and body text use the normal width.
+ * display and mono point at the same font; globals.css aliases their CSS variables.
+ */
+export const body = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-body", display: "swap" });
+export const display = body;
+export const mono = body;

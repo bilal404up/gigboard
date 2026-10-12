@@ -4,6 +4,13 @@ import type { GigCardData } from "@/components/gig/gig-card"
 import { GigArt } from "@/components/gig/GigArt"
 import { ReviewSummary } from "@/components/gig/review-summary"
 import { SellerMark, LevelPlate } from "@/components/seller/SellerMark"
+
+/* A drawn face when the seller has a picture, otherwise the monogram mark. */
+function Face({ seller, size }: { seller: GigCardData["seller"]; size: number }) {
+  if (!seller.avatar_url) return <SellerMark username={seller.username} level={seller.seller_level} size={size} />
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={seller.avatar_url} alt="" width={size} height={size} className="shrink-0 rounded-full object-cover" style={{ width: size, height: size }} />
+}
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils/cn"
 import { formatMoney } from "@/lib/utils/format"
@@ -28,7 +35,7 @@ export function GigTray({ gig, favorite, className = "" }: TrayProps) {
   return (
     <article
       className={cn(
-        "tray tray--hover flex flex-col focus-within:[outline:2.5px_solid_#4B2320] focus-within:outline-offset-2",
+        "tray tray--hover flex flex-col focus-within:[outline:2px_solid_#121417] focus-within:outline-offset-2",
         className
       )}
     >
@@ -43,7 +50,7 @@ export function GigTray({ gig, favorite, className = "" }: TrayProps) {
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex items-center gap-2.5">
-          <SellerMark username={gig.seller.username} level={gig.seller.seller_level} size={28} />
+          <Face seller={gig.seller} size={28} />
           <span className="truncate text-sm font-semibold">{gig.seller.full_name}</span>
           <LevelPlate level={gig.seller.seller_level} className="ml-auto min-h-6 shrink-0 px-2" />
         </div>
@@ -71,7 +78,7 @@ const ROW = "grid items-center gap-4 md:grid-cols-[6rem_minmax(0,1fr)_9rem_6rem_
 /* Column headings for list mode. Sentence case, on a brass sill. */
 export function GigTrayHeader() {
   return (
-    <div className={cn(ROW, "hidden bg-[linear-gradient(180deg,#E7C978,#C9A24A_40%,#7A5A14)] bg-[length:100%_4px] bg-bottom bg-no-repeat px-3 pb-3 text-xs font-semibold text-ink-muted md:grid")} aria-hidden="true">
+    <div className={cn(ROW, "hidden border-b border-line px-3 pb-3 text-xs font-semibold text-ink-muted md:grid")} aria-hidden="true">
       <span>Gig</span>
       <span />
       <span>Rating</span>
@@ -85,7 +92,7 @@ export function GigTrayHeader() {
 /* List row: a shallow tray. On small screens the columns stack into two lines. */
 export function GigTrayRow({ gig, favorite }: TrayProps) {
   return (
-    <article className={cn("tray tray--hover relative p-3 focus-within:[outline:2.5px_solid_#4B2320] focus-within:outline-offset-2", ROW, "grid-cols-[6rem_minmax(0,1fr)_3rem]")}>
+    <article className={cn("tray tray--hover relative p-3 focus-within:[outline:2px_solid_#121417] focus-within:outline-offset-2", ROW, "grid-cols-[6rem_minmax(0,1fr)_3rem]")}>
       <Art gig={gig} className="rounded-[6px]" />
       <div className="min-w-0">
         <h3 className="text-base font-semibold leading-snug">
@@ -94,7 +101,7 @@ export function GigTrayRow({ gig, favorite }: TrayProps) {
           </Link>
         </h3>
         <div className="mt-1.5 flex items-center gap-2 text-sm text-ink-muted">
-          <SellerMark username={gig.seller.username} level={gig.seller.seller_level} size={20} />
+          <Face seller={gig.seller} size={20} />
           <span className="truncate">{gig.seller.full_name}</span>
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 md:hidden">
@@ -161,14 +168,14 @@ export function FavoritePin({ active, pending = false, onClick, className = "" }
       aria-pressed={active}
       aria-label={active ? "Saved to favourites" : "Save to favourites"}
       className={cn(
-        "relative z-10 inline-flex h-11 w-11 items-center justify-center rounded-pill bg-laminate-raised text-ink shadow-[0_1px_0_#D5CBBD,0_4px_0_-2px_#E4DCCF] transition-transform duration-120 ease-out",
+        "relative z-10 inline-flex h-11 w-11 items-center justify-center rounded-pill bg-laminate-raised text-ink shadow-[0_0_0_1px_#E3E4E6] transition-transform duration-120 ease-out",
         "hover:-translate-y-px focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany disabled:opacity-60",
         className
       )}
     >
       <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
-        <circle cx="10" cy="6.5" r="4.5" fill={active ? "#C9A24A" : "none"} stroke={active ? "#7A5A14" : "currentColor"} strokeWidth="1.8" />
-        <path d="M6.5 10.5h7l-1 2.5h-5z" fill={active ? "#7A5A14" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        <circle cx="10" cy="6.5" r="4.5" fill={active ? "#2BB673" : "none"} stroke={active ? "#0C5C37" : "currentColor"} strokeWidth="1.8" />
+        <path d="M6.5 10.5h7l-1 2.5h-5z" fill={active ? "#0C5C37" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
         <path d="M10 13v5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     </button>

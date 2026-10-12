@@ -39,13 +39,13 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`} style={fontAlias}>
-      {/* body carries no transform or filter, so sticky and fixed children stay reliable.
-          Bottom padding for the demo bar comes from body[data-demo] in globals.css. */}
+      {/* The demo strip sits at the very top and scrolls away; the nav below it stays sticky.
+          Nothing is fixed to the bottom any more, so it never covers forms or the mobile order bar. */}
       <body className="flex min-h-screen flex-col" data-demo={demo ? "true" : undefined}>
         <UserProvider initialUser={initialUser}>
+          {demo && <DemoStrip />}
           {children}
           <Toaster />
-          {demo && <DemoStrip />}
         </UserProvider>
       </body>
     </html>

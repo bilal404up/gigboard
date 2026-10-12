@@ -1,7 +1,7 @@
 "use client";
 
 /*
- * The counter story: escrow as a two-way exchange.
+ * How payment works: escrow as a two-way exchange.
  * Steps 1 to 3 play once when the section scrolls into view. Step 4 waits
  * for the visitor to press Approve. Reduced motion opens at step 3 and
  * every change snaps.
@@ -17,11 +17,11 @@ type Props = {
   price: number;
   days: number;
   sellerName: string;
-  /** Demo number: the counter's share of each job. */
+  /** Demo number: the platform's share of each job. */
   feeRate?: number;
 };
 
-const LABELS = ["You pay", "They start", "Work comes back", "You approve"];
+const LABELS = ["You pay", "They start", "Work arrives", "You approve"];
 /* When steps 1, 2 and 3 play, in ms after the section comes into view */
 const PLAY_AT = [300, 1900, 3500];
 
@@ -58,10 +58,10 @@ export default function CounterStory({ title, price, days, sellerName, feeRate =
 
   const captions: Record<Step, string> = {
     0: "Here is one job, start to finish.",
-    1: `You pay $${price} into the tray. It waits under the glass, where you can both see it.`,
-    2: `${first} sees the money is there and starts. Ready in ${dayWords}, as listed.`,
-    3: "The work comes back through the tray. Check it against your brief before anything is paid.",
-    4: `You approve, and the money crosses. ${first} gets $${payout}, and $${fee} stays at the counter.`,
+    1: `You pay $${price}. Gigboard holds it, and ${first} can see it's there.`,
+    2: `${first} starts work. Ready in ${dayWords}, as listed.`,
+    3: "The work arrives. Check it against your brief before anything is paid.",
+    4: `You approve, and the payment is released. ${first} gets $${payout} and Gigboard keeps a $${fee} fee.`,
   };
 
   const clear = () => {
@@ -130,7 +130,7 @@ export default function CounterStory({ title, price, days, sellerName, feeRate =
     <section ref={rootRef} id="how-the-counter-works" className="cs" aria-labelledby="cs-title">
       <div className="cs-head">
         <h2 id="cs-title" className="cs-h2">
-          How the counter works
+          How payment works
         </h2>
         <p className="cs-intro">Every job runs the same way. Here is one, start to finish.</p>
       </div>
@@ -150,21 +150,21 @@ export default function CounterStory({ title, price, days, sellerName, feeRate =
 
         <span className="cs-work" aria-hidden="true">
           <svg viewBox="0 0 40 40">
-            <rect width="40" height="40" rx="4" fill="#efe9dc" />
-            <circle cx="15" cy="17" r="8" fill="#6b3a8e" />
-            <rect x="20" y="20" width="12" height="12" rx="2" fill="#d9a21e" transform="rotate(12 26 26)" />
+            <rect width="40" height="40" rx="6" fill="#F0F1F2" />
+            <circle cx="15" cy="17" r="8" fill="#121417" />
+            <rect x="20" y="20" width="12" height="12" rx="2" fill="#2BB673" transform="rotate(12 26 26)" />
           </svg>
           <span className="cs-work-title">{title}</span>
           <span className="cs-stamp cs-stamp--delivered">Delivered</span>
         </span>
 
         <span className="cs-ticket" aria-hidden="true">
-          <span className="cs-ticket-no">No. 0412</span>
+          <span className="cs-ticket-no">Order 0412</span>
           <span className="cs-amount">
             <Odometer value={step === 4 ? payout : price} />
           </span>
           <span className="cs-stamp cs-stamp--held">Held</span>
-          <span className="cs-stamp cs-stamp--approved">Approved</span>
+          <span className="cs-stamp cs-stamp--approved">Released</span>
         </span>
 
         <span className="cs-glass" aria-hidden="true">
@@ -172,16 +172,10 @@ export default function CounterStory({ title, price, days, sellerName, feeRate =
         </span>
 
         <span className="cs-fee" aria-hidden="true">
-          ${fee} stays at the counter
+          ${fee} Gigboard fee
         </span>
 
-        <button
-          type="button"
-          className="cs-approve"
-          data-variant={btn.variant}
-          disabled={btn.disabled}
-          onClick={onButton}
-        >
+        <button type="button" className="cs-approve" data-variant={btn.variant} disabled={btn.disabled} onClick={onButton}>
           {btn.text}
         </button>
       </div>
@@ -202,14 +196,11 @@ export default function CounterStory({ title, price, days, sellerName, feeRate =
       </p>
 
       <div className="cs-rules">
-        <h3 className="cs-h3">The rules at the counter</h3>
+        <h3 className="cs-h3">The rules</h3>
         <ul>
           <li>If the work arrives late, you get a full refund.</li>
-          <li>
-            If you don’t respond within three days of delivery, the job approves itself, so sellers are
-            never left waiting.
-          </li>
-          <li>If something’s wrong, ask for changes, or a person at the counter steps in.</li>
+          <li>If you don&apos;t respond within three days of delivery, the job approves itself, so sellers are never left waiting.</li>
+          <li>If something&apos;s wrong, ask for changes, or a person from Gigboard steps in.</li>
         </ul>
       </div>
     </section>

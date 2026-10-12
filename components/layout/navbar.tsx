@@ -18,6 +18,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 import { SearchAutocomplete } from "@/components/search/search-autocomplete";
 import { WordMark } from "@/components/layout/wordmark";
 import { SellerMark } from "@/components/seller/SellerMark";
+import { DemoSwitch } from "@/components/layout/demo-strip";
 import { useUser } from "@/lib/contexts/user-context";
 import { cn } from "@/lib/utils/cn";
 
@@ -26,10 +27,13 @@ const NAV_LINKS = [
   { href: "/how-it-works", label: "How it works" },
 ];
 
-const ICON_BTN =
-  "inline-flex h-11 w-11 items-center justify-center rounded-[4px] text-sand transition-colors hover:bg-mahogany-raised hover:text-laminate focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release md:h-10 md:w-10";
+const ICON_BTN = "inline-flex h-11 w-11 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-laminate-sunk hover:text-ink md:h-10 md:w-10";
+const NAV_LINK = "inline-flex h-10 items-center rounded-md px-3 text-[14px] font-semibold transition-colors";
+const SECONDARY = "inline-flex h-11 items-center justify-center rounded-md border border-line text-sm font-semibold text-ink transition-colors hover:bg-laminate-sunk";
+const PRIMARY = "nav-join inline-flex items-center justify-center rounded-md bg-ink px-4 text-sm font-semibold text-white transition-colors hover:bg-[#2A2D32]";
 
 export function Navbar() {
+  const demo = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
   const router = useRouter();
   const pathname = usePathname();
   const { user, setUser } = useUser();
@@ -63,11 +67,9 @@ export function Navbar() {
       if (cancelled) return;
       convChannel = sb
         .channel(`nav-conv-unread-${user.id}-${Math.random().toString(36).slice(2, 8)}`)
-        .on(
-          "postgres_changes",
-          { event: "UPDATE", schema: "public", table: "conversations" },
-          () => { refreshUnread(); }
-        )
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "conversations" }, () => {
+          refreshUnread();
+        })
         .subscribe();
     })();
 
@@ -87,39 +89,33 @@ export function Navbar() {
   const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
 
   return (
-    <header className="header site-nav">
-      <div className="wrap nav-inner flex min-h-[var(--header-h)] items-center gap-4">
-        <Link href="/" className="shrink-0 whitespace-nowrap rounded-[4px] text-laminate focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-4 focus-visible:outline-release" aria-label="Gigboard home">
+    <header className="site-nav">
+      <div className="wrap nav-inner flex items-center gap-4">
+        <Link href="/" className="shrink-0 whitespace-nowrap rounded-md text-ink" aria-label="Gigboard home">
           <WordMark />
         </Link>
 
         <div className="site-nav-search hidden min-w-0 max-w-xl flex-1 md:block">
-          <SearchAutocomplete placeholder="What service are you looking for?" />
+          <SearchAutocomplete placeholder="What do you need done?" />
         </div>
 
-        <nav className="hidden shrink-0 items-center gap-1 text-sm lg:flex">
+        <nav className="hidden shrink-0 items-center gap-1 lg:flex">
           {NAV_LINKS.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               aria-current={isActive(l.href) ? "page" : undefined}
-              className={cn(
-                "inline-flex h-10 items-center gap-2 rounded-[4px] px-3 font-semibold transition-colors focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release",
-                isActive(l.href) ? "bg-mahogany-raised text-laminate" : "text-sand hover:bg-mahogany-raised hover:text-laminate"
-              )}
+              className={cn(NAV_LINK, isActive(l.href) ? "bg-laminate-sunk text-ink" : "text-ink-muted hover:bg-laminate-sunk hover:text-ink")}
             >
-              {isActive(l.href) ? <span className="lamp lamp--on h-2 w-2" aria-hidden="true" /> : null}
               {l.label}
             </Link>
           ))}
           {!user?.is_seller && (
-            <Link
-              href="/become-seller"
-              className="inline-flex h-10 items-center rounded-[4px] px-3 font-semibold text-sand transition-colors hover:bg-mahogany-raised hover:text-laminate focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release"
-            >
+            <Link href="/become-seller" className={cn(NAV_LINK, "text-ink-muted hover:bg-laminate-sunk hover:text-ink")}>
               Become a seller
             </Link>
           )}
+        {demo && <DemoSwitch className="ml-2" />}
         </nav>
 
         <div className="ml-auto flex shrink-0 items-center gap-1">
@@ -128,25 +124,18 @@ export function Navbar() {
               <Link href="/favorites" aria-label="Favorites" className={cn(ICON_BTN, "hidden sm:inline-flex")}>
                 <Heart className="h-[18px] w-[18px]" />
               </Link>
-              <Link
-                href="/messages"
-                aria-label={unread > 0 ? `Messages (${unread} unread)` : "Messages"}
-                className={cn(ICON_BTN, "relative")}
-              >
+              <Link href="/messages" aria-label={unread > 0 ? `Messages (${unread} unread)` : "Messages"} className={cn(ICON_BTN, "relative")}>
                 <Bell className="h-[18px] w-[18px]" />
                 {unread > 0 && (
-                  <span className="absolute right-1.5 top-1.5 inline-flex h-4 min-w-[16px] items-center justify-center rounded-pill bg-alarm px-1 text-[10px] font-semibold leading-none text-laminate ring-2 ring-mahogany-deep">
+                  <span className="absolute right-1.5 top-1.5 inline-flex h-4 min-w-[16px] items-center justify-center rounded-pill bg-alarm px-1 text-[10px] font-semibold leading-none text-white ring-2 ring-white">
                     {unread > 9 ? "9+" : unread}
                   </span>
                 )}
               </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button
-                    className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-[4px] focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release md:h-10 md:w-10"
-                    aria-label="Account menu"
-                  >
-                    <Avatar className="h-8 w-8 shadow-[0_0_0_1.5px_#C9A24A]">
+                  <button className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-md md:h-10 md:w-10" aria-label="Account menu">
+                    <Avatar className="h-8 w-8 ring-1 ring-line">
                       {user.avatar_url && <AvatarImage src={user.avatar_url} />}
                       <AvatarFallback className="bg-transparent p-0">
                         <SellerMark username={user.username} label={user.full_name} size={32} />
@@ -157,20 +146,14 @@ export function Navbar() {
                 <DropdownMenuContent align="end" className="w-60">
                   <DropdownMenuLabel>
                     <div className="truncate font-semibold text-ink">{user.full_name}</div>
-                    <div className="num truncate text-xs font-normal text-ink-muted">@{user.username}</div>
+                    <div className="truncate text-xs font-normal text-ink-muted">@{user.username}</div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={() => router.push("/dashboard")}>Dashboard</DropdownMenuItem>
-                  {user.is_seller && (
-                    <DropdownMenuItem onSelect={() => router.push("/seller/dashboard")}>
-                      Seller Dashboard
-                    </DropdownMenuItem>
-                  )}
+                  {user.is_seller && <DropdownMenuItem onSelect={() => router.push("/seller/dashboard")}>Seller dashboard</DropdownMenuItem>}
                   <DropdownMenuItem onSelect={() => router.push("/messages")}>Messages</DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => router.push("/settings")}>Settings</DropdownMenuItem>
-                  {user.is_admin && (
-                    <DropdownMenuItem onSelect={() => router.push("/admin")}>Admin</DropdownMenuItem>
-                  )}
+                  {user.is_admin && <DropdownMenuItem onSelect={() => router.push("/admin")}>Admin</DropdownMenuItem>}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={signOut}>Sign out</DropdownMenuItem>
                 </DropdownMenuContent>
@@ -178,16 +161,10 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <Link
-                href="/login"
-                className="hidden h-10 items-center rounded-[4px] px-3 text-sm font-semibold text-sand transition-colors hover:bg-mahogany-raised hover:text-laminate focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release sm:inline-flex"
-              >
+              <Link href="/login" className={cn(NAV_LINK, "hidden text-ink-muted hover:bg-laminate-sunk hover:text-ink sm:inline-flex")}>
                 Log in
               </Link>
-              <Link
-                href="/signup"
-                className="nav-join inline-flex h-10 items-center rounded-[4px] bg-[linear-gradient(180deg,#E7C978_0%,#C9A24A_55%,#B08A2C_100%)] px-4 text-sm font-semibold text-ink shadow-[0_2px_0_#7A5A14,inset_0_1px_0_#E7C978] transition-transform hover:-translate-y-px focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-release active:translate-y-px"
-              >
+              <Link href="/signup" className={cn(PRIMARY, "h-10")}>
                 Join
               </Link>
             </>
@@ -198,44 +175,44 @@ export function Navbar() {
                 <Menu className="h-[18px] w-[18px]" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="flex flex-col p-0">
-              <div className="booth booth--plain flex h-16 items-center px-5">
+            <SheetContent side="right" className="flex flex-col bg-white p-0">
+              <div className="flex h-16 items-center border-b border-line px-5 text-ink">
                 <WordMark />
               </div>
 
-              <div className="border-b-2 border-dotted border-sand p-5">
-                <SearchAutocomplete placeholder="Search services…" />
+              <div className="border-b border-line p-5">
+                <SearchAutocomplete placeholder="What do you need done?" />
               </div>
+              {demo && (
+                <div className="border-b border-line p-5">
+                  <p className="mb-2 text-xs font-semibold text-ink-muted">View the demo as</p>
+                  <DemoSwitch className="flex w-full" />
+                </div>
+              )}
 
               <nav className="flex-1 py-2">
                 <MobileNavLink href="/search" label="Browse" icon={<Search className="h-4 w-4" />} />
                 <MobileNavLink href="/how-it-works" label="How it works" icon={<UserIcon className="h-4 w-4" />} />
-                {!user?.is_seller && (
-                  <MobileNavLink href="/become-seller" label="Become a seller" icon={<ShieldCheck className="h-4 w-4" />} />
-                )}
+                {!user?.is_seller && <MobileNavLink href="/become-seller" label="Become a seller" icon={<ShieldCheck className="h-4 w-4" />} />}
 
                 {user && (
                   <>
-                    <div className="my-2 border-t-2 border-dotted border-sand" />
+                    <div className="my-2 border-t border-line" />
                     <MobileNavLink href="/dashboard" label="Dashboard" icon={<LayoutDashboard className="h-4 w-4" />} />
-                    {user.is_seller && (
-                      <MobileNavLink href="/seller/dashboard" label="Seller dashboard" icon={<LayoutDashboard className="h-4 w-4" />} />
-                    )}
+                    {user.is_seller && <MobileNavLink href="/seller/dashboard" label="Seller dashboard" icon={<LayoutDashboard className="h-4 w-4" />} />}
                     <MobileNavLink href="/messages" label="Messages" icon={<MessageCircle className="h-4 w-4" />} />
                     <MobileNavLink href="/favorites" label="Favorites" icon={<Heart className="h-4 w-4" />} />
                     <MobileNavLink href="/settings" label="Settings" icon={<Settings className="h-4 w-4" />} />
-                    {user.is_admin && (
-                      <MobileNavLink href="/admin" label="Admin" icon={<ShieldCheck className="h-4 w-4" />} />
-                    )}
+                    {user.is_admin && <MobileNavLink href="/admin" label="Admin" icon={<ShieldCheck className="h-4 w-4" />} />}
                   </>
                 )}
               </nav>
 
-              <div className="border-t-2 border-dotted border-sand p-5">
+              <div className="border-t border-line p-5">
                 {user ? (
                   <>
                     <div className="mb-3 flex items-center gap-3">
-                      <Avatar className="h-10 w-10 shrink-0 shadow-[0_0_0_1.5px_#C9A24A]">
+                      <Avatar className="h-10 w-10 shrink-0 ring-1 ring-line">
                         {user.avatar_url && <AvatarImage src={user.avatar_url} />}
                         <AvatarFallback className="bg-transparent p-0">
                           <SellerMark username={user.username} label={user.full_name} size={40} />
@@ -243,14 +220,11 @@ export function Navbar() {
                       </Avatar>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-ink">{user.full_name}</p>
-                        <p className="num truncate text-xs text-ink-muted">@{user.username}</p>
+                        <p className="truncate text-xs text-ink-muted">@{user.username}</p>
                       </div>
                     </div>
                     <SheetClose asChild>
-                      <button
-                        onClick={signOut}
-                        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-[4px] text-sm font-semibold text-ink shadow-[inset_0_0_0_1.5px_#4B2320] hover:bg-laminate-sunk focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany"
-                      >
+                      <button onClick={signOut} className={cn(SECONDARY, "w-full gap-2")}>
                         <LogOut className="h-4 w-4" />
                         Sign out
                       </button>
@@ -259,18 +233,12 @@ export function Navbar() {
                 ) : (
                   <div className="flex gap-2">
                     <SheetClose asChild>
-                      <Link
-                        href="/login"
-                        className="inline-flex h-11 flex-1 items-center justify-center rounded-[4px] text-sm font-semibold text-ink shadow-[inset_0_0_0_1.5px_#4B2320] hover:bg-laminate-sunk focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany"
-                      >
+                      <Link href="/login" className={cn(SECONDARY, "flex-1")}>
                         Log in
                       </Link>
                     </SheetClose>
                     <SheetClose asChild>
-                      <Link
-                        href="/signup"
-                        className="inline-flex h-11 flex-1 items-center justify-center rounded-[4px] bg-[linear-gradient(180deg,#E7C978_0%,#C9A24A_55%,#B08A2C_100%)] text-sm font-semibold text-ink shadow-[0_2px_0_#7A5A14,inset_0_1px_0_#E7C978] focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany"
-                      >
+                      <Link href="/signup" className={cn(PRIMARY, "h-11 flex-1")}>
                         Join
                       </Link>
                     </SheetClose>
@@ -288,11 +256,8 @@ export function Navbar() {
 function MobileNavLink({ href, label, icon }: { href: string; label: string; icon: React.ReactNode }) {
   return (
     <SheetClose asChild>
-      <Link
-        href={href}
-        className="flex h-11 items-center gap-3 px-5 text-sm font-semibold text-ink transition-colors hover:bg-laminate-sunk focus-visible:outline focus-visible:outline-[2.5px] focus-visible:-outline-offset-[3px] focus-visible:outline-mahogany"
-      >
-        <span className="text-brass-deep">{icon}</span>
+      <Link href={href} className="flex h-11 items-center gap-3 px-5 text-sm font-semibold text-ink transition-colors hover:bg-laminate-sunk">
+        <span className="text-ink-muted">{icon}</span>
         {label}
       </Link>
     </SheetClose>

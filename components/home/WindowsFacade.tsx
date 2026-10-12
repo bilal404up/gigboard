@@ -21,40 +21,36 @@ export default function WindowsFacade({ gigs, hrefs = {} }: Props) {
     <section className="wf" aria-labelledby="wf-title">
       <div className="wf-head">
         <h2 id="wf-title" className="wf-h2">
-          Or start at a window
+          Browse by category
         </h2>
-        <p className="wf-intro">
-          Each window has its own sellers. Every job is one fixed price, paid the same way.
-        </p>
+        <p className="wf-intro">Six categories. Every gig has one fixed price and a delivery date.</p>
       </div>
 
-      <ol className="wf-wall">
+      <ol className="wf-list">
         {NOS.map((no) => {
           const name = WINDOWS[no];
           const n = byWindow[no];
-          const next = gigs.find((g) => g.window === no);
+          const mine = gigs.filter((g) => g.window === no);
+          const next = mine[0];
+          const from = mine.length ? Math.min(...mine.map((g) => g.price)) : null;
           const href = hrefs[no] ?? `/search?q=${encodeURIComponent(name)}`;
           const countText = n ? count(n, "gig", "gigs") : "No gigs yet";
-          const meta = next ? `$${next.price}, ${count(next.days, "day", "days")}` : "";
-          const label = `Window ${no}, ${name}. ${countText}.${next ? ` Next up: ${next.title}, ${meta}.` : ""}`;
+          const fromText = from !== null ? `From $${from}` : "";
+          const label = `${name}. ${countText}.${fromText ? ` ${fromText}.` : ""}${next ? ` Next up: ${next.title}.` : ""}`;
 
           return (
-            <li key={no} className="wf-bay" data-w={no}>
-              <Link className="wf-window" href={href} aria-label={label}>
-                <span className="wf-sign" aria-hidden="true">
-                  <span className="wf-no">{no}</span>
-                  <span className="wf-name">{name}</span>
+            <li key={no}>
+              <Link className="wf-row" href={href} aria-label={label}>
+                <span className="wf-no" aria-hidden="true">
+                  {no}
                 </span>
-                <span className="wf-pane" aria-hidden="true">
-                  <span className="wf-glint" />
+                <span className="wf-main" aria-hidden="true">
+                  <span className="wf-name">{name}</span>
+                  <span className="wf-next">{next ? `Next up: ${next.title}` : "Nothing listed yet"}</span>
+                </span>
+                <span className="wf-side" aria-hidden="true">
                   <span className="wf-count">{countText}</span>
-                  {next && (
-                    <span className="wf-next">
-                      <span className="wf-next-label">Next up</span>
-                      <span className="wf-next-title">{next.title}</span>
-                      <span className="wf-next-meta">{meta}</span>
-                    </span>
-                  )}
+                  {fromText && <span className="wf-meta">{fromText}</span>}
                 </span>
               </Link>
             </li>

@@ -1,22 +1,16 @@
 import { cn } from "@/lib/utils/cn";
 import { GigArt, type ArtCategory } from "@/components/gig/GigArt";
 
-export type CoverCategory =
-  | "web-development"
-  | "mobile-development"
-  | "design-creative"
-  | "ai-automation"
-  | "digital-marketing"
-  | "business-support";
+export type CoverCategory = "web-development" | "mobile-development" | "design-creative" | "ai-automation" | "digital-marketing" | "business-support";
 
-/** Kept for the pages that import it. The cover itself is now drawn by GigArt. */
+/** Kept for the pages that import it. Values match GigArt's quiet category tints. */
 export const COVER_STYLES: Record<CoverCategory, { bg: string; fg: string; tag: string }> = {
-  "web-development": { bg: "#0E5E57", fg: "#EFE9DF", tag: "Web" },
-  "mobile-development": { bg: "#2D4FA8", fg: "#EFE9DF", tag: "Mobile" },
-  "design-creative": { bg: "#6A2C70", fg: "#EFE9DF", tag: "Design" },
-  "ai-automation": { bg: "#D9A531", fg: "#2E1414", tag: "AI" },
-  "digital-marketing": { bg: "#C8331F", fg: "#EFE9DF", tag: "Marketing" },
-  "business-support": { bg: "#4B2320", fg: "#C9A24A", tag: "Business" },
+  "web-development": { bg: "#E9EEF5", fg: "#121417", tag: "Web" },
+  "mobile-development": { bg: "#E7EFF2", fg: "#121417", tag: "Mobile" },
+  "design-creative": { bg: "#F1EBF3", fg: "#121417", tag: "Design" },
+  "ai-automation": { bg: "#ECF2EA", fg: "#121417", tag: "AI" },
+  "digital-marketing": { bg: "#F5ECE7", fg: "#121417", tag: "Marketing" },
+  "business-support": { bg: "#EDEEF0", fg: "#121417", tag: "Business" },
 };
 
 const ORDER = Object.keys(COVER_STYLES) as CoverCategory[];
@@ -48,18 +42,19 @@ interface Props {
   seed: string;
   category?: string | null;
   className?: string;
-  /** Hide the category tag on very small covers. */
+  /** Kept for compatibility. The cover already names its category, so no extra tag is drawn. */
   showTag?: boolean;
+  /** Words printed on the cover, usually the gig title. */
+  text?: string;
 }
 
-/** An enamel sign built in code, seeded by the gig id. Fills its parent like the old cover did. */
-export function GigCover({ seed, category, className, showTag = true }: Props) {
+/** A typographic cover. Fills its parent like the old cover did. */
+export function GigCover({ seed, category, className, text }: Props) {
   const cat = coverCategoryFor(category, seed);
   const { tag } = COVER_STYLES[cat];
   return (
     <div className={cn("relative h-full w-full", className)}>
-      <GigArt seed={seed} category={ART[cat]} title={`${tag} gig cover`} cover />
-      {showTag && <span className="plate plate--enamel t-plate absolute left-2.5 top-2.5 min-h-6 px-2">{tag}</span>}
+      <GigArt seed={seed} category={ART[cat]} title={`${tag} gig cover`} text={text} cover />
     </div>
   );
 }

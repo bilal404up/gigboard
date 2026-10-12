@@ -12,8 +12,8 @@ type Props = {
 
 /* Only link to routes that exist. Drop any that don't. */
 const BUYERS: FooterLink[] = [
-  { label: "Browse the board", href: "/search" },
-  { label: "How the counter works", href: "/#how-the-counter-works" },
+  { label: "Browse gigs", href: "/search" },
+  { label: "How payment works", href: "/#how-the-counter-works" },
   { label: "Log in", href: "/login" },
 ];
 const SELLERS: FooterLink[] = [
@@ -22,7 +22,7 @@ const SELLERS: FooterLink[] = [
 ];
 const COMPANY: FooterLink[] = [
   { label: "How it works", href: "/how-it-works" },
-  { label: "Browse gigs", href: "/search" },
+  { label: "All gigs", href: "/search" },
 ];
 
 function Column({ title, links }: { title: string; links: FooterLink[] }) {
@@ -41,12 +41,7 @@ function Column({ title, links }: { title: string; links: FooterLink[] }) {
   );
 }
 
-export default function SiteFooter({
-  buyers = BUYERS,
-  sellers = SELLERS,
-  company = COMPANY,
-  year = new Date().getFullYear(),
-}: Props) {
+export default function SiteFooter({ buyers = BUYERS, sellers = SELLERS, company = COMPANY, year = new Date().getFullYear() }: Props) {
   return (
     <footer className="site-footer sf">
       <div className="sf-inner">
@@ -54,11 +49,11 @@ export default function SiteFooter({
           <Link href="/" className="sf-mark">
             Gigboard
           </Link>
-          <p className="sf-tagline">Fixed-price freelance work, paid through the counter.</p>
+          <p className="sf-tagline">Fixed-price freelance work. You pay up front, and the seller is paid when you approve.</p>
           <ul className="sf-rules">
             <li>Late delivery means a full refund.</li>
             <li>Three days of silence after delivery approves the job.</li>
-            <li>If something's wrong, a person at the counter steps in.</li>
+            <li>If something&apos;s wrong, a person from Gigboard steps in.</li>
           </ul>
         </div>
 

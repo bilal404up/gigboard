@@ -5,24 +5,23 @@ import { cn } from "@/lib/utils/cn"
 
 const buttonVariants = cva(
   [
-    "inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-[4px] font-sans text-[0.9375rem] font-semibold leading-none",
-    "transition-[transform,background-color,color] duration-120 ease-out",
-    "hover:-translate-y-px focus-visible:-translate-y-px active:translate-y-px",
-    "focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany",
-    "disabled:pointer-events-none disabled:translate-y-0 disabled:opacity-50",
+    "inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-[10px] font-sans text-[0.9375rem] font-semibold leading-none",
+    "transition-colors duration-120 ease-out",
+    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink",
+    "disabled:pointer-events-none disabled:opacity-50",
     "[&_svg]:h-4 [&_svg]:w-4 [&_svg]:shrink-0",
   ].join(" "),
   {
     variants: {
       variant: {
-        default:
-          "bg-mahogany text-laminate shadow-[0_2px_0_#2E1414] hover:bg-mahogany-raised focus-visible:bg-mahogany-raised focus-visible:outline-release active:shadow-[0_0_0_#2E1414,inset_0_2px_0_rgba(0,0,0,0.3)]",
-        cta: "bg-[linear-gradient(180deg,#E7C978_0%,#C9A24A_55%,#B08A2C_100%)] text-ink shadow-[0_2px_0_#7A5A14,inset_0_1px_0_#E7C978] hover:shadow-[0_3px_0_#7A5A14,inset_0_1px_0_#E7C978] focus-visible:shadow-[0_3px_0_#7A5A14,inset_0_1px_0_#E7C978] active:shadow-[0_0_0_#7A5A14,inset_0_2px_0_rgba(0,0,0,0.18)]",
-        secondary: "bg-laminate-sunk text-ink shadow-[0_2px_0_#D5CBBD] hover:bg-sand/60 active:shadow-none",
+        default: "bg-ink text-white hover:bg-[#2A2D32]",
+        /* the money button: green means "this releases or commits payment" */
+        cta: "bg-release text-ink hover:bg-[#26A366]",
+        secondary: "bg-laminate-sunk text-ink hover:bg-sand/70",
         ghost: "bg-transparent text-ink hover:bg-laminate-sunk",
-        link: "h-auto min-h-0 rounded-none p-0 text-ink underline decoration-ink/45 decoration-[1.5px] underline-offset-[3px] hover:translate-y-0 hover:decoration-ink focus-visible:translate-y-0 active:translate-y-0",
-        danger: "bg-transparent text-alarm shadow-[inset_0_0_0_1.5px_#B8281C] hover:bg-alarm-tint",
-        outline: "bg-transparent text-ink shadow-[inset_0_0_0_1.5px_#4B2320] hover:bg-laminate-sunk",
+        link: "h-auto min-h-0 rounded-none p-0 text-ink underline decoration-ink/45 decoration-[1.5px] underline-offset-[3px] hover:decoration-ink",
+        danger: "bg-transparent text-alarm shadow-[inset_0_0_0_1px_#B42318] hover:bg-alarm-tint",
+        outline: "bg-transparent text-ink shadow-[inset_0_0_0_1px_#8A9096] hover:bg-laminate-sunk hover:shadow-[inset_0_0_0_1px_#121417]",
       },
       size: {
         default: "h-11 px-[18px]",

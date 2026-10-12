@@ -1,35 +1,25 @@
 /* =====================================================================
-   Gigboard split-flap board, loop 2. Prefix: gb-
+   Gigboard split-flap board. Prefix: gb-
    Leaves are created and animated from GigBoard.tsx (transform only).
-   This file sets rest states. The hover bar uses opacity.
+   The headline and search sit on the page; the board is one black panel.
    Breakpoints must match GigBoard.tsx: 768, 1024, 1440.
    ===================================================================== */
 
 .gb {
-  --gb-hall: #eae7e0;
-  --gb-ink: #16201a;
-  --gb-muted: #5a5248;
-  --gb-paper: #f7f5f0;
-  --gb-field-edge: #8a8278;
-  --gb-mahogany: #3b1a12;
-  --gb-brass: #c9992f;
-  --gb-brass-dark: #8c6118;
-  --gb-field: #141311;
-  --gb-flap: #1d1b18;
-  --gb-flap-ink: #f1ede2;
-  --gb-rail-ink: #cfc6b8;
-  --gb-head-ink: #a8a397;
-  --gb-rule: #9a887a;
-  --gb-tab: #2a2420;
-  --gb-open: #1f7a4d;
-  --gb-w1: #17695a;
-  --gb-w2: #2e55a8;
-  --gb-w3: #6b3a8e;
-  --gb-w4: #d9a21e;
-  --gb-w5: #b8352a;
-  --gb-w6: #6e4b2e;
+  --gb-ink: #121417;
+  --gb-muted: #565b63;
+  --gb-paper: #ffffff;
+  --gb-field-edge: #8a9096;
+  --gb-board: #0e0f11;
+  --gb-flap: #1c1e21;
+  --gb-flap-ink: #f4f4f1;
+  --gb-rail-ink: #b9bec6;
+  --gb-head-ink: #8e949c;
+  --gb-rule: #34373c;
+  --gb-tab: #1c1e21;
+  --gb-lit: #2bb673;
+  --gb-dim: #33363b;
   --gb-nudge: 0.04em;
-  /* Point these at the variables app/fonts.ts exports */
   --gb-display-font: var(--font-display), "Arial Narrow", sans-serif;
   --gb-sans-font: var(--font-body), system-ui, sans-serif;
 
@@ -45,9 +35,10 @@
 }
 
 .gb :is(a, button, input):focus-visible {
-  outline: 3px solid var(--gb-brass);
+  outline: 3px solid var(--gb-ink);
   outline-offset: 2px;
 }
+.gb-frame :is(a, button):focus-visible { outline-color: var(--gb-flap-ink); }
 
 .gb-sr {
   position: absolute;
@@ -63,28 +54,27 @@
 
 /* Homepage wrapper ----------------------------------------------------- */
 
-.gb-hero { padding: 16px 12px 8px; }
+.gb-hero { padding: 16px 16px 8px; }
 .gb-hero > .gb {
-  max-width: 1440px;
+  max-width: 1280px;
   margin-inline: auto;
 }
 
-/* Plate: headline and search (on the hall below 768) ------------------- */
+/* Headline and search, on the page ------------------------------------- */
 
 .gb-plate {
   display: grid;
   gap: 16px;
-  padding: 0 0 18px;
+  padding: 8px 0 20px;
 }
 
 .gb-h1 {
   margin: 0;
   font-family: var(--gb-display-font);
-  font-weight: 800;
-  font-variation-settings: "wdth" 112;
-  font-size: clamp(28px, 8.2vw, 36px);
-  line-height: 1;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  font-size: clamp(32px, 8.4vw, 40px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
   color: var(--gb-ink);
 }
 .gb-h1-line { display: block; }
@@ -103,7 +93,7 @@
   height: 52px;
   padding: 0 16px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--gb-paper);
   color: var(--gb-ink);
   font-family: var(--gb-sans-font);
@@ -112,6 +102,7 @@
   line-height: 1;
   box-shadow: inset 0 0 0 1px var(--gb-field-edge);
 }
+.gb .gb-input:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--gb-ink); }
 .gb .gb-input::placeholder { color: var(--gb-muted); opacity: 1; }
 .gb .gb-input::-webkit-search-decoration,
 .gb .gb-input::-webkit-search-cancel-button {
@@ -121,25 +112,20 @@
 
 .gb .gb-go {
   flex: none;
-  min-width: 80px;
+  min-width: 84px;
   height: 52px;
   padding: 0 20px;
   border: 0;
-  border-radius: 6px;
-  background: var(--gb-brass);
-  color: var(--gb-ink);
-  font-family: var(--gb-display-font);
-  font-weight: 800;
-  font-variation-settings: "wdth" 110;
-  font-size: 17px;
+  border-radius: 10px;
+  background: var(--gb-ink);
+  color: #ffffff;
+  font-family: var(--gb-sans-font);
+  font-weight: 600;
+  font-size: 16px;
   line-height: 1;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), 0 2px 0 var(--gb-brass-dark);
 }
-.gb .gb-go:active {
-  transform: translateY(1px);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), 0 1px 0 var(--gb-brass-dark);
-}
+.gb .gb-go:hover { background: #2a2d32; }
 
 .gb-try,
 .gb-counter {
@@ -148,17 +134,20 @@
   color: var(--gb-muted);
 }
 .gb-try { margin: 10px 0 0; }
-.gb-counter { margin: 16px 2px 0; font-size: 17px; color: var(--gb-ink); }
+.gb-counter { margin: 14px 2px 0; font-size: 16px; color: var(--gb-ink); }
 
 .gb-try a,
 .gb-counter a {
   position: relative;
   color: var(--gb-ink);
+  font-weight: 600;
   text-decoration: underline;
-  text-decoration-color: var(--gb-brass);
-  text-decoration-thickness: 2px;
+  text-decoration-color: var(--gb-field-edge);
+  text-decoration-thickness: 1.5px;
   text-underline-offset: 4px;
 }
+.gb-try a:hover,
+.gb-counter a:hover { text-decoration-color: var(--gb-ink); }
 /* 44px hit area for inline links */
 .gb-try a::after,
 .gb-counter a::after {
@@ -167,20 +156,17 @@
   inset: -12px -3px;
 }
 
-/* Frame and field ------------------------------------------------------ */
+/* Board panel ---------------------------------------------------------- */
 
 .gb-frame {
-  padding: 6px 6px 4px;
-  background: var(--gb-mahogany);
-  border-radius: 12px;
+  padding: 8px 8px 4px;
+  background: var(--gb-board);
+  border-radius: 14px;
 }
 
 .gb-field {
   container-type: inline-size;
-  padding: 10px;
-  background: var(--gb-field);
-  border-radius: 8px;
-  box-shadow: inset 0 2px 0 rgb(0 0 0 / 0.55);
+  padding: 8px 6px;
 }
 
 /* Character grid: every column is a whole number of units, sized so the
@@ -214,6 +200,7 @@
   white-space: nowrap;
 }
 .gb-head.gb-col--price { text-align: right; }
+.gb-head.gb-col--status { text-align: center; }
 
 .gb-rows {
   display: grid;
@@ -242,7 +229,7 @@
   height: var(--ch);
   margin-top: calc(var(--ch) / -2);
   border-radius: 2px;
-  background: var(--gb-brass);
+  background: var(--gb-lit);
   opacity: 0;
   transition: opacity 120ms ease;
 }
@@ -259,6 +246,9 @@
   gap: var(--cg);
 }
 
+/* The plain title under each row on phones */
+.gb-plain { display: none; }
+
 /* Flap cells: at rest, the cell and two halves ------------------------- */
 
 .gb-cell {
@@ -270,7 +260,6 @@
   height: var(--ch);
   perspective: calc(var(--ch) * 5);
 }
-/* The split: a translucent groove, so small text stays readable */
 .gb-cell::after {
   content: "";
   position: absolute;
@@ -278,7 +267,7 @@
   right: 0;
   top: calc(50% - 0.5px);
   height: 1px;
-  background: rgb(0 0 0 / 0.4);
+  background: rgb(0 0 0 / 0.45);
   z-index: 3;
   pointer-events: none;
 }
@@ -302,15 +291,13 @@
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
-/* Top half: line box of full cell height, glyph centred on the bottom edge */
 .gb-face--top {
   top: 0;
   line-height: var(--ch);
   border-radius: 2px 2px 0 0;
   transform-origin: 50% 100%;
-  box-shadow: inset 0 0 0 100px rgb(255 255 255 / 0.035);
+  box-shadow: inset 0 0 0 100px rgb(255 255 255 / 0.03);
 }
-/* Bottom half: zero line box, glyph centred on the top edge */
 .gb-face--bot {
   bottom: 0;
   line-height: 0;
@@ -318,12 +305,10 @@
   transform-origin: 50% 0;
 }
 
-/* Leaves exist only while flipping, and rest edge-on */
 .gb-leaf { z-index: 2; }
 .gb-leaf.gb-face--top { transform: rotateX(-90deg); }
 .gb-leaf.gb-face--bot { transform: rotateX(90deg); }
 
-/* Word flaps: printed words, not letter grids */
 .gb-cell--word > .gb-face {
   text-align: left;
   padding-inline: calc(var(--cw) * 0.28);
@@ -334,16 +319,11 @@
 .gb-col--done > .gb-face,
 .gb-col--status > .gb-face { text-align: center; }
 
-/* Tones */
-.gb-face[data-tone="open"] { background: var(--gb-open); }
-.gb-face[data-tone="queue"] { background: var(--gb-brass); color: var(--gb-flap); }
-.gb-face[data-tone="away"] { background: var(--gb-flap-ink); color: var(--gb-flap); }
-.gb-face[data-tone="w1"] { background: var(--gb-w1); }
-.gb-face[data-tone="w2"] { background: var(--gb-w2); }
-.gb-face[data-tone="w3"] { background: var(--gb-w3); }
-.gb-face[data-tone="w4"] { background: var(--gb-w4); color: var(--gb-flap); }
-.gb-face[data-tone="w5"] { background: var(--gb-w5); }
-.gb-face[data-tone="w6"] { background: var(--gb-w6); }
+/* Tones: rated 4.8 and up is lit green, new gigs are dimmed, windows are neutral */
+.gb-face[data-tone="open"] { background: var(--gb-lit); color: var(--gb-board); }
+.gb-face[data-tone="queue"] { background: var(--gb-flap); }
+.gb-face[data-tone="away"] { background: var(--gb-dim); color: var(--gb-rail-ink); }
+.gb-face[data-tone^="w"] { background: #2a2d31; }
 
 /* Rail ------------------------------------------------------------------ */
 
@@ -352,7 +332,8 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
-  padding: 10px 2px 6px;
+  padding: 10px 2px 8px;
+  border-top: 1px solid var(--gb-rule);
   color: var(--gb-rail-ink);
 }
 
@@ -369,33 +350,17 @@
   height: 44px;
   padding: 0 8px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 8px;
   background: var(--gb-tab);
   color: var(--gb-flap-ink);
-  font-family: var(--gb-display-font);
-  font-weight: 700;
-  font-variation-settings: "wdth" 70;
-  font-size: 17px;
+  font-family: var(--gb-sans-font);
+  font-weight: 600;
+  font-size: 15px;
   line-height: 1;
   cursor: pointer;
-  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.3);
 }
-.gb .gb-tab[data-w="1"] { background: var(--gb-w1); }
-.gb .gb-tab[data-w="2"] { background: var(--gb-w2); }
-.gb .gb-tab[data-w="3"] { background: var(--gb-w3); }
-.gb .gb-tab[data-w="4"] { background: var(--gb-w4); color: var(--gb-flap); }
-.gb .gb-tab[data-w="5"] { background: var(--gb-w5); }
-.gb .gb-tab[data-w="6"] { background: var(--gb-w6); }
-.gb .gb-tab[aria-pressed="true"]::after {
-  content: "";
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: -6px;
-  height: 3px;
-  border-radius: 2px;
-  background: var(--gb-brass);
-}
+.gb .gb-tab[aria-pressed="true"] { background: var(--gb-flap-ink); color: var(--gb-board); }
+.gb-tab-name { display: none; }
 
 .gb-note {
   margin: 0;
@@ -414,7 +379,7 @@
   min-height: 44px;
   padding: 0 14px;
   border: 1px solid var(--gb-rule);
-  border-radius: 4px;
+  border-radius: 8px;
   background: transparent;
   color: var(--gb-flap-ink);
   font-family: var(--gb-sans-font);
@@ -442,12 +407,11 @@
   color: var(--gb-flap-ink);
 }
 
-/* Hover only where hover exists ------------------------------------------ */
-
 @media (hover: hover) {
   .gb-link[href]:hover::before { opacity: 1; }
   .gb-link[href]:hover .gb-face:not([data-tone]) { color: #ffffff; }
-  .gb .gb-ctl:hover { border-color: var(--gb-brass); }
+  .gb .gb-ctl:hover { border-color: var(--gb-flap-ink); }
+  .gb .gb-tab:not([aria-pressed="true"]):hover { background: #2a2d31; }
 }
 
 /* Breakpoints ------------------------------------------------------------- */
@@ -457,37 +421,18 @@
 
   .gb-plate {
     gap: 20px;
-    padding: 28px 28px 22px;
-    background: var(--gb-mahogany);
-    border-radius: 12px 12px 0 0;
+    padding: 20px 0 24px;
   }
-  .gb-h1 {
-    color: var(--gb-flap-ink);
-    font-variation-settings: "wdth" 140;
-    font-size: clamp(34px, 3.5vw, 52px);
-    line-height: 0.98;
-  }
-  .gb .gb-input {
-    height: 56px;
-    box-shadow: inset 0 2px 0 rgb(0 0 0 / 0.12);
-  }
-  .gb .gb-go {
-    height: 56px;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), 0 2px 0 #1f0c08;
-  }
-  .gb-try { color: var(--gb-rail-ink); }
-  .gb-try a { color: var(--gb-flap-ink); }
-  .gb-counter { margin-top: 16px; }
+  .gb-h1 { font-size: clamp(40px, 4.6vw, 58px); line-height: 1; }
+  .gb .gb-input,
+  .gb .gb-go { height: 56px; }
 
-  .gb-frame {
-    padding: 0 28px;
-    border-radius: 0 0 12px 12px;
-  }
-  .gb-field { padding: 16px 20px 14px; }
+  .gb-frame { padding: 14px 20px 6px; }
+  .gb-field { padding: 6px 0; }
 
   .gb-rail {
     gap: 12px 20px;
-    padding: 14px 0 18px;
+    padding: 12px 0 10px;
   }
   .gb-tabs { flex: none; }
   .gb .gb-tab { flex: none; }
@@ -502,12 +447,14 @@
 
 @media (min-width: 1024px) {
   .gb-plate {
-    grid-template-columns: minmax(0, 1fr) minmax(360px, 600px);
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 560px);
     column-gap: 48px;
     align-items: end;
   }
-  .gb-h1 { font-size: clamp(40px, 4.2vw, 64px); }
   .gb-rail { flex-wrap: nowrap; }
+  .gb .gb-tab[data-w] { padding: 0 12px; }
+  .gb .gb-tab[data-w] .gb-tab-n { display: none; }
+  .gb-tab-name { display: inline; }
 }
 
 @media (max-width: 1439.98px) {
@@ -531,10 +478,19 @@
   .gb-col--status { --span: 4; }
   .gb-strip-wide { display: none; }
   .gb-row:nth-child(n + 5) { display: none; }
-  .gb-cell::after { background: rgb(0 0 0 / 0.26); }
+  .gb-cell::after { background: rgb(0 0 0 / 0.3); }
+  .gb-plain {
+    display: block;
+    margin-top: 5px;
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.3;
+    color: var(--gb-rail-ink);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .gb-link[href]::before { transition: none; }
-  .gb .gb-go:active { transform: none; }
 }

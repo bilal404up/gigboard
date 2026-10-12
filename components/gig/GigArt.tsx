@@ -1,27 +1,43 @@
-/* Generative enamel sign for a gig. The field colour is fixed per category, the pattern and glyph pose come from the seed. */
+/* Typographic cover for a gig: the gig's own words on a quiet category tint, with a small category mark.
+   Every gig gets a different cover because the words differ. Exports are unchanged. */
 
 export type ArtCategory = 'design' | 'writing' | 'development' | 'mobile' | 'ai' | 'video' | 'audio' | 'marketing' | 'business' | 'other'
 
-type Props = { seed: string; category?: string | null; className?: string; title?: string; cover?: boolean }
-
-const LAM = '#EFE9DF'
-const DEEP = '#2E1414'
-const BRASS = '#C9A24A'
-
-const FIELD: Record<ArtCategory, { bg: string; fg: string; shadow: string }> = {
-  development: { bg: '#0E5E57', fg: LAM, shadow: DEEP },
-  mobile: { bg: '#2D4FA8', fg: LAM, shadow: DEEP },
-  design: { bg: '#6A2C70', fg: LAM, shadow: DEEP },
-  ai: { bg: '#D9A531', fg: DEEP, shadow: '#7A5A14' },
-  marketing: { bg: '#C8331F', fg: LAM, shadow: DEEP },
-  business: { bg: '#4B2320', fg: BRASS, shadow: '#120707' },
-  writing: { bg: '#0E5E57', fg: LAM, shadow: DEEP },
-  video: { bg: '#6A2C70', fg: LAM, shadow: DEEP },
-  audio: { bg: '#2D4FA8', fg: LAM, shadow: DEEP },
-  other: { bg: '#0E5E57', fg: LAM, shadow: DEEP },
+type Props = {
+  seed: string
+  category?: string | null
+  className?: string
+  title?: string
+  cover?: boolean
+  /** Words to print on the cover. Defaults to words taken from a slug-style seed. */
+  text?: string
 }
 
-const PATTERNS = ['stripes', 'dots', 'checks', 'rules'] as const
+const TINT: Record<ArtCategory, string> = {
+  development: '#E9EEF5',
+  mobile: '#E7EFF2',
+  design: '#F1EBF3',
+  ai: '#ECF2EA',
+  marketing: '#F5ECE7',
+  business: '#EDEEF0',
+  writing: '#F2EFE6',
+  video: '#EEEAF4',
+  audio: '#E9F0EF',
+  other: '#EDEEF0',
+}
+
+const NAME: Record<ArtCategory, string> = {
+  development: 'Web development',
+  mobile: 'Mobile',
+  design: 'Design',
+  ai: 'AI and automation',
+  marketing: 'Marketing',
+  business: 'Business support',
+  writing: 'Writing',
+  video: 'Video',
+  audio: 'Audio',
+  other: 'Gig',
+}
 
 export function hash(s: string) {
   let h = 0x811c9dc5
@@ -46,6 +62,17 @@ export function categoryOf(raw?: string | null): ArtCategory {
   return 'other'
 }
 
+/** "i-will-design-a-logo-that-still-reads-at-16px-fb6n" becomes "Design a logo that still reads at 16px". */
+function coverText(seed: string): string | null {
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(seed)) return null // a uuid, not a slug
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+){2,}$/.test(seed)) return null
+  let parts = seed.split('-')
+  if (parts[0] === 'i' && parts[1] === 'will') parts = parts.slice(2)
+  if (parts.length >= 3 && parts[parts.length - 1].length === 4) parts = parts.slice(0, -1)
+  const s = parts.join(' ')
+  return s ? s[0].toUpperCase() + s.slice(1) : null
+}
+
 function Glyph({ category, rot, fg }: { category: ArtCategory; rot: number; fg: string }) {
   const solid = { fill: fg, stroke: 'none' as const }
   const line = { fill: 'none' as const, stroke: fg, strokeWidth: 14, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
@@ -54,9 +81,8 @@ function Glyph({ category, rot, fg }: { category: ArtCategory; rot: number; fg: 
       case 'design':
         return (
           <>
-            <circle cx="-40" cy="10" r="52" {...solid} opacity="0.92" />
-            <circle cx="30" cy="-20" r="52" {...solid} opacity="0.92" />
-            <circle cx="10" cy="46" r="34" fill="rgba(0,0,0,0.35)" />
+            <circle cx="-40" cy="10" r="52" {...solid} opacity="0.9" />
+            <circle cx="30" cy="-20" r="52" {...solid} opacity="0.55" />
           </>
         )
       case 'writing':
@@ -65,7 +91,6 @@ function Glyph({ category, rot, fg }: { category: ArtCategory; rot: number; fg: 
             <rect x="-90" y="-62" width="180" height="22" rx="11" {...solid} />
             <rect x="-90" y="-18" width="130" height="22" rx="11" {...solid} />
             <rect x="-90" y="26" width="160" height="22" rx="11" {...solid} />
-            <circle cx="70" cy="37" r="14" {...solid} />
           </>
         )
       case 'development':
@@ -80,7 +105,6 @@ function Glyph({ category, rot, fg }: { category: ArtCategory; rot: number; fg: 
         return (
           <>
             <rect x="-52" y="-92" width="104" height="184" rx="24" fill="none" stroke={fg} strokeWidth="12" />
-            <rect x="-34" y="-62" width="68" height="104" rx="6" {...solid} opacity="0.9" />
             <circle cx="0" cy="66" r="9" {...solid} />
           </>
         )
@@ -104,7 +128,6 @@ function Glyph({ category, rot, fg }: { category: ArtCategory; rot: number; fg: 
           <>
             <rect x="-100" y="-66" width="150" height="132" rx="20" {...solid} />
             <path d="M58 -40 L106 -66 L106 66 L58 40 Z" {...solid} />
-            <path d="M-34 -16 L-6 0 L-34 16 Z" fill="rgba(0,0,0,0.45)" />
           </>
         )
       case 'audio':
@@ -113,7 +136,6 @@ function Glyph({ category, rot, fg }: { category: ArtCategory; rot: number; fg: 
             <path d="M-60 -70 A100 100 0 0 1 -60 70" {...line} />
             <path d="M-20 -46 A62 62 0 0 1 -20 46" {...line} />
             <path d="M20 -22 A30 30 0 0 1 20 22" {...line} />
-            <circle cx="-96" cy="0" r="16" {...solid} />
           </>
         )
       case 'marketing':
@@ -122,7 +144,6 @@ function Glyph({ category, rot, fg }: { category: ArtCategory; rot: number; fg: 
             <rect x="-104" y="26" width="44" height="48" rx="6" {...solid} />
             <rect x="-48" y="-8" width="44" height="82" rx="6" {...solid} />
             <rect x="8" y="-42" width="44" height="116" rx="6" {...solid} />
-            <circle cx="86" cy="-56" r="18" {...solid} />
           </>
         )
       case 'business':
@@ -133,60 +154,38 @@ function Glyph({ category, rot, fg }: { category: ArtCategory; rot: number; fg: 
           </>
         )
       default:
-        return (
-          <>
-            <path d="M0 -84 L84 0 L0 84 L-84 0 Z" {...solid} />
-            <circle cx="0" cy="0" r="22" fill="rgba(0,0,0,0.4)" />
-          </>
-        )
+        return <path d="M0 -84 L84 0 L0 84 L-84 0 Z" {...solid} />
     }
   })()
   return <g transform={`rotate(${rot})`}>{g}</g>
 }
 
-export function GigArt({ seed, category, className = '', title, cover = false }: Props) {
-  const h = hash(seed)
+export function GigArt({ seed, category, className = '', title, cover = false, text }: Props) {
   const cat = categoryOf(category)
-  const { bg, fg, shadow } = FIELD[cat]
-  const pattern = PATTERNS[(h >>> 4) % PATTERNS.length]
-  const angle = [0, 45, 90, 135][(h >>> 8) % 4]
-  const rot = [-8, -4, 0, 4, 8][(h >>> 12) % 5]
-  const ox = 180 + ((h >>> 16) % 80)
-  const oy = 140 + ((h >>> 20) % 40)
-  const pid = `art-${h.toString(36)}`
+  const words = text ?? coverText(seed)
+  const rot = [-6, 0, 6][hash(seed) % 3]
 
   return (
-    <svg
-      viewBox="0 0 400 300"
-      preserveAspectRatio={cover ? 'xMidYMid slice' : 'xMidYMid meet'}
+    <div
       role={title ? 'img' : undefined}
       aria-label={title}
-      aria-hidden={title ? undefined : 'true'}
-      focusable="false"
-      className={`block w-full ${cover ? 'h-full' : 'h-auto'} ${className}`}
+      aria-hidden={title ? undefined : true}
+      className={`relative w-full overflow-hidden [container-type:inline-size] ${cover ? 'h-full' : 'aspect-[4/3]'} ${className}`}
+      style={{ background: TINT[cat] }}
     >
-      <defs>
-        <pattern id={pid} width="24" height="24" patternUnits="userSpaceOnUse" patternTransform={`rotate(${angle})`}>
-          {pattern === 'stripes' ? <rect x="0" y="0" width="24" height="9" fill={fg} /> : null}
-          {pattern === 'dots' ? <circle cx="12" cy="12" r="4" fill={fg} /> : null}
-          {pattern === 'checks' ? (
-            <>
-              <rect x="0" y="0" width="12" height="12" fill={fg} />
-              <rect x="12" y="12" width="12" height="12" fill={fg} />
-            </>
-          ) : null}
-          {pattern === 'rules' ? <rect x="0" y="0" width="24" height="2.5" fill={fg} /> : null}
-        </pattern>
-      </defs>
-      <rect x="0" y="0" width="400" height="300" rx="10" fill={bg} />
-      <rect x="0" y="0" width="400" height="300" rx="10" fill={`url(#${pid})`} opacity="0.12" />
-      <rect x="8" y="8" width="384" height="284" rx="7" fill="none" stroke={fg} strokeOpacity="0.5" strokeWidth="2" />
-      <g transform={`translate(${ox + 6} ${oy + 8})`} opacity="0.35">
-        <Glyph category={cat} rot={rot} fg={shadow} />
-      </g>
-      <g transform={`translate(${ox} ${oy})`}>
-        <Glyph category={cat} rot={rot} fg={fg} />
-      </g>
-    </svg>
+      <svg viewBox="-120 -120 240 240" className="absolute right-[7%] top-[9%] w-[22%]" aria-hidden="true" focusable="false">
+        <Glyph category={cat} rot={rot} fg="#121417" />
+      </svg>
+      {words ? (
+        <>
+          <span className="absolute left-[7%] top-[9%] max-w-[60%] truncate text-[length:max(9px,4.6cqw)] font-semibold text-[#565B63]">{NAME[cat]}</span>
+          <span className="absolute bottom-[8%] left-[7%] right-[7%] line-clamp-3 text-[length:max(10px,8.4cqw)] font-bold leading-[1.05] tracking-[-0.02em] text-[#121417]">
+            {words}
+          </span>
+        </>
+      ) : (
+        <span className="absolute bottom-[9%] left-[7%] right-[7%] text-[length:max(14px,11cqw)] font-bold leading-none tracking-[-0.03em] text-[#121417]">{NAME[cat]}</span>
+      )}
+    </div>
   )
 }

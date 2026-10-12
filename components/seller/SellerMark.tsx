@@ -2,8 +2,6 @@ import { hash } from '@/components/gig/GigArt'
 
 export type SellerLevel = 'new' | 'level_one' | 'level_two' | 'top_rated'
 
-const LIGHTS = ['#E7C978', '#F7F3EA', '#F2B8A2', '#9FE3C4']
-
 const LEVEL_LABEL: Record<SellerLevel, string> = {
   new: 'New',
   level_one: 'Level One',
@@ -29,50 +27,33 @@ type MarkProps = {
   className?: string
 }
 
-/* A lit window sign: nine lamps, some on, in the seller's own light. The frame says the level. */
+const TINTS = ['#E9EEF5', '#ECF2EA', '#F1EBF3', '#F2EFE6', '#F5ECE7', '#E7EFF2']
+
+/* Fallback mark for anyone without a photo: initials on a quiet tint. Top rated gets the green dot. */
 export function SellerMark({ username, level, size = 40, label, className = '' }: MarkProps) {
   const h = hash(username)
   const lvl = normalizeLevel(level)
-  const light = LIGHTS[h % LIGHTS.length]
-  let bits = (h >>> 3) & 0x1ff
-  if ((bits & (bits - 1)) === 0 || bits === 0x1ff) bits ^= 0x0a5
-  const pad = size * 0.16
-  const step = (size - pad * 2) / 3
-  const r = step * 0.3
-  const ring =
-    lvl === 'top_rated' ? { stroke: '#C9A24A', width: 2.5 }
-    : lvl === 'level_two' ? { stroke: '#C9A24A', width: 2 }
-    : lvl === 'level_one' ? { stroke: '#0E5E57', width: 2 }
-    : { stroke: 'rgba(239, 233, 223, 0.5)', width: 1.5 }
+  const tint = TINTS[h % TINTS.length]
+  const initials = username.replace(/[^a-zA-Z0-9]/g, '').slice(0, 2).toUpperCase() || '?'
+  const r = size / 2
 
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox={`0 0 ${size} ${size}`}
-      role="img"
-      aria-label={label ?? `${username}, ${LEVEL_LABEL[lvl]} seller`}
-      className={`shrink-0 ${className}`}
-    >
-      <rect x="0" y="0" width={size} height={size} rx={size * 0.22} fill="#2E1414" />
-      <rect x={ring.width / 2} y={ring.width / 2} width={size - ring.width} height={size - ring.width} rx={size * 0.22 - ring.width / 2} fill="none" stroke={ring.stroke} strokeWidth={ring.width} />
-      {Array.from({ length: 9 }, (_, i) => {
-        const on = (bits >> i) & 1
-        const cx = pad + step * (i % 3) + step / 2
-        const cy = pad + step * Math.floor(i / 3) + step / 2
-        return <circle key={i} cx={cx} cy={cy} r={r} fill={on ? light : 'rgba(255, 255, 255, 0.12)'} />
-      })}
-      {lvl === 'top_rated' ? <circle cx={size - size * 0.16} cy={size * 0.16} r={size * 0.09} fill="#1FC77A" stroke="#2E1414" strokeWidth="1.5" /> : null}
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={label ?? `${username}, ${LEVEL_LABEL[lvl]} seller`} className={`shrink-0 ${className}`}>
+      <circle cx={r} cy={r} r={r} fill={tint} />
+      <text x={r} y={r} textAnchor="middle" dominantBaseline="central" fontFamily="var(--font-body), system-ui, sans-serif" fontWeight="600" fontSize={size * 0.36} fill="#121417">
+        {initials}
+      </text>
+      {lvl === 'top_rated' ? <circle cx={size - size * 0.16} cy={size * 0.16} r={size * 0.1} fill="#2BB673" stroke="#FFFFFF" strokeWidth="1.5" /> : null}
     </svg>
   )
 }
 
 type PlateProps = { level?: string | null; className?: string }
 
-/* Level as a plate material: paper, enamel, brass, brass with the open lamp. */
+/* Level pill. Top rated is the only one in green. */
 export function LevelPlate({ level, className = '' }: PlateProps) {
   const lvl = normalizeLevel(level)
-  const cls = lvl === 'level_one' ? 'plate plate--enamel' : lvl === 'new' ? 'plate plate--paper' : 'plate'
+  const cls = lvl === 'top_rated' ? 'plate plate--release' : lvl === 'new' ? 'plate plate--paper' : 'plate'
   return (
     <span className={`${cls} t-plate ${className}`}>
       {lvl === 'top_rated' ? <span className="lamp lamp--release" aria-hidden="true" /> : null}

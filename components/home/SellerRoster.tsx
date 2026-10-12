@@ -41,7 +41,7 @@ export default function SellerRoster({ sellers, gigs, owns }: Props) {
     <section className="sr" aria-labelledby="sr-title">
       <div className="sr-head">
         <h2 id="sr-title" className="sr-h2">
-          Sellers at the window
+          Top sellers
         </h2>
         <p className="sr-intro">Every seller lists a fixed price and is paid when you approve the work.</p>
       </div>
@@ -49,10 +49,10 @@ export default function SellerRoster({ sellers, gigs, owns }: Props) {
       <div className="sr-strip">
         <div className="sr-cols" aria-hidden="true">
           <span>Seller</span>
-          <span>Windows</span>
+          <span>Categories</span>
           <span>Jobs done</span>
           <span>Rating</span>
-          <span>On the board</span>
+          <span>Listed</span>
         </div>
 
         <ul className="sr-rows">
@@ -60,13 +60,11 @@ export default function SellerRoster({ sellers, gigs, owns }: Props) {
             const theirs = gigs.filter((g) => isOwner(g, s));
             const windows = Array.from(new Set(theirs.map((g) => g.window))).sort() as WindowNo[];
             const from = theirs.length ? Math.min(...theirs.map((g) => g.price)) : null;
-            const gigText = theirs.length
-              ? `${theirs.length} ${theirs.length === 1 ? "gig" : "gigs"} from $${from}`
-              : "Nothing listed yet";
+            const gigText = theirs.length ? `${theirs.length} ${theirs.length === 1 ? "gig" : "gigs"} from $${from}` : "Nothing listed yet";
             const ratingText = s.rating > 0 ? s.rating.toFixed(1) : "New";
             const label = [
               `${s.fullName}, ${LEVEL[s.level]}.`,
-              windows.length ? `Window ${list(windows)}.` : "",
+              windows.length ? `Category ${list(windows)}.` : "",
               `${s.totalOrders} jobs done.`,
               s.rating > 0 ? `Rated ${ratingText}.` : "Not rated yet.",
               `${gigText}.`,
@@ -96,7 +94,7 @@ export default function SellerRoster({ sellers, gigs, owns }: Props) {
                   <span className="sr-facts" aria-hidden="true">
                     <span className="sr-windows">
                       {windows.map((w) => (
-                        <i key={w} className="sr-pip" data-w={w}>
+                        <i key={w} className="sr-pip">
                           {w}
                         </i>
                       ))}

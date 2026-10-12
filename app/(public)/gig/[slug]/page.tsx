@@ -32,6 +32,12 @@ export default async function GigDetailPage({ params }: { params: { slug: string
   if (!seller || !profile || !packages || packages.length === 0) notFound();
 
   const rootSlug = rootSlugs.get(gig.category_id) ?? null;
+  // First names and avatars for the buyers who left the loaded reviews
+  const buyerIds = Array.from(new Set((reviews ?? []).map((r: any) => r.buyer_id).filter(Boolean)));
+  const { data: reviewerRows } = buyerIds.length
+    ? await sb.from("public_profiles").select("id, full_name, avatar_url").in("id", buyerIds)
+    : { data: [] as any[] };
+  const reviewers = Object.fromEntries((reviewerRows ?? []).map((u: any) => [u.id, { name: (u.full_name ?? "Buyer").split(" ")[0], avatar_url: u.avatar_url ?? null }]));
 
   return (
     <>
@@ -49,7 +55,7 @@ export default async function GigDetailPage({ params }: { params: { slug: string
               totalReviews={gig.total_reviews ?? 0}
             />
 
-            <div className="mt-8 overflow-hidden rounded-tray shadow-[0_2px_0_#2E1414,0_10px_0_-4px_#2E1414]">
+            <div className="mt-8 overflow-hidden rounded-[14px] border border-line">
               {/* keep your existing gallery field here (gig.images or gig.gallery_images) */}
               <GigGallery thumbnail={gig.thumbnail_url} images={(gig as any).images ?? null} title={gig.title} seed={gig.id} category={rootSlug} />
             </div>
@@ -66,7 +72,7 @@ export default async function GigDetailPage({ params }: { params: { slug: string
 
             <section aria-labelledby="seller-title" className="mt-10">
               <h2 id="seller-title" className="t-head mb-4">
-                At the window
+                About the seller
               </h2>
               <SellerCard
                 username={seller.username}
@@ -83,7 +89,7 @@ export default async function GigDetailPage({ params }: { params: { slug: string
               <h2 id="reviews-title" className="t-head mb-4">
                 Reviews
               </h2>
-              <ReviewsSection reviews={reviews ?? []} averageRating={gig.average_rating ?? 0} totalReviews={gig.total_reviews ?? 0} />
+              <ReviewsSection reviewers={reviewers} reviews={reviews ?? []} averageRating={gig.average_rating ?? 0} totalReviews={gig.total_reviews ?? 0} />
             </section>
           </div>
 
