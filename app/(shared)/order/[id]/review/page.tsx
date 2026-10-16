@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, Star, ChevronLeft } from "lucide-react";
@@ -11,8 +11,8 @@ import { RatingStars } from "@/components/ui/rating-stars";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
-export default function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ReviewPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const router = useRouter();
   const [overall, setOverall] = useState(5);
   const [communication, setCommunication] = useState(5);

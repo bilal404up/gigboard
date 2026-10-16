@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, Gift, ChevronLeft } from "lucide-react";
@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils/cn";
 
 const PRESETS = [5, 10, 20, 50];
 
-export default function TipPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function TipPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const router = useRouter();
   const [amount, setAmount] = useState(10);
   const [custom, setCustom] = useState("");

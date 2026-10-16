@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, FileText, ChevronLeft } from "lucide-react";
 import Link from "next/link";
@@ -9,8 +9,8 @@ import { Footer } from "@/components/layout/footer";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-export default function RequirementsPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function RequirementsPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const router = useRouter();
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);

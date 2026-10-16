@@ -211,7 +211,11 @@ async function main() {
     const sellerInfo = SELLERS.find((x) => x.username === seller)!;
     // Unrated sellers get no review count, so a gig never shows "0.0 from 7 reviews".
     const reviews = sellerInfo.rating === 0 ? 0 : Math.max(1, Math.round(sellerInfo.orders / 4) + (n % 5) * 3);
-    const { data: gig, error } = await sb
+    // A re-run reuses a gig that is already there, so it never creates a second copy.
+    const { data: existingGig } = await sb.from("gigs").select("*").eq("seller_id", sellerId).eq("title", title).maybeSingle();
+    const { data: gig, error } = existingGig
+      ? { data: existingGig, error: null }
+      : await sb
       .from("gigs")
       .insert({
         seller_id: sellerId,
@@ -240,7 +244,11 @@ async function main() {
     }
     const tiers = ["basic", "standard", "premium"] as const;
     const packageIds: string[] = [];
-    for (let i = 0; i < 3; i++) {
+    if (existingGig) {
+      const { data: pkgs } = await sb.from("gig_packages").select("id, package_type").eq("gig_id", gig.id);
+      for (const t of tiers) packageIds.push(...(pkgs ?? []).filter((p) => p.package_type === t).map((p) => p.id as string));
+    }
+    for (let i = 0; i < 3 && !existingGig; i++) {
       const { data: pkg } = await sb
         .from("gig_packages")
         .insert({
@@ -291,6 +299,7 @@ async function main() {
           status: "completed",
           requirements_submitted: true,
           delivery_days: 1 + (n % 5),
+          revisions_allowed: 1,
           delivered_at: completedAt,
           completed_at: completedAt,
           funds_cleared: true,
