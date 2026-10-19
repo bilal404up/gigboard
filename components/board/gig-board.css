@@ -77,7 +77,7 @@
 .gb-h1 {
   margin: 0;
   font-family: var(--font-display), system-ui, sans-serif;
-  font-weight: 700;
+  font-weight: 500;
   font-variation-settings: "wdth" 100;
   font-size: clamp(2.6rem, 11vw, 6.5rem);
   line-height: 0.94;
@@ -272,30 +272,19 @@
   height: var(--ch);
   perspective: calc(var(--ch) * 5);
 }
-.gb-cell::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(50% - 0.5px);
-  height: 1px;
-  background: rgb(0 0 0 / 0.55);
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.04);
-  z-index: 0;
-  pointer-events: none;
-}
+.gb-cell::after { content: none; }
 
 .gb-face {
   position: absolute;
   left: 0;
   right: 0;
   z-index: 1;
-  height: calc(50% - 0.5px);
+  height: 50%;
   overflow: hidden;
   background: var(--gb-flap);
   color: var(--gb-text);
   font-family: var(--gb-flap-font);
-  font-weight: 700;
+  font-weight: 600;
   font-variation-settings: "wdth" 62;
   font-size: calc(var(--ch) * 0.7);
   text-align: center;
