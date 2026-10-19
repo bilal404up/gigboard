@@ -46,7 +46,7 @@ export function CustomOfferCard({ offerId, mine }: { offerId: string; mine: bool
         <h4 className="font-semibold mb-1">{offer.title}</h4>
         <p className="text-sm text-neutral-600 mb-3">{offer.description}</p>
         <div className="flex items-center gap-3 text-sm font-medium mb-3">
-          <span className="font-heading text-xl">{formatMoney(Number(offer.price))}</span>
+          <span className="num text-xl">{formatMoney(Number(offer.price))}</span>
           <span className="text-neutral-500">·</span>
           <span>{offer.delivery_days} days</span>
           <span className="text-neutral-500">·</span>

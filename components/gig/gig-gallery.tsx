@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils/cn";
 import { GigCover } from "@/components/gig/gig-cover";
 
 const CTRL =
-  "inline-flex h-11 w-11 items-center justify-center rounded-pill bg-white text-ink shadow-[0_0_0_1px_#E3E4E6,0_6px_16px_-8px_rgba(18,20,23,0.35)] transition-opacity hover:bg-laminate focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
+  "inline-flex h-11 w-11 items-center justify-center rounded-pill bg-white text-ink shadow-[0_0_0_1px_#E2E0DA,0_6px_16px_-8px_rgba(18,20,23,0.35)] transition-opacity hover:bg-laminate focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
 
 const LIGHTBOX_BTN =
   "inline-flex h-11 w-11 items-center justify-center rounded-pill bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
@@ -23,12 +23,16 @@ export function GigGallery({
   title,
   seed,
   category,
+  price,
+  days,
 }: {
   thumbnail: string | null;
   images: string[] | null | undefined;
   title: string;
   seed?: string;
   category?: string | null;
+  price?: number | null;
+  days?: number | null;
 }) {
   const all = [thumbnail, ...(images ?? [])].filter((u): u is string => Boolean(u));
   const total = all.length;
@@ -51,8 +55,8 @@ export function GigGallery({
 
   if (total === 0) {
     return (
-      <div className="relative aspect-[16/9] overflow-hidden rounded-tray">
-        <GigCover seed={seed ?? title} category={category} text={coverWords(title)} />
+      <div className="relative aspect-[16/9] overflow-hidden">
+        <GigCover seed={seed ?? title} category={category} text={coverWords(title)} price={price} days={days} />
       </div>
     );
   }
@@ -98,7 +102,7 @@ export function GigGallery({
               aria-current={i === index}
               className={cn(
                 "relative h-14 w-20 shrink-0 overflow-hidden rounded-[8px] bg-laminate-sunk transition-all sm:h-16 sm:w-24",
-                i === index ? "opacity-100 shadow-[0_0_0_2px_#121417]" : "opacity-60 hover:opacity-100"
+                i === index ? "opacity-100 shadow-[0_0_0_2px_#111113]" : "opacity-60 hover:opacity-100"
               )}
             >
               <Image src={src} alt="" fill className="object-cover" sizes="100px" />

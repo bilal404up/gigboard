@@ -6,7 +6,7 @@ export default function GigDetailLoading() {
   return (
     <>
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 lg:pb-8">
+      <main id="main" className="wrap pb-16 pt-10 lg:pt-14">
         <Skeleton className="h-3 w-48 mb-5" />
         <div className="grid lg:grid-cols-12 gap-6 lg:gap-10">
           <div className="lg:col-span-8 space-y-6">

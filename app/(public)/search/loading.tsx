@@ -7,7 +7,7 @@ export default function SearchLoading() {
   return (
     <>
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <main id="main" className="wrap pb-16 pt-10 lg:pt-14">
         <div className="mb-6 space-y-2">
           <Skeleton className="h-8 w-64 max-w-full" />
           <Skeleton className="h-3 w-40" />

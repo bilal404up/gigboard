@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { ReviewSummary } from "@/components/gig/review-summary"
+import { gigTitle } from "@/lib/order-status"
 import { SellerMark, LevelPlate } from "@/components/seller/SellerMark"
 import type { SellerLevel } from "@/types/database.types"
 
@@ -17,7 +18,7 @@ type Props = {
 export function GigHeader({ title, categoryName, categorySlug, seller, averageRating, totalReviews, className = "" }: Props) {
   return (
     <header className={className}>
-      <nav aria-label="Breadcrumb" className="text-sm text-ink-muted">
+      <nav aria-label="Breadcrumb" className="text-sm text-ink-2">
         <ol className="flex flex-wrap items-center gap-2">
           <li>
             <Link href="/" className="link">
@@ -37,7 +38,7 @@ export function GigHeader({ title, categoryName, categorySlug, seller, averageRa
         </ol>
       </nav>
 
-      <h1 className="t-sign mt-3 max-w-[24ch]">{title}</h1>
+      <h1 className="t-sign mt-4 max-w-[22ch]">{gigTitle(title)}</h1>
 
       <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
         <Link href={`/seller/${seller.username}`} className="group inline-flex items-center gap-3 rounded-[8px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink">

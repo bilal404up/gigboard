@@ -29,7 +29,7 @@ const BANKS = [
 
 const STEPS = ["About you", "Background", "Bank", "Done"];
 
-const PRIMARY = "inline-flex h-11 items-center gap-2 rounded-[10px] bg-ink px-5 text-sm font-semibold text-white transition-colors hover:bg-[#2A2D32] disabled:cursor-not-allowed disabled:opacity-50";
+const PRIMARY = "inline-flex h-11 items-center gap-2 rounded-[10px] bg-ink px-5 text-sm font-semibold text-white transition-colors hover:bg-[#2A2A2E] disabled:cursor-not-allowed disabled:opacity-50";
 const BACK = "inline-flex h-11 items-center gap-1 rounded-[10px] px-3 text-sm font-medium text-ink-muted transition-colors hover:bg-laminate-sunk hover:text-ink";
 
 export default function BecomeSellerPage() {
@@ -86,7 +86,7 @@ export default function BecomeSellerPage() {
     }
     setLoading(false);
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 }, colors: ["#2BB673", "#121417", "#E3E4E6"] });
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 }, colors: ["#1E9E5A", "#111113", "#E2E0DA"] });
     }
     setStep(4);
   }
@@ -114,7 +114,7 @@ export default function BecomeSellerPage() {
                     aria-current={current ? "step" : undefined}
                     className={cn(
                       "relative grid h-8 w-8 place-items-center rounded-full text-sm font-semibold tabular-nums",
-                      done ? "bg-ink text-white" : current ? "bg-white text-ink shadow-[inset_0_0_0_2px_#121417]" : "bg-white text-ink-muted shadow-[inset_0_0_0_1px_#C5C8CD]"
+                      done ? "bg-ink text-white" : current ? "bg-white text-ink shadow-[inset_0_0_0_2px_#111113]" : "bg-white text-ink-muted shadow-[inset_0_0_0_1px_#C9C6BE]"
                     )}
                   >
                     {done ? <Check className="h-4 w-4" /> : s}
@@ -238,7 +238,7 @@ export default function BecomeSellerPage() {
                 </button>
                 <button
                   onClick={() => router.push("/seller/dashboard")}
-                  className="inline-flex h-11 items-center rounded-[10px] px-5 text-sm font-medium text-ink shadow-[inset_0_0_0_1px_#8A9096] transition-colors hover:bg-laminate-sunk"
+                  className="inline-flex h-11 items-center rounded-[10px] px-5 text-sm font-medium text-ink shadow-[inset_0_0_0_1px_#C9C6BE] transition-colors hover:bg-laminate-sunk"
                 >
                   Go to dashboard
                 </button>

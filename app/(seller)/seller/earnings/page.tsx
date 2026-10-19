@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { EarningsLedger } from "@/components/dashboard/earnings-ledger";
 import { createClient } from "@/lib/supabase/server";
+import { enrichOrders } from "@/lib/orders";
 import { formatMoney, formatDate } from "@/lib/utils/format";
 
 const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "success" | "warning" | "error" | "info"> = {
@@ -25,10 +26,18 @@ export default async function SellerEarningsPage() {
 
   const { data: clearing } = await sb
     .from("orders")
-    .select("id, order_number, package_snapshot, seller_earnings, funds_cleared_at, status")
+    .select("id, order_number, package_snapshot, seller_earnings, funds_cleared_at, status, gig_id, buyer_id, seller_id")
     .eq("seller_id", au.id)
     .eq("status", "completed")
     .eq("funds_cleared", false);
+
+  const { data: openOrders } = await sb
+    .from("orders")
+    .select("seller_earnings")
+    .eq("seller_id", au.id)
+    .in("status", ["active", "requires_requirements", "in_progress", "delivered", "revision_requested", "disputed"]);
+  const heldTotal = (openOrders ?? []).reduce((s, o: any) => s + Number(o.seller_earnings ?? 0), 0);
+  const clearingRows = await enrichOrders(sb, (clearing ?? []).map((o: any) => ({ ...o })));
 
   const { data: withdrawals } = await sb
     .from("withdrawals")
@@ -47,15 +56,16 @@ export default async function SellerEarningsPage() {
   return (
     <>
       <Navbar />
-      <main id="main" className="wrap py-8 lg:py-10">
-        <h1 className="t-sign">Earnings</h1>
-        <p className="mt-2 text-sm text-ink-muted">Sample data, Stripe test mode. No real money moves.</p>
+      <main id="main" className="wrap pb-16 pt-10 lg:pt-14">
+        <p className="eyebrow">Seller</p>
+        <h1 className="t-sign mt-3">Earnings</h1>
+        <p className="mt-2 text-sm text-ink-2">Sample data. No real money moves.</p>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
-          <EarningsLedger held={clearingTotal} available={available} paidOut={paidOut} />
+        <div className="mt-8 grid gap-6">
+          <EarningsLedger held={heldTotal} clearing={clearingTotal} available={available} paidOut={paidOut} />
 
-          <aside className="tray p-5">
-            <p className="t-plate text-ink-muted">Payout account</p>
+          <aside className="panel flex flex-wrap items-center justify-between gap-3 p-5">
+            <p className="eyebrow">Payout account</p>
             {bankConnected ? (
               <p className="mt-2 inline-flex items-center gap-2 font-semibold">
                 <span className="lamp lamp--release" aria-hidden="true" />
@@ -79,21 +89,22 @@ export default async function SellerEarningsPage() {
           <h2 id="clearing-title" className="t-head">
             Approved, clearing
           </h2>
-          {clearing && clearing.length > 0 ? (
+          {clearingRows.length > 0 ? (
             <ul className="mt-4 grid gap-3">
-              {clearing.map((o: any) => (
-                <li key={o.id} className="tray flex flex-wrap items-center gap-x-4 gap-y-1 p-4">
+              {clearingRows.map((o: any) => (
+                <li key={o.id} className="panel flex flex-wrap items-center gap-x-4 gap-y-1 p-4">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold">{(o.package_snapshot as { name?: string } | null)?.name ?? "Order"}</p>
-                    <p className="num text-xs text-ink-muted">{o.order_number ?? o.id}</p>
+                    <p className="truncate font-semibold">{o.gigTitle}</p>
+                    <p className="num text-xs text-ink-2">{o.order_number ?? o.id}</p>
                   </div>
-                  {o.funds_cleared_at ? <span className="text-xs text-ink-muted">Clears {formatDate(o.funds_cleared_at)}</span> : null}
-                  <span className="num font-bold">{formatMoney(Number(o.seller_earnings))}</span>
+                  {o.funds_cleared_at ? <span className="text-xs text-ink-2">Clears {formatDate(o.funds_cleared_at)}</span> : null}
+                  <span className="tag tag--go">Released</span>
+                  <span className="num">{formatMoney(Number(o.seller_earnings))}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-ink-muted">Nothing is clearing right now.</p>
+            <p className="mt-3 text-sm text-ink-2">Nothing is clearing right now.</p>
           )}
         </section>
 
@@ -102,16 +113,16 @@ export default async function SellerEarningsPage() {
             Payouts
           </h2>
           {withdrawals && withdrawals.length > 0 ? (
-            <div className="tray mt-4 overflow-x-auto">
-              <table className="w-full min-w-[32rem] text-left text-sm">
+            <div className="panel mt-4 overflow-x-auto">
+              <table className="data-table min-w-[32rem]">
                 <thead>
-                  <tr className="t-plate text-ink-muted">
-                    <th scope="col" className="px-4 py-3 font-bold">Requested</th>
-                    <th scope="col" className="px-4 py-3 font-bold">Status</th>
-                    <th scope="col" className="px-4 py-3 text-right font-bold">Amount</th>
+                  <tr>
+                    <th scope="col">Requested</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" className="text-right">Amount</th>
                   </tr>
                 </thead>
-                <tbody className="[&_tr+tr]:border-t-2 [&_tr+tr]:border-dotted [&_tr+tr]:border-sand">
+                <tbody className="[&_tr+tr]:border-t [&_tr+tr]:border-line">
                   {withdrawals.map((w: any) => (
                     <tr key={w.id}>
                       <td className="num px-4 py-3">{formatDate(w.requested_at)}</td>
@@ -123,11 +134,11 @@ export default async function SellerEarningsPage() {
               </table>
             </div>
           ) : (
-            <EmptyState className="mt-4" title="No payouts yet" description="Approved earnings clear first, then you can withdraw them to your bank." />
+            <EmptyState className="mt-4" sign="No payouts" title="No payouts yet" description="Approved earnings clear first, then you can withdraw them to your bank." />
           )}
         </section>
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

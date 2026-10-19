@@ -22,8 +22,8 @@ export function SortSelect({ defaultValue }: { defaultValue: string }) {
 
   return (
     <div className="flex items-center gap-2">
-      <label htmlFor="sort" className="text-sm font-semibold text-ink-muted">Sort by</label>
-      <select id="sort" defaultValue={defaultValue} onChange={onChange} className="field h-11 w-auto min-w-[10rem] py-0 text-sm font-semibold md:h-10">
+      <label htmlFor="sort" className="sr-only">Sort by</label>
+      <select id="sort" defaultValue={defaultValue} onChange={onChange} className="field h-11 w-auto min-w-[10rem] rounded-full py-0 pl-4 text-sm font-medium md:h-10">
         {SORT_OPTIONS.map((o) => (
           <option key={o.value} value={o.value}>{o.label}</option>
         ))}

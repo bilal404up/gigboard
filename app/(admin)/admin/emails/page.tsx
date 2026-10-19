@@ -11,22 +11,22 @@ export default async function AdminEmailsPage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <main id="main" className="wrap pb-16 pt-10 lg:pt-14">
         <header className="mb-6">
-          <p className="text-xs font-semibold text-ink-subtle mb-1">Admin</p>
-          <h1 className="font-heading text-2xl sm:text-3xl text-ink">Email logs</h1>
+          <p className="eyebrow">Admin</p>
+          <h1 className="t-sign mt-3">Email log</h1>
         </header>
-        <div className="flex items-start gap-3 bg-info/5 border border-info/20 rounded-xl p-4 mb-6">
-          <Info className="w-5 h-5 text-info shrink-0 mt-0.5" />
+        <div className="panel mb-6 flex items-start gap-3 p-4">
+          <Info className="mt-0.5 h-5 w-5 shrink-0 text-ink-2" aria-hidden="true" />
           <p className="text-sm text-ink-muted leading-relaxed">
-            <strong className="text-ink">Portfolio demo:</strong> emails are logged to Supabase
+            <strong className="text-ink">Demo:</strong> emails are logged to Supabase
             instead of being sent via SMTP. Useful for verifying that the right notifications fire
             on each event.
           </p>
         </div>
         <EmailInbox emails={data ?? []} />
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

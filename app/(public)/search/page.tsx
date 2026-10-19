@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { GigRow, GigBoardHeader, type GigCardData } from "@/components/gig/gig-card";
+import { GigCard, GigRow, GigBoardHeader, type GigCardData } from "@/components/gig/gig-card";
 import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
-import { ResultsSill } from "@/components/search/results-sill";
-import { Search as SearchIcon, X } from "lucide-react";
+import { X } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SortSelect } from "./sort-select";
 import { MobileFilterTrigger } from "./mobile-filter-trigger";
@@ -22,6 +21,7 @@ interface SearchParams {
   level?: string | string[];
   rating?: string;
   sort?: string;
+  view?: string;
   page?: string;
 }
 
@@ -136,25 +136,25 @@ async function searchGigs(params: SearchParams): Promise<{ gigs: GigRow[]; count
 }
 
 const DELIVERY_OPTIONS = [
-  { value: "", label: "Any" },
-  { value: "1", label: "Within 24 hrs" },
+  { value: "", label: "Any time" },
+  { value: "1", label: "Within 1 day" },
   { value: "3", label: "Up to 3 days" },
   { value: "7", label: "Up to 7 days" },
   { value: "14", label: "Up to 14 days" },
 ];
 
 const LEVEL_OPTIONS = [
-  { value: "new_seller", label: "New Seller", dot: "bg-ink-faint" },
-  { value: "level_one", label: "Level One", dot: "bg-brand-primary" },
-  { value: "level_two", label: "Level Two", dot: "bg-brand-primary-dark" },
-  { value: "top_rated", label: "Top Rated", dot: "bg-brand-accent" },
+  { value: "new_seller", label: "New seller" },
+  { value: "level_one", label: "Level one" },
+  { value: "level_two", label: "Level two" },
+  { value: "top_rated", label: "Top rated" },
 ];
 
 const RATING_OPTIONS = [
   { value: "", label: "Any rating" },
-  { value: "4.5", label: "4.5 & up" },
-  { value: "4.0", label: "4.0 & up" },
-  { value: "3.5", label: "3.5 & up" },
+  { value: "4.5", label: "4.5 and up" },
+  { value: "4.0", label: "4.0 and up" },
+  { value: "3.5", label: "3.5 and up" },
 ];
 
 function countActiveFilters(p: SearchParams) {
@@ -172,104 +172,123 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
   const roots = await getCategoryRootSlugs();
   const q = searchParams.q ?? "";
   const sort = searchParams.sort ?? "relevance";
+  const view = searchParams.view === "grid" ? "grid" : "board";
   const activeCount = countActiveFilters(searchParams);
   const selectedLevels = toArray(searchParams.level);
+
+  const cards: GigCardData[] = gigs.map((g) => ({
+    id: g.id,
+    slug: g.slug,
+    title: g.title,
+    thumbnail_url: g.thumbnail_url,
+    average_rating: g.average_rating ?? 0,
+    total_reviews: g.total_reviews ?? 0,
+    starting_price: g.starting_price,
+    category_slug: roots.get(g.category_id) ?? null,
+    delivery_days: g.delivery_days,
+    seller: g.seller,
+  }));
+
+  const viewHref = (v: "board" | "grid") => buildRemoveUrl(searchParams, ["view"], v === "grid" ? { view: "grid" } : {});
 
   return (
     <>
       <Navbar />
-      <main id="main" className="wrap py-8 lg:py-10">
-        <ResultsSill
-          count={gigs.length}
-          query={q || null}
-          controls={
-            <>
-              <MobileFilterTrigger activeCount={activeCount}>
-                <FilterSidebar searchParams={searchParams} selectedLevels={selectedLevels} />
-              </MobileFilterTrigger>
-              <SortSelect defaultValue={sort} />
-            </>
-          }
-        />
-
-        {activeCount > 0 && (
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="t-plate mr-1 text-ink-muted">Active</span>
-            {(searchParams.min_price || searchParams.max_price) && (
-              <ActiveChip
-                label={`${searchParams.min_price ? `$${searchParams.min_price}` : "Any"} to ${searchParams.max_price ? `$${searchParams.max_price}` : "Any"}`}
-                removeUrl={buildRemoveUrl(searchParams, ["min_price", "max_price"])}
-              />
-            )}
-            {searchParams.delivery_days && (
-              <ActiveChip
-                label={DELIVERY_OPTIONS.find((d) => d.value === searchParams.delivery_days)?.label ?? `${searchParams.delivery_days} days`}
-                removeUrl={buildRemoveUrl(searchParams, ["delivery_days"])}
-              />
-            )}
-            {selectedLevels.map((lv) => (
-              <ActiveChip
-                key={lv}
-                label={LEVEL_OPTIONS.find((l) => l.value === lv)?.label ?? lv}
-                removeUrl={buildRemoveUrl(searchParams, [], { level: selectedLevels.filter((x) => x !== lv) })}
-              />
-            ))}
-            {searchParams.rating && (
-              <ActiveChip
-                label={RATING_OPTIONS.find((r) => r.value === searchParams.rating)?.label ?? searchParams.rating}
-                removeUrl={buildRemoveUrl(searchParams, ["rating"])}
-              />
-            )}
-            <Link href={`/search${q ? `?q=${encodeURIComponent(q)}` : ""}`} className="link ml-1 text-sm font-semibold">
-              Clear all filters
-            </Link>
-          </div>
-        )}
-
-        <div className="mt-6 grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)] lg:items-start">
-          <aside className="hidden lg:sticky lg:top-[calc(var(--header-h)+1rem)] lg:block lg:self-start">
-            <FilterSidebar searchParams={searchParams} selectedLevels={selectedLevels} />
-          </aside>
-
+      <main id="main" className="wrap pb-16 pt-10 lg:pt-14">
+        <header className="flex flex-wrap items-end justify-between gap-6 border-b border-line pb-6">
           <div className="min-w-0">
-            {gigs.length === 0 ? (
-              <EmptyState
-                icon={<SearchIcon className="h-7 w-7" />}
-                title="No results found"
-                description={
-                  activeCount > 0
-                    ? "Try removing some filters, or broaden your search."
-                    : `We couldn't find any services matching "${q}". Try a different search or browse categories.`
-                }
-                action={
-                  <Button asChild variant="cta">
-                    <Link href="/search">Browse all gigs</Link>
-                  </Button>
-                }
-              />
-            ) : (
-              <div>
-                <GigBoardHeader />
-                <div className="mt-3 grid gap-3">
-                  {gigs.map((g) => {
-                    const card: GigCardData = {
-                      id: g.id,
-                      slug: g.slug,
-                      title: g.title,
-                      thumbnail_url: g.thumbnail_url,
-                      average_rating: g.average_rating ?? 0,
-                      total_reviews: g.total_reviews ?? 0,
-                      starting_price: g.starting_price,
-                      category_slug: roots.get(g.category_id) ?? null,
-                      delivery_days: g.delivery_days,
-                      seller: g.seller,
-                    };
-                    return <GigRow key={g.id} gig={card} />;
-                  })}
-                </div>
-              </div>
-            )}
+            <p className="eyebrow">Browse</p>
+            <h1 className="t-sign mt-3">
+              {q ? (
+                <>
+                  <span className="num">{gigs.length}</span> {gigs.length === 1 ? "gig" : "gigs"} for &ldquo;{q}&rdquo;
+                </>
+              ) : (
+                <>
+                  <span className="num">{gigs.length}</span> {gigs.length === 1 ? "gig" : "gigs"} open for booking
+                </>
+              )}
+            </h1>
           </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <nav aria-label="Result view" className="tabs w-auto">
+              <Link href={viewHref("board")} aria-current={view === "board" ? "page" : undefined} className="tab px-4" aria-selected={view === "board"}>
+                Board
+              </Link>
+              <Link href={viewHref("grid")} aria-current={view === "grid" ? "page" : undefined} className="tab px-4" aria-selected={view === "grid"}>
+                Grid
+              </Link>
+            </nav>
+            <SortSelect defaultValue={sort} />
+          </div>
+        </header>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <MobileFilterTrigger activeCount={activeCount}>
+            <FilterForm searchParams={searchParams} selectedLevels={selectedLevels} stacked />
+          </MobileFilterTrigger>
+          <div className="hidden lg:block">
+            <FilterForm searchParams={searchParams} selectedLevels={selectedLevels} />
+          </div>
+          {activeCount > 0 && (
+            <>
+              {(searchParams.min_price || searchParams.max_price) && (
+                <ActiveChip
+                  label={`${searchParams.min_price ? `$${searchParams.min_price}` : "Any"} to ${searchParams.max_price ? `$${searchParams.max_price}` : "any"}`}
+                  removeUrl={buildRemoveUrl(searchParams, ["min_price", "max_price"])}
+                />
+              )}
+              {searchParams.delivery_days && (
+                <ActiveChip
+                  label={DELIVERY_OPTIONS.find((d) => d.value === searchParams.delivery_days)?.label ?? `${searchParams.delivery_days} days`}
+                  removeUrl={buildRemoveUrl(searchParams, ["delivery_days"])}
+                />
+              )}
+              {selectedLevels.map((lv) => (
+                <ActiveChip
+                  key={lv}
+                  label={LEVEL_OPTIONS.find((l) => l.value === lv)?.label ?? lv}
+                  removeUrl={buildRemoveUrl(searchParams, [], { level: selectedLevels.filter((x) => x !== lv) })}
+                />
+              ))}
+              {searchParams.rating && (
+                <ActiveChip label={RATING_OPTIONS.find((r) => r.value === searchParams.rating)?.label ?? searchParams.rating} removeUrl={buildRemoveUrl(searchParams, ["rating"])} />
+              )}
+              <Link href={buildRemoveUrl(searchParams, ["min_price", "max_price", "delivery_days", "rating", "level"])} className="link ml-1 text-sm font-semibold">
+                Clear filters
+              </Link>
+            </>
+          )}
+        </div>
+
+        <div className="mt-8">
+          {gigs.length === 0 ? (
+            <EmptyState
+              sign="No match"
+              title="No gigs match"
+              description={activeCount > 0 ? "Try removing a filter, or search for something broader." : `Nothing matches “${q}”. Try a different word or browse every gig.`}
+              action={
+                <Button asChild>
+                  <Link href="/search">Browse all gigs</Link>
+                </Button>
+              }
+            />
+          ) : view === "grid" ? (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {cards.map((c) => (
+                <GigCard key={c.id} gig={c} />
+              ))}
+            </div>
+          ) : (
+            <div className="panel overflow-hidden px-0 pt-3">
+              <GigBoardHeader />
+              <div className="[&>article:last-child]:border-b-0">
+                {cards.map((c) => (
+                  <GigRow key={c.id} gig={c} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
       <Footer />
@@ -277,16 +296,13 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
   );
 }
 
-function buildRemoveUrl(
-  current: SearchParams,
-  removeKeys: string[],
-  overrides: Partial<Record<string, string | string[]>> = {}
-): string {
+function buildRemoveUrl(current: SearchParams, removeKeys: string[], overrides: Partial<Record<string, string | string[]>> = {}): string {
   const params = new URLSearchParams();
   const entries: Array<[string, string | string[] | undefined]> = [
     ["q", current.q],
     ["category", current.category],
     ["sort", current.sort],
+    ["view", current.view],
     ["min_price", current.min_price],
     ["max_price", current.max_price],
     ["delivery_days", current.delivery_days],
@@ -311,10 +327,7 @@ function buildRemoveUrl(
 
 function ActiveChip({ label, removeUrl }: { label: string; removeUrl: string }) {
   return (
-    <Link
-      href={removeUrl}
-      className="chip h-11 gap-1.5 pr-2 text-xs font-semibold hover:bg-sand focus-visible:outline focus-visible:outline-[2.5px] focus-visible:outline-offset-2 focus-visible:outline-mahogany md:h-8"
-    >
+    <Link href={removeUrl} className="chip h-11 gap-1.5 pr-2 text-xs font-semibold hover:shadow-[inset_0_0_0_1px_#111113] md:h-9">
       <span>{label}</span>
       <X className="h-3.5 w-3.5" aria-hidden="true" />
       <span className="sr-only">Remove filter</span>
@@ -322,70 +335,66 @@ function ActiveChip({ label, removeUrl }: { label: string; removeUrl: string }) 
   );
 }
 
-function FilterSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+const CHOICE = "flex min-h-11 cursor-pointer items-center gap-3 rounded-[6px] px-2 text-sm text-ink hover:bg-surface-sunk";
+const BOX = "h-[18px] w-[18px] shrink-0 accent-[#111113]";
+
+/* One filter. In the top bar it is a popover (details/summary, works without JavaScript); in the mobile sheet it is a plain group. */
+function FilterGroup({ title, value, stacked, children }: { title: string; value?: string; stacked?: boolean; children: React.ReactNode }) {
+  if (stacked) {
+    return (
+      <fieldset className="border-t border-line py-4 first:border-t-0 first:pt-0">
+        <legend className="eyebrow mb-3">{title}</legend>
+        {children}
+      </fieldset>
+    );
+  }
   return (
-    <fieldset className="border-t-2 border-dotted border-sand py-4 first:border-t-0 first:pt-0">
-      <legend className="t-plate mb-3 text-ink-muted">{title}</legend>
-      {children}
-    </fieldset>
+    <details className="filter-pop">
+      <summary className="filter-pop-trigger">
+        <span>{title}</span>
+        {value ? <span className="filter-pop-value">{value}</span> : null}
+        <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
+          <path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </summary>
+      <div className="filter-pop-panel">
+        <fieldset>
+          <legend className="sr-only">{title}</legend>
+          {children}
+        </fieldset>
+        <button type="submit" className="btn btn-primary btn-small mt-3 w-full">
+          Show results
+        </button>
+      </div>
+    </details>
   );
 }
 
-const CHOICE = "flex min-h-11 cursor-pointer items-center gap-3 rounded-[4px] px-2 text-sm text-ink hover:bg-laminate-sunk";
-const BOX = "h-5 w-5 shrink-0 accent-mahogany";
-
-function FilterSidebar({
-  searchParams,
-  selectedLevels,
-}: {
-  searchParams: SearchParams;
-  selectedLevels: string[];
-}) {
+function FilterForm({ searchParams, selectedLevels, stacked = false }: { searchParams: SearchParams; selectedLevels: string[]; stacked?: boolean }) {
   const q = searchParams.q ?? "";
   const category = searchParams.category ?? "";
   const sort = searchParams.sort ?? "";
+  const view = searchParams.view ?? "";
   const selectedDelivery = searchParams.delivery_days ?? "";
   const selectedRating = searchParams.rating ?? "";
-
-  const clearHref = q ? `/search?q=${encodeURIComponent(q)}` : "/search";
+  const priceValue = searchParams.min_price || searchParams.max_price ? `${searchParams.min_price ? `$${searchParams.min_price}` : "$0"} to ${searchParams.max_price ? `$${searchParams.max_price}` : "any"}` : undefined;
 
   return (
-    <form method="get" action="/search" className="tray p-5">
+    <form method="get" action="/search" className={stacked ? "" : "flex flex-wrap items-center gap-2"}>
       {q && <input type="hidden" name="q" value={q} />}
       {category && <input type="hidden" name="category" value={category} />}
       {sort && <input type="hidden" name="sort" value={sort} />}
+      {view && <input type="hidden" name="view" value={view} />}
 
-      <FilterSection title="Price range">
+      <FilterGroup title="Price" value={priceValue} stacked={stacked}>
         <div className="flex items-center gap-2">
-          <input
-            type="number"
-            name="min_price"
-            min={0}
-            inputMode="numeric"
-            aria-label="Minimum price" placeholder="Min"
-            defaultValue={searchParams.min_price ?? ""}
-            className="field field-num min-w-0 flex-1"
-          />
-          <span className="shrink-0 text-sm text-ink-muted">to</span>
-          <input
-            type="number"
-            name="max_price"
-            min={0}
-            inputMode="numeric"
-            aria-label="Maximum price" placeholder="Max"
-            defaultValue={searchParams.max_price ?? ""}
-            className="field field-num min-w-0 flex-1"
-          />
+          <input type="number" name="min_price" min={0} inputMode="numeric" aria-label="Minimum price" placeholder="Min" defaultValue={searchParams.min_price ?? ""} className="field field-num min-w-0 flex-1" />
+          <span className="shrink-0 text-sm text-ink-2">to</span>
+          <input type="number" name="max_price" min={0} inputMode="numeric" aria-label="Maximum price" placeholder="Max" defaultValue={searchParams.max_price ?? ""} className="field field-num min-w-0 flex-1" />
         </div>
-      </FilterSection>
+      </FilterGroup>
 
-      <FilterSection title="Delivery time">
+      <FilterGroup title="Delivery" value={selectedDelivery ? DELIVERY_OPTIONS.find((d) => d.value === selectedDelivery)?.label : undefined} stacked={stacked}>
         <div className="-mx-2">
           {DELIVERY_OPTIONS.map((opt) => (
             <label key={opt.label} className={CHOICE}>
@@ -394,21 +403,20 @@ function FilterSidebar({
             </label>
           ))}
         </div>
-      </FilterSection>
+      </FilterGroup>
 
-      <FilterSection title="Seller level">
+      <FilterGroup title="Seller level" value={selectedLevels.length ? String(selectedLevels.length) : undefined} stacked={stacked}>
         <div className="-mx-2">
           {LEVEL_OPTIONS.map((l) => (
             <label key={l.value} className={CHOICE}>
               <input type="checkbox" name="level" value={l.value} defaultChecked={selectedLevels.includes(l.value)} className={BOX} />
-              <span className={`inline-block h-2.5 w-2.5 rounded-full ${l.dot}`} aria-hidden="true" />
               <span>{l.label}</span>
             </label>
           ))}
         </div>
-      </FilterSection>
+      </FilterGroup>
 
-      <FilterSection title="Minimum rating">
+      <FilterGroup title="Rating" value={selectedRating ? RATING_OPTIONS.find((r) => r.value === selectedRating)?.label : undefined} stacked={stacked}>
         <div className="-mx-2">
           {RATING_OPTIONS.map((opt) => (
             <label key={opt.label} className={CHOICE}>
@@ -417,16 +425,18 @@ function FilterSidebar({
             </label>
           ))}
         </div>
-      </FilterSection>
+      </FilterGroup>
 
-      <div className="flex gap-2 border-t-2 border-dotted border-sand pt-4">
-        <Button type="submit" variant="cta" className="flex-1">
-          Apply
-        </Button>
-        <Button asChild variant="outline">
-          <Link href={clearHref}>Clear</Link>
-        </Button>
-      </div>
+      {stacked ? (
+        <div className="flex gap-2 border-t border-line pt-4">
+          <Button type="submit" className="flex-1">
+            Show results
+          </Button>
+          <Button asChild variant="secondary">
+            <Link href={q ? `/search?q=${encodeURIComponent(q)}` : "/search"}>Clear</Link>
+          </Button>
+        </div>
+      ) : null}
     </form>
   );
 }

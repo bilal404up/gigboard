@@ -3,16 +3,16 @@
 import { Suspense, useEffect, useState } from "react";
 import { Field } from "@/components/ui/field";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Lock, Loader2, Info, ShieldCheck, ChevronLeft } from "lucide-react";
+import { Loader2, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { EscrowDrawer } from "@/components/escrow/EscrowDrawer";
 import { createClient } from "@/lib/supabase/client";
 import { calculateOrderPricing, DEFAULT_PLATFORM_SETTINGS } from "@/lib/utils/fee-calculator";
 import { formatMoney } from "@/lib/utils/format";
+import { gigTitle, plural } from "@/lib/order-status";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils/cn";
 import { isStripeLive } from "@/lib/stripe/browser";
@@ -24,7 +24,7 @@ export default function CheckoutPage() {
     <Suspense
       fallback={
         <div className="py-16 text-center">
-          <Loader2 className="mx-auto h-6 w-6 animate-spin text-ink-faint" />
+          <Loader2 className="mx-auto h-6 w-6 animate-spin text-ink-2" aria-label="Loading" />
         </div>
       }
     >
@@ -35,12 +35,17 @@ export default function CheckoutPage() {
 
 function Line({ label, value, muted, bold }: { label: string; value: string; muted?: boolean; bold?: boolean }) {
   return (
-    <div className="flex items-baseline gap-2 py-1">
-      <span className={cn("min-w-0 truncate", muted && "text-ink-muted", bold && "font-semibold")}>{label}</span>
-      <span aria-hidden="true" className="mb-1 min-w-3 flex-1 border-b-2 border-dotted border-sand" />
-      <span className={cn("num shrink-0", bold && "fig-price")}>{value}</span>
+    <div className="flex items-baseline gap-3 py-1.5">
+      <span className={cn("min-w-0 truncate", muted && "text-ink-2", bold && "font-semibold")}>{label}</span>
+      <span aria-hidden="true" className="mb-1 min-w-3 flex-1 border-b border-dashed border-line-strong" />
+      <span className={cn("num shrink-0", bold && "text-[1.375rem] leading-none tracking-[-0.03em]")}>{value}</span>
     </div>
   );
+}
+
+function shortDate(days: number) {
+  const t = new Date();
+  return new Date(t.getFullYear(), t.getMonth(), t.getDate() + days).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 }
 
 function CheckoutInner() {
@@ -68,10 +73,7 @@ function CheckoutInner() {
         sb
           .from("gig_extras")
           .select("*")
-          .in(
-            "id",
-            extrasParam ? extrasParam.split(",").filter(Boolean) : ["00000000-0000-0000-0000-000000000000"]
-          ),
+          .in("id", extrasParam ? extrasParam.split(",").filter(Boolean) : ["00000000-0000-0000-0000-000000000000"]),
       ]);
       setGig(g as Gig);
       setPkg(p as GigPackage);
@@ -79,7 +81,7 @@ function CheckoutInner() {
     })();
   }, [gigId, pkgId, extrasParam]);
 
-  // Decide flow + create PaymentIntent once we have order context
+  // Decide the flow and create a PaymentIntent once the order context is known
   useEffect(() => {
     if (!gig || !pkg || intent || intentLoading) return;
     if (!isStripeLive()) {
@@ -100,7 +102,7 @@ function CheckoutInner() {
           }),
         });
         if (res.status === 503) {
-          // Server says Stripe isn't configured, fall back gracefully
+          // The server says Stripe is not configured: fall back to the demo checkout
           setUseStripeFlow(false);
           return;
         }
@@ -121,54 +123,45 @@ function CheckoutInner() {
     return (
       <>
         <Navbar />
-        <main className="wrap py-16 text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-ink-faint" />
+        <main id="main" className="wrap py-16 text-center">
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-ink-2" aria-label="Loading your order" />
         </main>
-        <Footer />
+        <Footer variant="app" />
       </>
     );
   }
 
   const extrasTotal = extras.reduce((s, e) => s + Number(e.price), 0);
   const pricing = calculateOrderPricing(Number(pkg.price), extrasTotal, DEFAULT_PLATFORM_SETTINGS);
+  const revisions = pkg.revisions === -1 ? "Unlimited revisions" : plural(pkg.revisions, "revision");
 
   return (
     <>
       <Navbar />
-      <main id="main" className="wrap py-8 lg:py-10">
+      <main id="main" className="wrap pb-16 pt-8 lg:pt-10">
         <Link href={`/gig/${gig.slug}`} className="link inline-flex min-h-11 items-center gap-1 text-sm">
           <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           Back to gig
         </Link>
 
-        <h1 className="t-sign mt-3">Secure checkout</h1>
-        <p className="mt-2 max-w-[52ch] text-sm text-ink-muted">
-          Review your order, then complete payment to release the brief to your seller.
-        </p>
+        <p className="eyebrow mt-4">Step 1 of 2 · Pay, then send your brief</p>
+        <h1 className="t-sign mt-3">Checkout</h1>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start lg:gap-8">
+        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_26rem] lg:items-start lg:gap-10">
           <section className="space-y-5">
             {useStripeFlow ? (
-              <div className="tray flex items-start gap-3 p-4">
-                <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-brass-deep" aria-hidden="true" />
-                <div className="text-sm">
-                  <p className="mb-0.5 font-semibold text-ink">Test mode payment</p>
-                  <p className="leading-relaxed text-ink-muted">
-                    Use <code className="num rounded-[3px] bg-laminate-sunk px-1.5 py-0.5 text-xs">4242 4242 4242 4242</code>,
-                    any future expiry, any CVC.
-                  </p>
-                </div>
+              <div className="rounded-[12px] bg-held-bg p-4 shadow-[inset_0_0_0_1px_#F0D98A]">
+                <p className="text-sm font-semibold text-ink">Stripe test mode</p>
+                <p className="mt-1 text-sm leading-relaxed text-ink">
+                  Use <span className="num rounded-[4px] bg-surface px-1.5 py-0.5 text-xs">4242 4242 4242 4242</span>, any future expiry and any CVC. No real money moves.
+                </p>
               </div>
             ) : (
-              <div className="tray flex items-start gap-3 p-4">
-                <Info className="mt-0.5 h-5 w-5 shrink-0 text-brass-deep" aria-hidden="true" />
-                <div className="text-sm">
-                  <p className="mb-0.5 font-semibold text-ink">Demo mode, no real charge</p>
-                  <p className="leading-relaxed text-ink-muted">
-                    Stripe isn&apos;t configured in this environment. Fill in any card details to
-                    simulate placing the order.
-                  </p>
-                </div>
+              <div className="rounded-[12px] bg-held-bg p-4 shadow-[inset_0_0_0_1px_#F0D98A]" role="note">
+                <p className="text-sm font-semibold text-ink">Demo payment</p>
+                <p className="mt-1 text-sm leading-relaxed text-ink">
+                  No card is charged here and the card details are not sent anywhere. Enter any details to place the order and see the held-payment flow.
+                </p>
               </div>
             )}
 
@@ -176,19 +169,15 @@ function CheckoutInner() {
               <h2 className="t-head mb-5">Payment details</h2>
               {useStripeFlow ? (
                 intent ? (
-                  <StripePaymentForm
-                    clientSecret={intent.clientSecret}
-                    orderId={intent.orderId}
-                    totalCents={Math.round(pricing.buyerTotalPaid * 100)}
-                  />
+                  <StripePaymentForm clientSecret={intent.clientSecret} orderId={intent.orderId} totalCents={Math.round(pricing.buyerTotalPaid * 100)} />
                 ) : intentLoading ? (
                   <div className="py-10 text-center">
-                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-ink-faint" />
-                    <p className="mt-2 text-sm text-ink-muted">Preparing secure payment…</p>
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-ink-2" aria-hidden="true" />
+                    <p className="mt-2 text-sm text-ink-2">Preparing the payment form</p>
                   </div>
                 ) : intentError ? (
                   <div className="well-error">
-                    <p className="font-semibold">Couldn&apos;t start payment</p>
+                    <p className="font-semibold">Could not start the payment</p>
                     <p className="mt-1 text-xs">{intentError}</p>
                   </div>
                 ) : null
@@ -207,7 +196,7 @@ function CheckoutInner() {
                     });
                     const data = await res.json();
                     if (!res.ok) throw new Error(data.error || "Failed to place order");
-                    toast.success("Order placed!");
+                    toast.success("Order placed. Your payment is held.");
                     router.push(`/order/${data.order.id}/requirements`);
                   }}
                 />
@@ -215,50 +204,56 @@ function CheckoutInner() {
             </div>
           </section>
 
-          <aside className="drawer-card lg:sticky lg:top-[calc(var(--header-h)+1rem)] lg:self-start">
-            <h2 className="t-head">Order summary</h2>
-            <p className="mt-2 line-clamp-2 text-sm font-semibold text-ink">{gig.title}</p>
-            <dl className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-muted">
-              <div><dt className="sr-only">Package</dt><dd>{pkg.name}</dd></div>
-              <div className="num"><dt className="sr-only">Delivery</dt><dd>{pkg.delivery_days} days</dd></div>
-              <div className="num"><dt className="sr-only">Revisions</dt><dd>{pkg.revisions === -1 ? "Unlimited" : pkg.revisions} revisions</dd></div>
-            </dl>
-
-            <div className="mt-4 border-t-2 border-dotted border-sand pt-3 text-sm">
+          {/* the order summary, printed like a ticket */}
+          <aside className="ticket lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:self-start" aria-labelledby="summary-title">
+            <div className="ticket-head">
+              <span className="eyebrow !text-[#B8B4AA]">Order summary</span>
+              <span className="tag tag--held">Held on payment</span>
+            </div>
+            <div className="ticket-body">
+              <h2 id="summary-title" className="text-[1.0625rem] font-semibold leading-snug">
+                {gigTitle(gig.title)}
+              </h2>
+              <dl className="mt-4 grid grid-cols-3 gap-3 text-sm">
+                <div>
+                  <dt className="eyebrow">Package</dt>
+                  <dd className="mt-1">{pkg.name}</dd>
+                </div>
+                <div>
+                  <dt className="eyebrow">Ready by</dt>
+                  <dd className="num mt-1" suppressHydrationWarning>
+                    {shortDate(pkg.delivery_days)}
+                  </dd>
+                  <dd className="text-xs text-ink-2">{plural(pkg.delivery_days, "day")}</dd>
+                </div>
+                <div>
+                  <dt className="eyebrow">Revisions</dt>
+                  <dd className="mt-1">{revisions}</dd>
+                </div>
+              </dl>
+            </div>
+            <div className="ticket-tear" aria-hidden="true" />
+            <div className="ticket-body text-sm">
               <Line label="Package" value={formatMoney(Number(pkg.price))} muted />
               {extras.map((e) => (
                 <Line key={e.id} label={`+ ${e.title}`} value={formatMoney(Number(e.price))} muted />
               ))}
               <Line label="Service fee" value={formatMoney(pricing.buyerServiceFee)} muted />
               {pricing.buyerSmallOrderFee > 0 && <Line label="Small order fee" value={formatMoney(pricing.buyerSmallOrderFee)} muted />}
-              <div className="mt-2 border-t-2 border-dotted border-sand pt-2">
+              <div className="mt-2 border-t border-line pt-2">
                 <Line label="Total" value={formatMoney(pricing.buyerTotalPaid)} bold />
               </div>
-            </div>
-
-            <div className="mt-5 rounded-[8px] bg-mahogany-deep p-3">
-              <EscrowDrawer
-                state="held"
-                size="sm"
-                amount={formatMoney(pricing.buyerTotalPaid)}
-                note={<span className="text-laminate">Goes under the glass when you pay. Moves only when you approve.</span>}
-              />
+              <p className="mt-4 text-sm leading-[1.5] text-ink-2">Held when you pay. Released to the seller only when you approve the work.</p>
             </div>
           </aside>
         </div>
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }
 
-function DemoCardForm({
-  totalPaid,
-  onPlaceOrder,
-}: {
-  totalPaid: number;
-  onPlaceOrder: () => Promise<void>;
-}) {
+function DemoCardForm({ totalPaid, onPlaceOrder }: { totalPaid: number; onPlaceOrder: () => Promise<void> }) {
   const [card, setCard] = useState("");
   const [exp, setExp] = useState("");
   const [cvc, setCvc] = useState("");
@@ -269,7 +264,7 @@ function DemoCardForm({
   const errors = {
     card: card.length !== 16 ? "Card number must be 16 digits" : "",
     exp: !/^\d{2}\/\d{2}$/.test(exp) ? "Use MM/YY format" : "",
-    cvc: cvc.length < 3 ? "CVC must be 3–4 digits" : "",
+    cvc: cvc.length < 3 ? "CVC must be 3 or 4 digits" : "",
     name: name.trim().length < 2 ? "Required" : "",
   };
   const valid = !errors.card && !errors.exp && !errors.cvc && !errors.name;
@@ -303,50 +298,25 @@ function DemoCardForm({
     <>
       <div className="space-y-4">
         <Field label="Cardholder name" error={touched ? errors.name : ""}>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="As shown on card" autoComplete="cc-name" />
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Any name" autoComplete="off" />
         </Field>
-
         <Field label="Card number" error={touched ? errors.card : ""}>
-          <div className="relative">
-            <Input
-              value={card.replace(/(\d{4})(?=\d)/g, "$1 ")}
-              onChange={(e) => setCard(fmtCard(e.target.value))}
-              placeholder="1234 5678 9012 3456"
-              inputMode="numeric"
-              autoComplete="cc-number"
-              className="pr-14"
-            />
-            <Lock className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brass-deep" aria-hidden="true" />
-          </div>
+          <Input value={card.replace(/(\d{4})(?=\d)/g, "$1 ")} onChange={(e) => setCard(fmtCard(e.target.value))} placeholder="Any 16 digits" inputMode="numeric" autoComplete="off" />
         </Field>
-
         <div className="grid grid-cols-2 gap-3">
           <Field label="Expiry" error={touched ? errors.exp : ""}>
-            <Input value={exp} onChange={(e) => setExp(fmtExpiry(e.target.value))} placeholder="MM/YY" inputMode="numeric" autoComplete="cc-exp" />
+            <Input value={exp} onChange={(e) => setExp(fmtExpiry(e.target.value))} placeholder="MM/YY" inputMode="numeric" autoComplete="off" />
           </Field>
           <Field label="CVC" error={touched ? errors.cvc : ""}>
-            <Input value={cvc} onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="123" inputMode="numeric" autoComplete="cc-csc" />
+            <Input value={cvc} onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="123" inputMode="numeric" autoComplete="off" />
           </Field>
         </div>
       </div>
 
-      <div className="mt-5 flex items-start gap-2 text-xs text-ink-muted">
-        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-brass-deep" aria-hidden="true" />
-        <p>
-          Your payment is held in escrow by Gigboard until you approve the delivery.
-          Card details are not saved.
-        </p>
-      </div>
+      <p className="mt-5 text-sm text-ink-2">This is a demo checkout. The details above stay in this page and are never sent or saved.</p>
 
-      <Button type="button" variant="cta" size="lg" onClick={submit} disabled={loading} className="mt-5 w-full">
-        {loading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <>
-            <Lock className="h-4 w-4" aria-hidden="true" />
-            Pay {formatMoney(totalPaid)}
-          </>
-        )}
+      <Button type="button" size="lg" onClick={submit} disabled={loading} className="mt-5 w-full">
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Placing order" /> : <>Pay {formatMoney(totalPaid)}</>}
       </Button>
     </>
   );

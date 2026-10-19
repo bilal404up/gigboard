@@ -28,25 +28,25 @@ export function ReviewsSection({
   });
 
   return (
-    <div className="tray p-5 md:p-6">
+    <div className="panel p-5 md:p-6">
       <div className="grid gap-6 md:grid-cols-2">
         <div>
           <ReviewSummary average={averageRating} total={totalReviews} />
           {totalReviews > 0 && reviews.length === 0 ? (
-            <p className="mt-3 max-w-[40ch] text-sm text-ink-muted">The score is this gig&apos;s recorded average. Individual reviews haven&apos;t been loaded.</p>
+            <p className="mt-3 max-w-[40ch] text-sm text-ink-2">The score is this gig&apos;s recorded average. The written reviews behind it are not part of the sample data.</p>
           ) : null}
         </div>
 
         {reviews.length > 0 ? (
           <div>
-            <p className="mb-2 text-xs font-semibold text-ink-muted">
-              {reviews.length === totalReviews ? "Breakdown" : `Breakdown of the ${reviews.length} most recent`}
+            <p className="eyebrow mb-3">
+              {reviews.length >= totalReviews ? `All ${reviews.length} ${reviews.length === 1 ? "review" : "reviews"}` : `Latest ${reviews.length} of ${totalReviews} reviews`}
             </p>
             <div className="space-y-1.5">
               {ratingBuckets.map((b) => (
                 <div key={b.star} className="flex items-center gap-2 text-xs">
-                  <span className="w-5 tabular-nums">{b.star}</span>
-                  <div className="h-2 flex-1 overflow-hidden rounded-pill bg-laminate-sunk" aria-hidden="true">
+                  <span className="num w-5">{b.star}</span>
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-pill bg-surface-sunk" aria-hidden="true">
                     <div className="h-full rounded-pill bg-ink" style={{ width: `${b.pct}%` }} />
                   </div>
                   <span className="w-8 text-right tabular-nums text-ink-muted">{b.count}</span>

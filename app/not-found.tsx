@@ -1,38 +1,28 @@
 import Link from "next/link";
-import { Search, Home } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { FlapText } from "@/components/board/flap-text";
+import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
     <>
       <Navbar />
-      <main className="flex-1 flex items-center justify-center px-4 py-20 text-center">
-        <div className="max-w-md">
-          <p className="text-xs font-semibold text-brand-primary-dark mb-3">
-            404 · Not found
-          </p>
-          <h1 className="font-heading text-3xl sm:text-4xl text-ink mb-3 text-balance">
-            We couldn&apos;t find that page.
-          </h1>
-          <p className="text-sm text-ink-muted leading-relaxed mb-8">
-            The link may be broken, the page may have moved, or it may never have existed.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 h-11 px-5 rounded-md bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-dark transition-colors"
-            >
-              <Home className="w-4 h-4" />
-              Back home
-            </Link>
-            <Link
-              href="/search"
-              className="inline-flex items-center gap-2 h-11 px-5 rounded-md border border-line-strong text-sm font-medium text-ink hover:bg-canvas-subtle transition-colors"
-            >
-              <Search className="w-4 h-4" />
-              Browse services
-            </Link>
+      <main id="main" className="flex flex-1 items-center">
+        <div className="wrap py-20 lg:py-28">
+          <p className="eyebrow">Error 404</p>
+          <div className="mt-6 max-w-full overflow-hidden">
+            <FlapText text="Page not found" size="lg" className="max-w-full" />
+          </div>
+          <h1 className="t-sign mt-8 max-w-[20ch]">This page is not on the board.</h1>
+          <p className="mt-4 max-w-[48ch] text-ink-2">The link may be broken or the page may have moved. Pages that need a role, such as admin, also show this when you are signed out.</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button asChild>
+              <Link href="/">Back to the board</Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link href="/search">Browse gigs</Link>
+            </Button>
           </div>
         </div>
       </main>

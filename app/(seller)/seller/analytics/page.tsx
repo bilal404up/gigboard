@@ -86,7 +86,7 @@ export default async function SellerAnalyticsPage() {
                     <th scope="col" className="px-4 py-3 text-right font-bold">Rating</th>
                   </tr>
                 </thead>
-                <tbody className="[&_tr+tr]:border-t-2 [&_tr+tr]:border-dotted [&_tr+tr]:border-sand">
+                <tbody className="[&_tr+tr]:border-t [&_tr+tr]:border-line">
                   {gigs.map((g: any) => (
                     <tr key={g.id}>
                       <td className="px-4 py-3 font-semibold">{g.title}</td>
@@ -104,7 +104,7 @@ export default async function SellerAnalyticsPage() {
           )}
         </section>
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

@@ -10,9 +10,19 @@ import { CountdownTimer } from "@/components/ui/countdown-timer";
 import { toast } from "sonner";
 import type { Order } from "@/types/database.types";
 
-/* the one release button: the only control on the site that moves money */
-const RELEASE = "bg-release text-ink shadow-[0_2px_0_#0B6B40] hover:bg-release hover:shadow-[0_3px_0_#0B6B40,0_0_0_4px_rgba(31,199,122,0.22)] focus-visible:bg-release focus-visible:outline-mahogany active:shadow-[0_0_0_#0B6B40,inset_0_2px_0_rgba(0,0,0,0.18)]";
+function Panel({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
+  return (
+    <section className="panel space-y-4 p-5 md:p-6" aria-label={title}>
+      <div>
+        <p className="eyebrow">{eyebrow}</p>
+        <h2 className="t-head mt-2">{title}</h2>
+      </div>
+      {children}
+    </section>
+  );
+}
 
+/* The actions for the current step. Buttons are sentence case; the green one is the only control that releases money. */
 export function OrderActions({ order, isBuyer }: { order: Order; isBuyer: boolean }) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
@@ -28,74 +38,83 @@ export function OrderActions({ order, isBuyer }: { order: Order; isBuyer: boolea
     });
     setLoading(null);
     if (!res.ok) {
-      toast.error("Action failed");
+      toast.error("That did not work. Try again.");
       return;
     }
     toast.success("Done");
     router.refresh();
   }
 
-  if (order.status === "requires_requirements" && isBuyer) {
-    return (
-      <div className="tray p-6">
-        <div className="flex items-center gap-3">
-          <span className="lamp lamp--on" aria-hidden="true" />
-          <h3 className="t-head">Submit your requirements to begin</h3>
-        </div>
-        <p className="mt-2 max-w-[52ch] text-sm text-ink-muted">
-          The seller needs details about your project before they can start. Your delivery clock begins after submission.
-        </p>
-        <Button asChild variant="cta" className="mt-4">
-          <Link href={`/order/${order.id}/requirements`}>Submit Requirements</Link>
+  if (order.status === "requires_requirements") {
+    return isBuyer ? (
+      <Panel eyebrow="Your next step" title="Send your brief">
+        <p className="text-sm text-ink-2">The seller needs your project details before they start. Your payment stays held while they work.</p>
+        <Button asChild className="w-full">
+          <Link href={`/order/${order.id}/requirements`}>Send requirements</Link>
         </Button>
-      </div>
+      </Panel>
+    ) : (
+      <Panel eyebrow="Waiting" title="Waiting for the brief">
+        <p className="text-sm text-ink-2">The buyer has paid. The payment is held until they approve your delivery.</p>
+      </Panel>
     );
   }
 
-  if (order.status === "in_progress") {
+  if (order.status === "in_progress" || order.status === "revision_requested") {
     return (
-      <div className="tray p-6">
-        <div className="flex items-center gap-3">
-          <span className="lamp lamp--on" aria-hidden="true" />
-          <h3 className="t-head">In Progress</h3>
-        </div>
+      <Panel eyebrow={order.status === "revision_requested" ? "Revision requested" : "In progress"} title={isBuyer ? "The seller is working on it" : "Deliver the work"}>
+        {order.status === "revision_requested" && order.revision_message ? (
+          <div className="rounded-[8px] bg-surface-sunk p-3">
+            <p className="eyebrow mb-1">Requested changes</p>
+            <p className="text-sm">{order.revision_message}</p>
+          </div>
+        ) : null}
         {order.delivery_due_at && (
-          <div className="mt-4">
-            <p className="text-sm text-ink-muted">Delivery expected by:</p>
+          <div>
+            <p className="text-sm text-ink-2">Due in</p>
             <CountdownTimer to={order.delivery_due_at} className="fig-price-xl mt-1 text-ink" />
           </div>
         )}
-        {!isBuyer && (
+        {!isBuyer && order.status === "in_progress" && (
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="default" className="mt-5">Deliver Order</Button>
+              <Button className="w-full">Deliver order</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Deliver Order</DialogTitle>
-                <DialogDescription>Share a message and the buyer will be notified.</DialogDescription>
+                <DialogTitle>Deliver order</DialogTitle>
+                <DialogDescription>Add a message. The buyer is notified and can approve or ask for a revision.</DialogDescription>
               </DialogHeader>
-              <Textarea value={deliveryMsg} onChange={(e) => setDeliveryMsg(e.target.value)} rows={5} placeholder="Hi! I've attached..." />
+              <Textarea value={deliveryMsg} onChange={(e) => setDeliveryMsg(e.target.value)} rows={5} placeholder="What you delivered and anything the buyer should check" />
               <Button onClick={() => call("deliver", { message: deliveryMsg }, "deliver")} disabled={loading === "deliver"}>
-                {loading === "deliver" ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send Delivery"}
+                {loading === "deliver" ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Sending" /> : "Send delivery"}
               </Button>
             </DialogContent>
           </Dialog>
         )}
-      </div>
+      </Panel>
     );
   }
 
-  if (order.status === "delivered" && isBuyer) {
+  if (order.status === "delivered") {
+    if (!isBuyer) {
+      return (
+        <Panel eyebrow="Delivered" title="Waiting for approval">
+          <p className="text-sm text-ink-2">The payment is released to you when the buyer approves.</p>
+          {order.auto_complete_at && (
+            <p className="text-sm text-ink-2">
+              If they do not reply, the order approves itself on <span className="num">{new Date(order.auto_complete_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>.
+            </p>
+          )}
+        </Panel>
+      );
+    }
+    const left = order.revisions_allowed === -1 ? null : order.revisions_allowed - order.revisions_used;
     return (
-      <div className="tray space-y-4 p-6">
-        <div className="flex items-center gap-3">
-          <span className="lamp lamp--on" aria-hidden="true" />
-          <h3 className="t-head">Delivery Received</h3>
-        </div>
+      <Panel eyebrow="Delivered" title="Review the delivery">
         {order.delivery_message && (
-          <div className="rounded-[6px] bg-laminate-sunk p-3">
-            <p className="mb-1 text-xs font-semibold text-ink-muted">Seller&apos;s message</p>
+          <div className="rounded-[8px] bg-surface-sunk p-3">
+            <p className="eyebrow mb-1">Message from the seller</p>
             <p className="text-sm">{order.delivery_message}</p>
           </div>
         )}
@@ -103,63 +122,58 @@ export function OrderActions({ order, isBuyer }: { order: Order; isBuyer: boolea
           <div className="space-y-1">
             {order.delivery_files.map((url, i) => (
               <a key={i} href={url} className="link inline-flex min-h-11 items-center gap-2 text-sm">
-                <FileText className="w-4 h-4" /> Delivery file {i + 1} <Download className="w-3 h-3" />
+                <FileText className="h-4 w-4" aria-hidden="true" /> Delivery file {i + 1} <Download className="h-3 w-3" aria-hidden="true" />
               </a>
             ))}
           </div>
         )}
-        <div className="flex flex-wrap gap-2">
-          <Button size="lg" className={RELEASE} onClick={() => call("accept", undefined, "accept")} disabled={loading === "accept"}>
-            {loading === "accept" ? <Loader2 className="w-4 h-4 animate-spin" /> : "Accept Delivery"}
+        <p className="text-sm text-ink-2">Approving releases your payment to the seller. Until then it stays held.</p>
+        <div className="grid gap-2">
+          <Button size="lg" variant="release" onClick={() => call("accept", undefined, "accept")} disabled={loading === "accept"}>
+            {loading === "accept" ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Approving" /> : "Approve and release payment"}
           </Button>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="secondary" size="lg">Request Revision</Button>
+              <Button variant="secondary" size="lg" disabled={left !== null && left <= 0}>
+                Ask for a revision
+              </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Request a Revision</DialogTitle>
-                <DialogDescription>
-                  {order.revisions_allowed - order.revisions_used} revisions remaining.
-                </DialogDescription>
+                <DialogTitle>Ask for a revision</DialogTitle>
+                <DialogDescription>{left === null ? "Unlimited revisions in this package." : `${left} ${left === 1 ? "revision" : "revisions"} left in this package.`}</DialogDescription>
               </DialogHeader>
-              <Textarea value={revisionMsg} onChange={(e) => setRevisionMsg(e.target.value)} rows={5} placeholder="Please change..." />
+              <Textarea value={revisionMsg} onChange={(e) => setRevisionMsg(e.target.value)} rows={5} placeholder="What should change" />
               <Button onClick={() => call("request-revision", { message: revisionMsg }, "revision")} disabled={loading === "revision"}>
-                {loading === "revision" ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send Revision Request"}
+                {loading === "revision" ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Sending" /> : "Send revision request"}
               </Button>
             </DialogContent>
           </Dialog>
         </div>
-        <p className="text-sm text-ink-muted">Accepting slides the drawer to the seller. Until then your payment stays under the glass.</p>
         {order.auto_complete_at && (
-          <p className="text-xs text-ink-muted">
-            Auto-completes on {new Date(order.auto_complete_at).toLocaleDateString()} if no action.
+          <p className="text-xs text-ink-2">
+            If you do not reply, the order approves itself on <span className="num">{new Date(order.auto_complete_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>.
           </p>
         )}
-      </div>
+      </Panel>
     );
   }
 
   if (order.status === "completed") {
     return (
-      <div className="tray space-y-4 p-6">
-        <div className="flex items-center gap-3">
-          <span className="lamp lamp--release" aria-hidden="true" />
-          <h3 className="t-head">Order Complete!</h3>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {isBuyer && (
-            <>
-              <Button asChild variant="cta">
-                <Link href={`/order/${order.id}/review`}>Leave a Review</Link>
-              </Button>
-              <Button asChild variant="secondary">
-                <Link href={`/order/${order.id}/tip`}>Send a Tip</Link>
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
+      <Panel eyebrow="Released" title="Order complete">
+        <p className="text-sm text-ink-2">{isBuyer ? "You approved the work and the payment was released to the seller." : "The buyer approved the work. The payment was released to you."}</p>
+        {isBuyer && (
+          <div className="grid gap-2">
+            <Button asChild>
+              <Link href={`/order/${order.id}/review`}>Leave a review</Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link href={`/order/${order.id}/tip`}>Send a tip</Link>
+            </Button>
+          </div>
+        )}
+      </Panel>
     );
   }
 

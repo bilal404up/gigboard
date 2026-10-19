@@ -13,7 +13,7 @@ function Row({ label, value, muted, bold }: { label: string; value: string; mute
   return (
     <div className="flex items-baseline justify-between gap-3 py-1">
       <span className={cn("shrink-0", muted && "text-ink-muted", bold && "font-semibold")}>{label}</span>
-      <span className={cn("shrink-0 tabular-nums", bold && "fig-price")}>{value}</span>
+      <span className={cn("num shrink-0", bold && "text-[1.125rem]")}>{value}</span>
     </div>
   );
 }
@@ -37,7 +37,7 @@ export function OrderCard({ gigId, packages, extras }: { gigId: string; packages
       extras={
         extras.length > 0 ? (
           <div className="grid gap-2">
-            <p className="text-xs font-semibold text-ink-muted">Add-ons</p>
+            <p className="eyebrow">Add-ons</p>
             {extras.map((ex) => {
               const checked = selectedExtras.includes(ex.id);
               const id = `extra-${ex.id}`;
@@ -47,14 +47,14 @@ export function OrderCard({ gigId, packages, extras }: { gigId: string; packages
                   htmlFor={id}
                   className={cn(
                     "flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-[8px] px-3 py-2 text-sm transition-colors duration-120",
-                    checked ? "bg-release-tint" : "hover:bg-laminate-sunk"
+                    checked ? "bg-surface-sunk" : "hover:bg-surface-sunk"
                   )}
                 >
                   <span className="flex min-w-0 items-center gap-3">
                     <Checkbox id={id} checked={checked} onCheckedChange={() => setSelectedExtras((s) => (s.includes(ex.id) ? s.filter((x) => x !== ex.id) : [...s, ex.id]))} />
                     <span className="truncate text-ink">{ex.title}</span>
                   </span>
-                  <span className="shrink-0 font-semibold tabular-nums text-ink">+{formatMoney(Number(ex.price))}</span>
+                  <span className="num shrink-0 text-ink">+{formatMoney(Number(ex.price))}</span>
                 </label>
               );
             })}
@@ -74,11 +74,11 @@ export function OrderCard({ gigId, packages, extras }: { gigId: string; packages
       }
       action={
         <div className="grid gap-2">
-          <Button asChild variant="cta" size="lg" className="w-full">
+          <Button asChild size="lg" className="w-full">
             <Link href={orderUrl}>Continue for {formatMoney(pricing.buyerTotalPaid)}</Link>
           </Button>
-          <Button variant="secondary" className="w-full">
-            Contact seller
+          <Button asChild variant="secondary" className="w-full">
+            <Link href="/messages">Message the seller</Link>
           </Button>
         </div>
       }

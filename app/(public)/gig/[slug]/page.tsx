@@ -42,7 +42,7 @@ export default async function GigDetailPage({ params }: { params: { slug: string
   return (
     <>
       <Navbar />
-      <main id="main" className="wrap py-8 pb-28 lg:py-12 lg:pb-12">
+      <main id="main" className="wrap py-8 pb-28 lg:py-14 lg:pb-20">
         {/* two plain grid children: the drawer card is sticky, so nothing above it may carry transform or filter */}
         <div className="grid gap-10 lg:grid-cols-gig lg:items-start">
           <div className="min-w-0">
@@ -55,23 +55,24 @@ export default async function GigDetailPage({ params }: { params: { slug: string
               totalReviews={gig.total_reviews ?? 0}
             />
 
-            <div className="mt-8 overflow-hidden rounded-[14px] border border-line">
+            <div className="mt-8 overflow-hidden rounded-[12px] shadow-[0_0_0_1px_#E2E0DA]">
               {/* keep your existing gallery field here (gig.images or gig.gallery_images) */}
-              <GigGallery thumbnail={gig.thumbnail_url} images={(gig as any).images ?? null} title={gig.title} seed={gig.id} category={rootSlug} />
+              <GigGallery thumbnail={gig.thumbnail_url} images={(gig as any).images ?? null} title={gig.title} seed={gig.id} category={rootSlug} price={Math.min(...packages.map((p: any) => Number(p.price)))} days={Math.min(...packages.map((p: any) => Number(p.delivery_days)))} />
             </div>
 
             <section aria-labelledby="about-title" className="mt-10">
-              <h2 id="about-title" className="t-head">
+              <p className="eyebrow">What you get</p>
+              <h2 id="about-title" className="t-head mt-2">
                 About this gig
               </h2>
               <div
-                className="prose prose-sm mt-4 max-w-copy [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 text-ink prose-headings:font-display prose-a:text-brass-deep"
+                className="mt-4 max-w-copy space-y-3 text-[0.9375rem] leading-[1.65] text-ink [&_a]:underline [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5"
                 dangerouslySetInnerHTML={{ __html: cleanGigHtml(gig.description ?? "") }}
               />
             </section>
 
             <section aria-labelledby="seller-title" className="mt-10">
-              <h2 id="seller-title" className="t-head mb-4">
+              <h2 id="seller-title" className="t-head mb-4 border-t border-line pt-10">
                 About the seller
               </h2>
               <SellerCard
@@ -86,7 +87,7 @@ export default async function GigDetailPage({ params }: { params: { slug: string
             </section>
 
             <section aria-labelledby="reviews-title" className="mt-10">
-              <h2 id="reviews-title" className="t-head mb-4">
+              <h2 id="reviews-title" className="t-head mb-4 border-t border-line pt-10">
                 Reviews
               </h2>
               <ReviewsSection reviewers={reviewers} reviews={reviews ?? []} averageRating={gig.average_rating ?? 0} totalReviews={gig.total_reviews ?? 0} />

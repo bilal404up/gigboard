@@ -114,7 +114,7 @@ export default async function FavoritesPage() {
           />
         )}
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

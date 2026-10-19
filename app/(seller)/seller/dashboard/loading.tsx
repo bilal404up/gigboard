@@ -6,7 +6,7 @@ export default function SellerDashboardLoading() {
   return (
     <>
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <main id="main" className="wrap pb-16 pt-10 lg:pt-14">
         <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
           <div className="space-y-2 min-w-0">
             <Skeleton className="h-3 w-32" />
@@ -49,7 +49,7 @@ export default function SellerDashboardLoading() {
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

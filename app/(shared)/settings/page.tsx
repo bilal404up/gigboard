@@ -53,7 +53,7 @@ export default function SettingsPage() {
         <main className="py-20 text-center">
           <Loader2 className="w-6 h-6 animate-spin text-ink-faint mx-auto" />
         </main>
-        <Footer />
+        <Footer variant="app" />
       </>
     );
   }
@@ -102,11 +102,11 @@ export default function SettingsPage() {
           <TabsContent value="account">
             <div className="drawer-card grid max-w-[36rem] gap-4">
               <dl className="grid gap-3 text-sm">
-                <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-dotted border-sand pb-3">
+                <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">
                   <dt className="font-semibold">Email</dt>
                   <dd className="num text-ink-muted">{(user as any).email ?? "Not shown"}</dd>
                 </div>
-                <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-dotted border-sand pb-3">
+                <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">
                   <dt className="font-semibold">Username</dt>
                   <dd className="num text-ink-muted">@{user.username}</dd>
                 </div>
@@ -138,7 +138,7 @@ export default function SettingsPage() {
           </TabsContent>
         </Tabs>
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

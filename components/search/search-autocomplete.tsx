@@ -120,7 +120,7 @@ export function SearchAutocomplete({ placeholder = "What do you need done?", siz
         <button
           type="submit"
           className={cn(
-            "absolute right-1.5 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-[7px] bg-ink px-3 text-sm font-semibold text-white transition-colors hover:bg-[#2A2D32] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink",
+            "absolute right-1.5 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-[7px] bg-ink px-3 text-sm font-semibold text-white transition-colors hover:bg-[#2A2A2E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink",
             lg ? "h-11" : "h-8 md:h-7"
           )}
         >
@@ -129,7 +129,7 @@ export function SearchAutocomplete({ placeholder = "What do you need done?", siz
       </form>
 
       {showDropdown && (
-        <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-[12px] bg-white text-ink shadow-[0_0_0_1px_#E3E4E6,0_18px_40px_-20px_rgba(18,20,23,0.35)]">
+        <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-[12px] bg-white text-ink shadow-[0_0_0_1px_#E2E0DA,0_18px_40px_-20px_rgba(18,20,23,0.35)]">
           {loading && items.length === 0 ? (
             <div className="px-4 py-3 text-sm text-ink-muted">Searching</div>
           ) : items.length === 0 ? (

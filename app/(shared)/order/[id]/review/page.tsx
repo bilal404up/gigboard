@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, Star, ChevronLeft } from "lucide-react";
+import { Loader2, ChevronLeft } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,7 +37,7 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
     });
     setLoading(false);
     if (res.ok) {
-      toast.success("Review posted!");
+      toast.success("Review posted");
       router.push(`/order/${id}`);
     } else {
       toast.error("Failed to post review");
@@ -47,25 +47,20 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
   return (
     <>
       <Navbar />
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
+      <main id="main" className="wrap pb-16 pt-10 lg:pt-14">
         <Link
           href={`/order/${id}`}
-          className="inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink mb-4 transition-colors"
+          className="link mb-4 inline-flex min-h-11 items-center gap-1 text-sm"
         >
           <ChevronLeft className="w-4 h-4" />
           Back to order
         </Link>
 
-        <div className="bg-white border border-line rounded-2xl p-6 sm:p-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-full bg-brand-accent-50 text-ink flex items-center justify-center">
-              <Star className="w-5 h-5 fill-ink text-ink" />
-            </div>
-            <h1 className="font-heading text-xl text-ink">Leave a review</h1>
-          </div>
-          <p className="text-sm text-ink-muted leading-relaxed mb-6">
-            Your review is public and permanent. Be specific, buyers and sellers both rely on
-            real feedback.
+        <div className="panel max-w-2xl p-6 sm:p-8">
+          <p className="eyebrow">Order complete</p>
+          <h1 className="t-sign mb-3 mt-3">Leave a review</h1>
+          <p className="text-sm text-ink-2 leading-relaxed mb-6">
+            Your review is public. Be specific: other buyers read it before they book.
           </p>
 
           <div className="space-y-5">
@@ -88,13 +83,13 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
                 rows={6}
                 placeholder="Share your experience working with this seller…"
               />
-              <p className="text-2xs text-ink-subtle mt-1">{text.length}/1000 · min 15</p>
+              <p className="num mt-1 text-xs text-ink-2">{text.length}/1000 · min 15</p>
             </div>
 
             <button
               onClick={submit}
               disabled={loading || text.length < 15}
-              className="w-full h-11 inline-flex items-center justify-center gap-2 rounded-md bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="btn btn-primary w-full"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               Post review
@@ -102,7 +97,7 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

@@ -82,7 +82,7 @@ export default async function SellerGigsPage() {
           />
         )}
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

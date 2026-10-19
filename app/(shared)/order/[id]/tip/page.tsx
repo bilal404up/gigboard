@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, Gift, ChevronLeft } from "lucide-react";
+import { Loader2, ChevronLeft } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Input } from "@/components/ui/input";
@@ -35,7 +35,7 @@ export default function TipPage({ params }: { params: { id: string } }) {
     });
     setLoading(false);
     if (res.ok) {
-      toast.success("Tip sent!");
+      toast.success("Tip sent");
       router.push(`/order/${id}`);
     } else {
       toast.error("Failed to send tip");
@@ -45,24 +45,20 @@ export default function TipPage({ params }: { params: { id: string } }) {
   return (
     <>
       <Navbar />
-      <main className="max-w-md mx-auto px-4 sm:px-6 py-10 sm:py-12">
+      <main id="main" className="wrap pb-16 pt-10 lg:pt-14">
         <Link
           href={`/order/${id}`}
-          className="inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink mb-4 transition-colors"
+          className="link mb-4 inline-flex min-h-11 items-center gap-1 text-sm"
         >
           <ChevronLeft className="w-4 h-4" />
           Back to order
         </Link>
 
-        <div className="bg-white border border-line rounded-2xl p-6 sm:p-7">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-full bg-brand-accent/15 text-brand-accent-dark flex items-center justify-center">
-              <Gift className="w-5 h-5" />
-            </div>
-            <h1 className="font-heading text-xl text-ink">Send a tip</h1>
-          </div>
-          <p className="text-sm text-ink-muted leading-relaxed mb-6">
-            Show appreciation for great work. Tips go directly to your seller&apos;s balance.
+        <div className="panel max-w-2xl p-6 sm:p-8">
+          <p className="eyebrow">Order complete</p>
+          <h1 className="t-sign mb-3 mt-3">Send a tip</h1>
+          <p className="text-sm text-ink-2 leading-relaxed mb-6">
+            Optional. The tip is recorded on the order and added to the seller&apos;s earnings. In this demo no real money moves.
           </p>
 
           <label className="block text-sm font-medium text-ink mb-1.5">Amount</label>
@@ -76,10 +72,10 @@ export default function TipPage({ params }: { params: { id: string } }) {
                   setCustom("");
                 }}
                 className={cn(
-                  "h-10 rounded-md border text-sm font-semibold tabular-nums transition-colors",
+                  "h-11 rounded-[8px] font-mono text-sm transition-colors",
                   amount === p && !custom
-                    ? "border-brand-primary bg-brand-primary-50 text-brand-primary-dark"
-                    : "border-line-strong text-ink hover:bg-canvas-subtle"
+                    ? "bg-ink text-white"
+                    : "bg-surface text-ink shadow-[inset_0_0_0_1px_#C9C6BE] hover:shadow-[inset_0_0_0_1px_#111113]"
                 )}
               >
                 ${p}
@@ -103,32 +99,32 @@ export default function TipPage({ params }: { params: { id: string } }) {
             className="mb-5"
           />
 
-          <div className="bg-canvas-subtle border border-line rounded-lg p-3 text-sm space-y-1.5 mb-5">
-            <div className="flex justify-between text-ink-muted">
+          <div className="mb-5 space-y-1.5 rounded-[10px] bg-surface-sunk p-4 text-sm">
+            <div className="flex justify-between text-ink-2">
               <span>Tip amount</span>
-              <span className="tabular-nums">{formatMoney(breakdown.amount)}</span>
+              <span className="num">{formatMoney(breakdown.amount)}</span>
             </div>
-            <div className="flex justify-between text-ink-subtle text-xs">
+            <div className="flex justify-between text-ink-2 text-xs">
               <span>Platform fee (20%)</span>
-              <span className="tabular-nums">−{formatMoney(breakdown.platformCommission)}</span>
+              <span className="num">-{formatMoney(breakdown.platformCommission)}</span>
             </div>
             <div className="flex justify-between font-semibold text-ink pt-2 mt-1 border-t border-line">
               <span>Seller receives</span>
-              <span className="tabular-nums">{formatMoney(breakdown.sellerAmount)}</span>
+              <span className="num">{formatMoney(breakdown.sellerAmount)}</span>
             </div>
           </div>
 
           <button
             onClick={submit}
             disabled={loading || finalAmount < 1}
-            className="w-full h-11 inline-flex items-center justify-center gap-2 rounded-md bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="btn btn-primary w-full"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            Send tip · {formatMoney(finalAmount)}
+            Send a {formatMoney(finalAmount)} tip
           </button>
         </div>
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

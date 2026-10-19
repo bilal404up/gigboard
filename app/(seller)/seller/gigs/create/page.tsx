@@ -100,10 +100,10 @@ export default function CreateGigPage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      <main id="main" className="wrap pb-16 pt-10 lg:pt-14">
         <header className="mb-6">
-          <p className="text-xs font-semibold text-ink-subtle mb-1">Seller</p>
-          <h1 className="font-heading text-2xl sm:text-3xl text-ink">Create a gig</h1>
+          <p className="eyebrow">Seller</p>
+          <h1 className="t-sign mt-3">Create a gig</h1>
           <p className="text-sm text-ink-subtle mt-1">
             Step {step} of {STEPS.length} · {STEPS[step - 1]}
           </p>
@@ -130,7 +130,7 @@ export default function CreateGigPage() {
         <div className="bg-white border border-line rounded-2xl p-6 sm:p-7">
           {step === 1 && (
             <div className="space-y-5">
-              <h2 className="font-heading text-lg text-ink">Overview</h2>
+              <h2 className="t-head">Overview</h2>
               <Field
                 label="Gig title"
                 hint={`${title.length}/80, start with "I will…"`}
@@ -150,7 +150,7 @@ export default function CreateGigPage() {
 
           {step === 2 && (
             <div className="space-y-4">
-              <h2 className="font-heading text-lg text-ink">Pricing</h2>
+              <h2 className="t-head">Pricing</h2>
               <p className="text-sm text-ink-subtle">Three tiers, buyers will see them as Basic / Standard / Premium tabs.</p>
               {packages.map((pkg, i) => (
                 <div key={pkg.package_type} className="border border-line rounded-xl p-4">
@@ -203,7 +203,7 @@ export default function CreateGigPage() {
 
           {step === 3 && (
             <div className="space-y-5">
-              <h2 className="font-heading text-lg text-ink">Description</h2>
+              <h2 className="t-head">Description</h2>
               <Field label="Short description" hint={`${shortDesc.length}/150, shown in cards`}>
                 <Textarea value={shortDesc} onChange={(e) => setShortDesc(e.target.value)} maxLength={150} rows={2} />
               </Field>
@@ -223,7 +223,7 @@ export default function CreateGigPage() {
 
           {step === 4 && (
             <div className="space-y-5">
-              <h2 className="font-heading text-lg text-ink">Gallery</h2>
+              <h2 className="t-head">Gallery</h2>
               <Field label="Thumbnail" hint="Required · 5:3 aspect works best">
                 <ImageUpload value={thumbnail} onChange={setThumbnail} />
               </Field>
@@ -235,7 +235,7 @@ export default function CreateGigPage() {
 
           {step === 5 && (
             <div className="space-y-5">
-              <h2 className="font-heading text-lg text-ink">Review &amp; publish</h2>
+              <h2 className="t-head">Review &amp; publish</h2>
               <ul className="space-y-2">
                 <Checkrow label="Title is at least 10 characters" ok={checks.title} />
                 <Checkrow label="At least one tag added" ok={checks.tags} />
@@ -283,7 +283,7 @@ export default function CreateGigPage() {
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

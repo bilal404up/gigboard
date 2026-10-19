@@ -1,22 +1,31 @@
 import Link from "next/link";
-import { AlertOctagon, ArrowRight } from "lucide-react";
+import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
 import { createClient } from "@/lib/supabase/server";
-import { formatDate } from "@/lib/utils/format";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { formatDate, formatMoney } from "@/lib/utils/format";
 
-const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "success" | "warning" | "error" | "info"> = {
-  open: "warning",
-  in_review: "info",
-  resolved_buyer: "success",
-  resolved_seller: "success",
-  cancelled: "secondary",
+const TONE: Record<string, string> = {
+  open: "tag tag--stop",
+  in_review: "tag tag--held",
+  resolved_buyer: "tag tag--neutral",
+  resolved_seller: "tag tag--neutral",
+  cancelled: "tag tag--neutral",
 };
 
+/* Disputes are participant-only under RLS, so the admin list is read with the server-only client after an admin check. Read-only. */
 export default async function AdminDisputesPage() {
   const sb = createClient();
-  const { data } = await sb
+  const {
+    data: { user },
+  } = await sb.auth.getUser();
+  if (!user) notFound();
+  const { data: me } = await sb.from("users").select("is_admin").eq("id", user.id).single();
+  if (!me?.is_admin) notFound();
+
+  const { data } = await createAdminClient()
     .from("disputes")
     .select("*, orders(order_number, buyer_id, seller_id, buyer_total_paid)")
     .order("created_at", { ascending: false });
@@ -24,51 +33,45 @@ export default async function AdminDisputesPage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <header className="mb-8">
-          <p className="text-xs font-semibold text-ink-subtle mb-1">Admin</p>
-          <h1 className="font-heading text-2xl sm:text-3xl text-ink">Disputes</h1>
-          <p className="text-sm text-ink-subtle mt-1">{data?.length ?? 0} total · most recent first</p>
-        </header>
+      <main id="main" className="wrap pb-16 pt-10 lg:pt-14">
+        <p className="eyebrow">
+          <Link href="/admin" className="link">
+            Admin
+          </Link>
+        </p>
+        <h1 className="t-sign mt-3">Disputes</h1>
+        <p className="mt-2 text-sm text-ink-2">
+          <span className="num">{data?.length ?? 0}</span> total, most recent first. Payment stays held while a dispute is open.
+        </p>
 
-        {!data || data.length === 0 ? (
-          <div className="bg-white border border-line rounded-2xl p-12 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-brand-primary-50 text-brand-primary-dark flex items-center justify-center">
-              <AlertOctagon className="w-5 h-5" />
-            </div>
-            <p className="text-sm text-ink font-medium mb-1">No disputes</p>
-            <p className="text-sm text-ink-subtle">Disputes opened by buyers or sellers will appear here.</p>
-          </div>
-        ) : (
-          <div className="bg-white border border-line rounded-2xl divide-y divide-line overflow-hidden">
-            {data.map((d: any) => (
-              <Link
-                key={d.id}
-                href={`/order/${d.order_id}`}
-                className="block px-5 py-4 hover:bg-canvas-subtle transition-colors"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="font-mono text-2xs text-ink-subtle">{d.orders?.order_number}</span>
-                      <Badge variant={STATUS_VARIANT[d.status] ?? "secondary"} className="capitalize">
-                        {d.status.replace(/_/g, " ")}
-                      </Badge>
-                    </div>
-                    <p className="text-sm font-semibold text-ink capitalize mb-0.5">
-                      {d.reason.replace(/_/g, " ")}
-                    </p>
-                    <p className="text-sm text-ink-muted line-clamp-2 leading-relaxed">{d.description}</p>
-                    <p className="text-2xs text-ink-subtle mt-2">Opened {formatDate(d.created_at)}</p>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-ink-faint mt-1 shrink-0" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+        <div className="mt-8">
+          {!data || data.length === 0 ? (
+            <EmptyState sign="All clear" title="No disputes" description="Disputes on orders appear here with the amount that is held." />
+          ) : (
+            <ul className="panel divide-y divide-line overflow-hidden">
+              {data.map((d: any) => (
+                <li key={d.id}>
+                  <Link href={`/order/${d.order_id}`} className="grid gap-1 px-5 py-4 transition-colors hover:bg-[#FAF9F6] md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-6">
+                    <span className="min-w-0">
+                      <span className="flex flex-wrap items-center gap-2">
+                        <span className="num text-xs text-ink-2">{d.orders?.order_number}</span>
+                        <span className={TONE[d.status] ?? "tag tag--neutral"}>{String(d.status).replace(/_/g, " ")}</span>
+                      </span>
+                      <span className="mt-1 block font-semibold first-letter:uppercase">{String(d.reason).replace(/_/g, " ")}</span>
+                      <span className="mt-0.5 block text-sm text-ink-2 line-clamp-2">{d.description}</span>
+                    </span>
+                    <span className="text-left md:text-right">
+                      {d.orders?.buyer_total_paid != null ? <span className="num block">{formatMoney(Number(d.orders.buyer_total_paid))}</span> : null}
+                      <span className="block text-xs text-ink-2">Opened {formatDate(d.created_at)}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

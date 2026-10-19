@@ -6,7 +6,7 @@ export default function DashboardLoading() {
   return (
     <>
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <main id="main" className="wrap pb-16 pt-10 lg:pt-14">
         <div className="flex items-center gap-4 mb-8">
           <Skeleton className="w-14 h-14 rounded-full shrink-0" />
           <div className="min-w-0 flex-1 space-y-2">
@@ -38,7 +38,7 @@ export default function DashboardLoading() {
           ))}
         </div>
       </main>
-      <Footer />
+      <Footer variant="app" />
     </>
   );
 }

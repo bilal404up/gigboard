@@ -1,5 +1,9 @@
-/* Typographic cover for a gig: the gig's own words on a quiet category tint, with a small category mark.
-   Every gig gets a different cover because the words differ. Exports are unchanged. */
+/*
+ * Ticket-style gig cover, drawn in code (no photos).
+ * A dark flap band carries the category and the price in mono, the title sits below in
+ * Archivo Expanded on the page colour, and a thin category rule runs along the band.
+ * Thumbnails show only the category and price, never shrunken title text.
+ */
 
 export type ArtCategory = 'design' | 'writing' | 'development' | 'mobile' | 'ai' | 'video' | 'audio' | 'marketing' | 'business' | 'other'
 
@@ -7,32 +11,41 @@ type Props = {
   seed: string
   category?: string | null
   className?: string
+  /** accessible name; when omitted the cover is decorative */
   title?: string
+  /** fill the parent instead of keeping 4:3 */
   cover?: boolean
-  /** Words to print on the cover. Defaults to words taken from a slug-style seed. */
+  /** words printed on the cover, usually the gig title */
   text?: string
+  /** starting price in dollars, shown in the band */
+  price?: number | null
+  /** fastest delivery in days */
+  days?: number | null
+  /** "thumb": category and price only */
+  variant?: 'cover' | 'thumb'
 }
 
-const TINT: Record<ArtCategory, string> = {
-  development: '#E9EEF5',
-  mobile: '#E7EFF2',
-  design: '#F1EBF3',
-  ai: '#ECF2EA',
-  marketing: '#F5ECE7',
-  business: '#EDEEF0',
-  writing: '#F2EFE6',
-  video: '#EEEAF4',
-  audio: '#E9F0EF',
-  other: '#EDEEF0',
+/* Category rules: muted, so amber, green and red stay reserved for money. */
+const RULE: Record<ArtCategory, string> = {
+  development: '#4A6489',
+  mobile: '#6A5F96',
+  design: '#9A5873',
+  ai: '#3F7380',
+  marketing: '#A4593A',
+  business: '#776B5E',
+  writing: '#7A6A3A',
+  video: '#5D5A8C',
+  audio: '#3F7380',
+  other: '#776B5E',
 }
 
 const NAME: Record<ArtCategory, string> = {
-  development: 'Web development',
+  development: 'Web',
   mobile: 'Mobile',
   design: 'Design',
-  ai: 'AI and automation',
+  ai: 'AI',
   marketing: 'Marketing',
-  business: 'Business support',
+  business: 'Business',
   writing: 'Writing',
   video: 'Video',
   audio: 'Audio',
@@ -51,7 +64,7 @@ export function hash(s: string) {
 export function categoryOf(raw?: string | null): ArtCategory {
   const c = (raw ?? '').toLowerCase()
   if (/mobile|ios|android|\bapp/.test(c)) return 'mobile'
-  if (/\bai\b|automation|bot|machine|gpt|llm/.test(c)) return 'ai'
+  if (/\bai\b|^ai|automation|bot|machine|gpt|llm/.test(c)) return 'ai'
   if (/design|logo|brand|illustr|creative|\bui|\bux/.test(c)) return 'design'
   if (/writ|copy|edit|translat|content/.test(c)) return 'writing'
   if (/video|motion|anim|film/.test(c)) return 'video'
@@ -64,7 +77,7 @@ export function categoryOf(raw?: string | null): ArtCategory {
 
 /** "i-will-design-a-logo-that-still-reads-at-16px-fb6n" becomes "Design a logo that still reads at 16px". */
 function coverText(seed: string): string | null {
-  if (/^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(seed)) return null // a uuid, not a slug
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(seed)) return null
   if (!/^[a-z0-9]+(?:-[a-z0-9]+){2,}$/.test(seed)) return null
   let parts = seed.split('-')
   if (parts[0] === 'i' && parts[1] === 'will') parts = parts.slice(2)
@@ -73,119 +86,45 @@ function coverText(seed: string): string | null {
   return s ? s[0].toUpperCase() + s.slice(1) : null
 }
 
-function Glyph({ category, rot, fg }: { category: ArtCategory; rot: number; fg: string }) {
-  const solid = { fill: fg, stroke: 'none' as const }
-  const line = { fill: 'none' as const, stroke: fg, strokeWidth: 14, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
-  const g = (() => {
-    switch (category) {
-      case 'design':
-        return (
-          <>
-            <circle cx="-40" cy="10" r="52" {...solid} opacity="0.9" />
-            <circle cx="30" cy="-20" r="52" {...solid} opacity="0.55" />
-          </>
+function Cells({ text }: { text: string }) {
+  return (
+    <span className="ga-cells" aria-hidden="true">
+      {Array.from(text.toUpperCase()).map((ch, i) =>
+        ch === ' ' ? <span key={i} className="ga-gap" /> : (
+          <span key={i} className="ga-cell">
+            {ch}
+          </span>
         )
-      case 'writing':
-        return (
-          <>
-            <rect x="-90" y="-62" width="180" height="22" rx="11" {...solid} />
-            <rect x="-90" y="-18" width="130" height="22" rx="11" {...solid} />
-            <rect x="-90" y="26" width="160" height="22" rx="11" {...solid} />
-          </>
-        )
-      case 'development':
-        return (
-          <>
-            <path d="M-50 -60 L-100 0 L-50 60" {...line} />
-            <path d="M50 -60 L100 0 L50 60" {...line} />
-            <path d="M18 -70 L-18 70" {...line} />
-          </>
-        )
-      case 'mobile':
-        return (
-          <>
-            <rect x="-52" y="-92" width="104" height="184" rx="24" fill="none" stroke={fg} strokeWidth="12" />
-            <circle cx="0" cy="66" r="9" {...solid} />
-          </>
-        )
-      case 'ai':
-        return (
-          <>
-            <path d="M-70 -40 L0 -70 L70 -30 M0 -70 L-40 50 M-70 -40 L-40 50 L50 60 L70 -30" fill="none" stroke={fg} strokeWidth="8" strokeLinejoin="round" />
-            {[
-              [-70, -40],
-              [0, -70],
-              [70, -30],
-              [-40, 50],
-              [50, 60],
-            ].map(([x, y]) => (
-              <circle key={`${x}${y}`} cx={x} cy={y} r="17" {...solid} />
-            ))}
-          </>
-        )
-      case 'video':
-        return (
-          <>
-            <rect x="-100" y="-66" width="150" height="132" rx="20" {...solid} />
-            <path d="M58 -40 L106 -66 L106 66 L58 40 Z" {...solid} />
-          </>
-        )
-      case 'audio':
-        return (
-          <>
-            <path d="M-60 -70 A100 100 0 0 1 -60 70" {...line} />
-            <path d="M-20 -46 A62 62 0 0 1 -20 46" {...line} />
-            <path d="M20 -22 A30 30 0 0 1 20 22" {...line} />
-          </>
-        )
-      case 'marketing':
-        return (
-          <>
-            <rect x="-104" y="26" width="44" height="48" rx="6" {...solid} />
-            <rect x="-48" y="-8" width="44" height="82" rx="6" {...solid} />
-            <rect x="8" y="-42" width="44" height="116" rx="6" {...solid} />
-          </>
-        )
-      case 'business':
-        return (
-          <>
-            <circle cx="0" cy="0" r="78" fill="none" stroke={fg} strokeWidth="18" />
-            <rect x="-42" y="-10" width="84" height="20" rx="10" {...solid} />
-          </>
-        )
-      default:
-        return <path d="M0 -84 L84 0 L0 84 L-84 0 Z" {...solid} />
-    }
-  })()
-  return <g transform={`rotate(${rot})`}>{g}</g>
+      )}
+    </span>
+  )
 }
 
-export function GigArt({ seed, category, className = '', title, cover = false, text }: Props) {
+export function GigArt({ seed, category, className = '', title, cover = false, text, price, days, variant = 'cover' }: Props) {
   const cat = categoryOf(category)
-  const words = text ?? coverText(seed)
-  const rot = [-6, 0, 6][hash(seed) % 3]
+  const words = variant === 'thumb' ? null : (text ?? coverText(seed))
+  const priceText = typeof price === 'number' && price > 0 ? `$${Math.round(price)}` : null
 
   return (
     <div
       role={title ? 'img' : undefined}
       aria-label={title}
       aria-hidden={title ? undefined : true}
-      className={`relative w-full overflow-hidden [container-type:inline-size] ${cover ? 'h-full' : 'aspect-[4/3]'} ${className}`}
-      style={{ background: TINT[cat] }}
+      className={`ga ${variant === 'thumb' ? 'ga--thumb' : ''} ${cover ? 'h-full' : 'aspect-[4/3]'} ${className}`}
+      style={{ ['--ga-rule' as string]: RULE[cat] }}
     >
-      <svg viewBox="-120 -120 240 240" className="absolute right-[7%] top-[9%] w-[22%]" aria-hidden="true" focusable="false">
-        <Glyph category={cat} rot={rot} fg="#121417" />
-      </svg>
-      {words ? (
-        <>
-          <span className="absolute left-[7%] top-[9%] max-w-[60%] truncate text-[length:max(9px,4.6cqw)] font-semibold text-[#565B63]">{NAME[cat]}</span>
-          <span className="absolute bottom-[8%] left-[7%] right-[7%] line-clamp-3 text-[length:max(10px,8.4cqw)] font-bold leading-[1.05] tracking-[-0.02em] text-[#121417]">
-            {words}
+      <div className="ga-band">
+        <Cells text={NAME[cat]} />
+        {priceText ? <span className="ga-price">{variant === 'thumb' ? priceText : `From ${priceText}`}</span> : null}
+      </div>
+      <div className="ga-body">
+        {words ? <span className="ga-title">{words}</span> : <span className="ga-title ga-title--cat">{NAME[cat]}</span>}
+        {variant !== 'thumb' && typeof days === 'number' && days > 0 ? (
+          <span className="ga-meta">
+            Ready in {days} {days === 1 ? 'day' : 'days'}
           </span>
-        </>
-      ) : (
-        <span className="absolute bottom-[9%] left-[7%] right-[7%] text-[length:max(14px,11cqw)] font-bold leading-none tracking-[-0.03em] text-[#121417]">{NAME[cat]}</span>
-      )}
+        ) : null}
+      </div>
     </div>
   )
 }

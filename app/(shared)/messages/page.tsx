@@ -196,7 +196,7 @@ export default function MessagesPage() {
 
             {active ? (
               <section aria-label={`Conversation with ${active.other_user.full_name}`} className="drawer-card flex h-[70dvh] min-h-[28rem] flex-col p-0 pt-[14px]">
-                <header className="flex items-center gap-3 border-b-2 border-dotted border-sand px-4 py-3">
+                <header className="flex items-center gap-3 border-b border-line px-4 py-3">
                   <SellerMark username={active.other_user.username || active.id} label={active.other_user.full_name} size={32} />
                   <div className="min-w-0">
                     <p className="truncate font-semibold">{active.other_user.full_name}</p>
@@ -232,7 +232,7 @@ export default function MessagesPage() {
                     e.preventDefault();
                     sendMessage();
                   }}
-                  className="flex items-center gap-2 border-t-2 border-dotted border-sand p-3"
+                  className="flex items-center gap-2 border-t border-line p-3"
                 >
                   <label htmlFor="message" className="sr-only">
                     Message

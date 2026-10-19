@@ -38,7 +38,7 @@ function LoginForm() {
   return (
     <AuthShell
       title="Log in"
-      intro="Back to the counter."
+      intro="Welcome back."
       footer={
         <>
           New here?{" "}
