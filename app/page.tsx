@@ -5,7 +5,7 @@ import { toBoardGigs, WINDOWS, CATEGORY_SLUG, windowFor, type WindowNo } from "@
 import { HeldTimeline } from "@/components/home/HeldTimeline";
 import { CategoryTiles, type CategoryTile } from "@/components/home/CategoryTiles";
 import { SellerCards, type SellerCardData } from "@/components/home/SellerCards";
-import { TestOrder, BuildNotes } from "@/components/home/BuildProof";
+import { TestOrder, BuildNotes, DemoMap } from "@/components/home/BuildProof";
 import { getCategoryRootSlugs } from "@/lib/supabase/category-roots";
 import { getPlatformSettings } from "@/lib/supabase/settings";
 import { paymentMode } from "@/lib/stripe/mode";
@@ -122,6 +122,7 @@ export default async function HomePage() {
         <SellerCards sellers={data.sellers} />
         {demo && cheapest && <TestOrder gig={{ title: cheapest.title, href: cheapest.href, price: cheapest.price }} mode={mode} />}
         <BuildNotes mode={mode} />
+        <DemoMap />
       </main>
       <Footer />
     </>

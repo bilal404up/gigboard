@@ -81,9 +81,10 @@ export function TestOrder({ gig, mode }: { gig: Gig; mode: PaymentMode }) {
   );
 }
 
-const MAP: Array<{ title: string; links: Array<{ label: string; href: string }> }> = [
+const MAP: Array<{ title: string; blurb: string; links: Array<{ label: string; href: string }> }> = [
   {
     title: "Buyers",
+    blurb: "Find a gig, pay into held payment, approve the work.",
     links: [
       { label: "Browse gigs", href: "/search" },
       { label: "How it works", href: "/how-it-works" },
@@ -94,6 +95,7 @@ const MAP: Array<{ title: string; links: Array<{ label: string; href: string }> 
   },
   {
     title: "Sellers",
+    blurb: "List gigs, deliver orders, see what has been released.",
     links: [
       { label: "Become a seller", href: "/become-seller" },
       { label: "Seller dashboard", href: "/seller/dashboard" },
@@ -105,6 +107,7 @@ const MAP: Array<{ title: string; links: Array<{ label: string; href: string }> 
   },
   {
     title: "Admins",
+    blurb: "Review new gigs, settle disputes, read the sent emails.",
     links: [
       { label: "Admin home", href: "/admin" },
       { label: "Gig review", href: "/admin/gigs/review" },
@@ -120,61 +123,81 @@ const ICONS: Record<string, typeof ShoppingBag> = { Buyers: ShoppingBag, Sellers
 export function BuildNotes({ mode }: { mode: PaymentMode }) {
   return (
     <section className="home-section home-section--rule" aria-labelledby="bp-notes-title">
+      <div className="wrap bp-about">
+        <Reveal as="div" variant="rise" className="bp-about-head">
+          <p className="eyebrow">About this build</p>
+          <h2 id="bp-notes-title" className="t-sign mt-3">
+            A working marketplace, end to end
+          </h2>
+          <p className="home-lead mt-4">A portfolio demo with sample gigs, sellers and reviews. Every order runs the same held-payment flow.</p>
+        </Reveal>
+        <Reveal as="dl" stagger={90} className="bp-dl">
+          <div>
+            <dt>The problem</dt>
+            <dd>Buyers worry about paying for work that never arrives. Sellers worry about doing work that never gets paid.</dd>
+          </div>
+          <div>
+            <dt>The approach</dt>
+            <dd>
+              Fixed-price gigs with a delivery date. The platform holds the payment and only the buyer&apos;s approval releases it. Three days without a reply
+              after delivery approves the order.
+            </dd>
+          </div>
+          <div>
+            <dt>The stack</dt>
+            <dd>
+              Next.js 14, TypeScript and Tailwind on Supabase (Postgres, auth and realtime). Card payments use Stripe when keys are configured.
+              {mode === "demo" ? " This demo runs without them, so checkout is simulated." : ""}
+            </dd>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* Every screen in the demo, grouped by who uses it. */
+export function DemoMap() {
+  const pages = MAP.reduce((n, g) => n + g.links.length, 0)
+  return (
+    <section className="home-section home-section--rule" aria-labelledby="dm-title">
       <div className="wrap">
-        <div className="bp-notes">
-          <div>
-            <p className="eyebrow">About this build</p>
-            <h2 id="bp-notes-title" className="t-sign mt-3">
-              A working marketplace, end to end
-            </h2>
-            <dl className="bp-dl">
-              <div>
-                <dt>The problem</dt>
-                <dd>Buyers worry about paying for work that never arrives. Sellers worry about doing work that never gets paid.</dd>
-              </div>
-              <div>
-                <dt>The approach</dt>
-                <dd>
-                  Fixed-price gigs with a delivery date. The platform holds the payment and only the buyer&apos;s approval releases it. Three days without a reply
-                  after delivery approves the order.
-                </dd>
-              </div>
-              <div>
-                <dt>The stack</dt>
-                <dd>
-                  Next.js 14, TypeScript and Tailwind on Supabase (Postgres, auth and realtime). Card payments use Stripe when keys are configured.
-                  {mode === "demo" ? " This demo runs without them, so checkout is simulated." : ""}
-                </dd>
-              </div>
-            </dl>
-          </div>
-          <div>
-            <Reveal as="div" stagger={80} className="bp-map">
-            {MAP.map((group) => {
-              const Icon = ICONS[group.title]
-              return (
-                <nav key={group.title} className="bp-card" aria-label={`${group.title} pages`}>
-                  <h3 className="bp-card-title">
-                    <Icon size={16} aria-hidden="true" />
-                    {group.title}
-                  </h3>
-                  <ul>
-                    {group.links.map((l) => (
-                      <li key={l.href}>
-                        <Link href={l.href} className="bp-card-link">
-                          {l.label}
-                          <ArrowUpRight size={14} aria-hidden="true" />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              )
-            })}
-            </Reveal>
-            <p className="bp-note">Pages that need an account ask you to sign in. In the demo, pick a role in the top menu.</p>
-          </div>
+        <div className="home-head">
+          <p className="eyebrow">Explore the demo</p>
+          <h2 id="dm-title" className="t-sign">
+            Every screen, one click away
+          </h2>
+          <p className="home-lead">
+            {pages} pages across three roles. Pages that need an account ask you to sign in. In the demo, pick a role in the top menu.
+          </p>
         </div>
+        <Reveal as="div" stagger={90} className="dm-grid">
+          {MAP.map((group) => {
+            const Icon = ICONS[group.title]
+            return (
+              <nav key={group.title} className="dm-panel" aria-label={`${group.title} pages`}>
+                <div className="dm-top">
+                  <span className="dm-icon" aria-hidden="true">
+                    <Icon size={18} />
+                  </span>
+                  <span className="dm-count num">{group.links.length} pages</span>
+                </div>
+                <h3 className="dm-title">{group.title}</h3>
+                <p className="dm-blurb">{group.blurb}</p>
+                <ul className="dm-links">
+                  {group.links.map((l) => (
+                    <li key={l.href}>
+                      <Link href={l.href} className="dm-link" prefetch={false}>
+                        {l.label}
+                        <ArrowUpRight size={15} aria-hidden="true" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )
+          })}
+        </Reveal>
       </div>
     </section>
   );
