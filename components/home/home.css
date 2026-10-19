@@ -79,7 +79,7 @@ html.js .ht-line:not([data-in]) .ht-label { opacity: 0; transform: translateY(6p
   transition: background-color 220ms var(--kit-ease), color 220ms var(--kit-ease);
 }
 .ct-no { grid-area: no; align-self: start; padding-top: 4px; font-size: 0.75rem; color: var(--ink-3); }
-.ct-name { grid-area: name; font-family: var(--font-display), sans-serif; font-weight: 700; font-variation-settings: "wdth" 125; font-size: clamp(1.125rem, 0.9rem + 1.2vw, 1.875rem); line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance; }
+.ct-name { grid-area: name; font-family: var(--font-display), sans-serif; font-weight: 600; font-variation-settings: "wdth" 100; font-size: clamp(1.125rem, 0.9rem + 1.2vw, 1.875rem); line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance; }
 @media (min-width: 768px) { .ct-name { white-space: nowrap; } }
 .ct-lead { display: none; }
 .ct-from, .ct-count { font-size: 0.8125rem; color: var(--ink-2); }
@@ -202,7 +202,7 @@ html.js .ht-line:not([data-in]) .ht-label { opacity: 0; transform: translateY(6p
 .dm-top { display: flex; align-items: center; justify-content: space-between; }
 .dm-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 8px; background: var(--board); color: var(--held); }
 .dm-count { font: 500 0.75rem/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
-.dm-title { margin: 20px 0 0; font-family: var(--font-display), sans-serif; font-weight: 700; font-variation-settings: "wdth" 125; font-size: 1.5rem; line-height: 1.1; }
+.dm-title { margin: 20px 0 0; font-family: var(--font-display), sans-serif; font-weight: 600; font-variation-settings: "wdth" 100; font-size: 1.5rem; line-height: 1.1; }
 .dm-blurb { margin: 8px 0 0; font-size: 0.9375rem; line-height: 1.5; color: var(--ink-2); }
 .dm-links { margin: 20px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
 .dm-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; border-bottom: 1px solid var(--line); font-size: 0.9375rem; font-weight: 500; color: var(--ink); text-decoration: none; }
