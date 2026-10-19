@@ -10,7 +10,7 @@ const Switch = React.forwardRef<React.ElementRef<typeof SwitchPrimitive.Root>, R
     <SwitchPrimitive.Root
       ref={ref}
       className={cn(
-        "peer relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-pill bg-[#8A9096] transition-colors duration-200",
+        "peer relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-pill bg-[#C9C6BE] transition-colors duration-200",
         "before:absolute before:-inset-2 before:content-['']",
         "data-[state=checked]:bg-release-deep focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-50",
         className

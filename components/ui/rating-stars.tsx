@@ -10,8 +10,17 @@ type Props = {
 }
 
 const STAR = "M8 1.2l2.06 4.3 4.74.6-3.48 3.3.9 4.7L8 11.8l-4.22 2.3.9-4.7L1.2 6.1l4.74-.6z"
-const EMPTY = "#DCDDE0"
-const FULL = "#121417"
+const EMPTY = "#E2E0DA"
+const FULL = "#111113"
+
+/* One small ink star, for "4.9 (53)" rating text */
+export function RatingGlyph({ size = 12, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true" className={`shrink-0 ${className}`}>
+      <path d={STAR} fill={FULL} />
+    </svg>
+  )
+}
 
 /* Ink stars on a grey track. Partial stars are clipped, so 4.9 reads as 4.9, not as 5 or 4. */
 function Star({ fill, size, id }: { fill: number; size: number; id: string }) {

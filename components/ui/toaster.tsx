@@ -12,15 +12,15 @@ export function Toaster() {
         unstyled: false,
         classNames: {
           toast:
-            "group !flex !gap-3 !items-start !w-full !px-4 !py-3 !pl-5 !rounded-[12px] !border-0 !bg-white !text-ink !font-sans !text-sm !shadow-[inset_3px_0_0_#121417,0_0_0_1px_#E3E4E6,0_12px_28px_-14px_rgba(18,20,23,0.35)]",
+            "group !flex !gap-3 !items-start !w-full !px-4 !py-3 !pl-5 !rounded-[12px] !border-0 !bg-white !text-ink !font-sans !text-sm !shadow-[inset_3px_0_0_#111113,0_0_0_1px_#E2E0DA,0_12px_28px_-14px_rgba(18,20,23,0.35)]",
           title: "!text-sm !font-semibold !text-ink",
           description: "!text-xs !text-ink-muted !leading-relaxed !mt-0.5",
-          actionButton: "!bg-ink !text-white !text-xs !font-semibold !rounded-[8px] !h-8 !px-3 hover:!bg-[#2A2D32]",
+          actionButton: "!bg-ink !text-white !text-xs !font-semibold !rounded-[8px] !h-8 !px-3 hover:!bg-[#2A2A2E]",
           cancelButton: "!bg-laminate-sunk !text-ink !text-xs !rounded-[8px] !h-8 !px-3",
-          success: "!shadow-[inset_3px_0_0_#2BB673,0_0_0_1px_#E3E4E6,0_12px_28px_-14px_rgba(18,20,23,0.35)]",
-          error: "!shadow-[inset_3px_0_0_#B42318,0_0_0_1px_#E3E4E6,0_12px_28px_-14px_rgba(18,20,23,0.35)]",
-          info: "!shadow-[inset_3px_0_0_#2F4A80,0_0_0_1px_#E3E4E6,0_12px_28px_-14px_rgba(18,20,23,0.35)]",
-          warning: "!shadow-[inset_3px_0_0_#B45309,0_0_0_1px_#E3E4E6,0_12px_28px_-14px_rgba(18,20,23,0.35)]",
+          success: "!shadow-[inset_3px_0_0_#1E9E5A,0_0_0_1px_#E2E0DA,0_12px_28px_-14px_rgba(18,20,23,0.35)]",
+          error: "!shadow-[inset_3px_0_0_#B42318,0_0_0_1px_#E2E0DA,0_12px_28px_-14px_rgba(18,20,23,0.35)]",
+          info: "!shadow-[inset_3px_0_0_#5A5A60,0_0_0_1px_#E2E0DA,0_12px_28px_-14px_rgba(18,20,23,0.35)]",
+          warning: "!shadow-[inset_3px_0_0_#B45309,0_0_0_1px_#E2E0DA,0_12px_28px_-14px_rgba(18,20,23,0.35)]",
           icon: "!mt-0.5",
         },
       }}

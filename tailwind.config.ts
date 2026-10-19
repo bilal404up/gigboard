@@ -1,36 +1,70 @@
 import type { Config } from 'tailwindcss'
 
+/*
+ * Gigboard "Timetable" tokens.
+ * Colour carries meaning: amber (held) is money held by Gigboard, green (go) is money released
+ * to a seller, red (stop) is a problem, ink is every action. Nothing else is coloured.
+ * The old names (mahogany, laminate, brass, ...) remain as aliases so older markup still
+ * compiles; they point at the new values.
+ */
+const C = {
+  page: '#F4F3EF',
+  surface: '#FFFFFF',
+  sunk: '#ECEAE4',
+  line: '#E2E0DA',
+  lineStrong: '#C9C6BE',
+  ink: '#111113',
+  ink2: '#5A5A60',
+  ink3: '#8B8B91',
+  board: '#0E0E0F',
+  flap: '#1B1C1F',
+  seam: '#2A2B2F',
+  flapText: '#F2EEE3',
+  held: '#F5B700',
+  heldInk: '#7A5600',
+  heldBg: '#FFF3CC',
+  go: '#1E9E5A',
+  goInk: '#0F5C34',
+  goBg: '#E2F3E9',
+  stopInk: '#B42318',
+  stopBg: '#FCEBE9',
+}
+
 const config: Config = {
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Old names, new values: every page that uses them moves to the new palette.
-        mahogany: { DEFAULT: '#16181B', raised: '#25282D', deep: '#0C0D0F' },
-        laminate: { DEFAULT: '#F7F7F4', raised: '#FFFFFF', sunk: '#EFEFEB' },
-        ink: { DEFAULT: '#121417', muted: '#565B63', subtle: '#686D75', faint: '#C5C8CD' },
-        sand: { DEFAULT: '#DCDDE0', light: '#ECEDEF' },
-        brass: { DEFAULT: '#E5F2EA', deep: '#106F44', light: '#F2F8F4', tint: '#E5F2EA' },
-        release: { DEFAULT: '#2BB673', deep: '#0C5C37', tint: '#E5F2EA' },
-        alarm: { DEFAULT: '#B42318', tint: '#FCEBE9' },
-        enamel: { teal: '#2F5D62', vermilion: '#9A3B2E', mustard: '#6E6230', cobalt: '#2F4A80', plum: '#5B3F6E' },
+        page: C.page,
+        surface: { DEFAULT: C.surface, sunk: C.sunk },
+        ink: { DEFAULT: C.ink, 2: C.ink2, 3: C.ink3, muted: C.ink2, subtle: C.ink2, faint: C.lineStrong },
+        line: { DEFAULT: C.line, subtle: C.sunk, strong: C.lineStrong },
+        board: { DEFAULT: C.board, flap: C.flap, seam: C.seam, text: C.flapText },
+        held: { DEFAULT: C.held, ink: C.heldInk, bg: C.heldBg },
+        go: { DEFAULT: C.go, ink: C.goInk, bg: C.goBg },
+        stop: { DEFAULT: C.stopInk, ink: C.stopInk, bg: C.stopBg },
 
+        // Aliases for older markup
+        mahogany: { DEFAULT: C.ink, raised: C.flap, deep: C.board },
+        laminate: { DEFAULT: C.page, raised: C.surface, sunk: C.sunk },
+        sand: { DEFAULT: C.line, light: C.sunk },
+        brass: { DEFAULT: C.goBg, deep: C.goInk, light: C.flapText, tint: C.goBg },
+        release: { DEFAULT: C.go, deep: C.goInk, tint: C.goBg },
+        alarm: { DEFAULT: C.stopInk, tint: C.stopBg },
         brand: {
-          primary: '#16181B',
-          'primary-dark': '#0C0D0F',
-          'primary-50': '#EFEFEB',
-          'primary-100': '#DCDDE0',
-          accent: '#106F44',
-          'accent-dark': '#0C5C37',
-          'accent-50': '#E5F2EA',
+          primary: C.ink,
+          'primary-dark': C.ink,
+          'primary-50': C.sunk,
+          'primary-100': C.line,
+          accent: C.goInk,
+          'accent-dark': C.goInk,
+          'accent-50': C.goBg,
         },
-        canvas: { DEFAULT: '#FFFFFF', subtle: '#EFEFEB', raised: '#FFFFFF', board: '#0E0F11' },
-        line: { DEFAULT: '#E3E4E6', subtle: '#EEEFF1', strong: '#121417' },
-        success: '#0C5C37',
-        warning: '#7A5A14',
-        error: '#B42318',
-        info: '#2F4A80',
-        seller: { new: '#686D75', 'level-one': '#2F5D62', 'level-two': '#4A4F57', 'top-rated': '#0C5C37' },
+        canvas: { DEFAULT: C.surface, subtle: C.sunk, raised: C.surface, board: C.board },
+        success: C.goInk,
+        warning: C.heldInk,
+        error: C.stopInk,
+        info: C.ink2,
       },
 
       fontFamily: {
@@ -42,33 +76,30 @@ const config: Config = {
       },
 
       fontSize: {
-        'sign-xl': ['4.5rem', { lineHeight: '1', letterSpacing: '-0.035em', fontWeight: '700' }],
-        sign: ['2.5rem', { lineHeight: '1.08', letterSpacing: '-0.03em', fontWeight: '700' }],
-        head: ['1.375rem', { lineHeight: '1.2', fontWeight: '700' }],
+        '2xs': ['0.75rem', { lineHeight: '1.35' }],
         micro: ['0.8125rem', { lineHeight: '1.4' }],
-        price: ['1.75rem', { lineHeight: '1', fontWeight: '700' }],
-        'price-xl': ['3rem', { lineHeight: '1', fontWeight: '700' }],
       },
 
-      borderRadius: { rail: '2px', tray: '14px', drawer: '16px', pill: '999px' },
+      borderRadius: { flap: '3px', control: '8px', panel: '12px', board: '16px', rail: '3px', tray: '12px', drawer: '16px', pill: '999px' },
 
       boxShadow: {
-        rim: 'inset 0 0 0 1px #E3E4E6',
-        tray: '0 0 0 1px #E3E4E6, 0 1px 2px rgba(18, 20, 23, 0.04)',
-        'tray-lift': '0 0 0 1px #D5D7DB, 0 14px 30px -16px rgba(18, 20, 23, 0.3)',
-        drawer: '0 0 0 1px #E3E4E6, 0 18px 40px -26px rgba(18, 20, 23, 0.35)',
+        pop: '0 1px 0 rgba(17,17,19,.04), 0 16px 32px -16px rgba(17,17,19,.24)',
+        hairline: `inset 0 0 0 1px ${C.line}`,
+        rim: `inset 0 0 0 1px ${C.line}`,
+        tray: `0 0 0 1px ${C.line}`,
+        'tray-lift': `0 0 0 1px ${C.lineStrong}, 0 1px 0 rgba(17,17,19,.04), 0 16px 32px -16px rgba(17,17,19,.24)`,
+        drawer: `0 0 0 1px ${C.line}`,
         plate: 'none',
-        lamp: '0 0 0 3px rgba(43, 182, 115, 0.25)',
-        field: 'inset 0 0 0 1px #8A9096',
+        field: `inset 0 0 0 1px ${C.lineStrong}`,
       },
 
       spacing: { demo: 'var(--demo-h)', header: 'var(--header-h)' },
       maxWidth: { wrap: '80rem', copy: '62ch' },
       minHeight: { tap: '44px' },
       zIndex: { sticky: '10', header: '30', demo: '40', scrim: '50', sheet: '60', toast: '70' },
-      transitionTimingFunction: { out: 'cubic-bezier(0.2, 0.7, 0.2, 1)', slide: 'cubic-bezier(0.3, 0.9, 0.3, 1)' },
-      transitionDuration: { 120: '120ms', 200: '200ms', 280: '280ms' },
-      gridTemplateColumns: { gig: 'minmax(0, 1fr) 22rem', hero: '6fr 7fr' },
+      transitionTimingFunction: { out: 'cubic-bezier(0.2, 0.7, 0.2, 1)', slide: 'cubic-bezier(0.2, 0.7, 0.2, 1)' },
+      transitionDuration: { 120: '150ms', 150: '150ms', 200: '200ms', 250: '250ms', 280: '250ms' },
+      gridTemplateColumns: { gig: 'minmax(0, 1fr) 24rem', hero: '6fr 7fr' },
     },
   },
   plugins: [require('tailwindcss-animate')],

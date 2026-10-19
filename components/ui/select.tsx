@@ -28,7 +28,7 @@ const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.T
   ({ className, children, ...props }, ref) => (
     <SelectPrimitive.Trigger
       ref={ref}
-      className={cn("field flex items-center justify-between gap-3 text-left data-[placeholder]:text-ink-muted [&>span]:line-clamp-1", "data-[state=open]:shadow-[inset_0_0_0_2px_#121417]", className)}
+      className={cn("field flex items-center justify-between gap-3 text-left data-[placeholder]:text-ink-muted [&>span]:line-clamp-1", "data-[state=open]:shadow-[inset_0_0_0_2px_#111113]", className)}
       {...props}
     >
       {children}
@@ -50,7 +50,7 @@ const SelectContent = React.forwardRef<React.ElementRef<typeof SelectPrimitive.C
         position={position}
         className={cn(
           "relative z-sheet max-h-96 min-w-[8rem] overflow-hidden rounded-[12px] bg-white text-ink",
-          "shadow-[0_0_0_1px_#E3E4E6,0_18px_40px_-20px_rgba(18,20,23,0.35)]",
+          "shadow-[0_0_0_1px_#E2E0DA,0_18px_40px_-20px_rgba(18,20,23,0.35)]",
           "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
           "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",

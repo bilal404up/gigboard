@@ -45,7 +45,10 @@ export function DemoSwitch({ className }: { className?: string }) {
   }
 
   return (
-    <div role="group" aria-label="View the demo as" className={cn("inline-flex items-center gap-0.5 rounded-[10px] bg-laminate-sunk p-0.5", className)}>
+    <div role="group" aria-label="View the demo as" className={cn("inline-flex items-center gap-0.5 rounded-[10px] bg-surface-sunk p-[3px] shadow-[inset_0_0_0_1px_#E2E0DA]", className)}>
+      <span className="hidden px-2 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-ink-2 xl:inline" aria-hidden="true">
+        Demo
+      </span>
       {DEMO_ROLES.map((role) => {
         const on = current === role;
         return (
@@ -58,7 +61,7 @@ export function DemoSwitch({ className }: { className?: string }) {
             className={cn(
               "inline-flex h-9 min-w-11 flex-1 items-center justify-center rounded-[8px] px-3 text-[13px] font-semibold transition-colors md:h-8 md:flex-none",
               "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:opacity-60",
-              on ? "bg-white text-ink shadow-[0_0_0_1px_#E3E4E6]" : "text-ink-muted hover:text-ink"
+              on ? "bg-ink text-white" : "text-ink-2 hover:text-ink"
             )}
           >
             {pending === role ? "Switching" : LABELS[role]}
@@ -72,11 +75,11 @@ export function DemoSwitch({ className }: { className?: string }) {
 export function DemoStrip() {
   return (
     <div role="region" aria-label="Demo notice" className="demo-bar">
-      <p className="wrap flex items-center gap-2 text-[13px] leading-[18px]">
+      <p className="wrap flex items-center gap-2.5 text-[12.5px] leading-[18px]">
         <span className="demo-tag">Demo</span>
-        <span className="truncate">
-          <span className="sm:hidden">Sample data. Stripe test mode, no real money moves.</span>
-          <span className="hidden sm:inline">Sample data: gigs, sellers and reviews are invented. Stripe test mode, no real money moves. Switch roles in the menu.</span>
+        <span className="min-w-0 truncate">
+          <span className="sm:hidden">Sample data · No real money moves</span>
+          <span className="hidden sm:inline">Sample gigs, sellers and reviews · Demo payments, no real money moves · Switch roles in the menu</span>
         </span>
       </p>
     </div>

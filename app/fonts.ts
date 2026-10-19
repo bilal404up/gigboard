@@ -1,10 +1,15 @@
 import { Archivo } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 
 /**
- * One family for the whole site. Archivo's width axis gives the board its condensed flap
- * letters (wdth 62); headings and body text use the normal width.
- * display and mono point at the same font; globals.css aliases their CSS variables.
+ * Three voices.
+ * - Archivo (width axis): the board flaps at wdth 62 and the expanded headlines at wdth 125.
+ * - Geist: interface and body text.
+ * - Geist Mono: prices, order numbers, dates and countdowns, with tabular figures.
+ * Geist ships as local files from the "geist" package (Next 14's Google list predates it).
+ * globals.css maps --font-body and --font-mono onto the Geist variables.
  */
-export const body = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-body", display: "swap" });
-export const display = body;
-export const mono = body;
+export const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display", display: "swap" });
+export const body = GeistSans;
+export const mono = GeistMono;

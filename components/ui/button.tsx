@@ -3,10 +3,15 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils/cn"
 
+/*
+ * Three variants in practice: primary (ink), secondary (surface with a hairline), quiet (text).
+ * "release" is reserved for the buyer's "Approve and release payment".
+ * cta, outline, ghost are older names kept as aliases.
+ */
 const buttonVariants = cva(
   [
-    "inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-[10px] font-sans text-[0.9375rem] font-semibold leading-none",
-    "transition-colors duration-120 ease-out",
+    "inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-[8px] font-sans text-[0.9375rem] font-semibold leading-none",
+    "transition-[background-color,box-shadow,color] duration-150 ease-out",
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink",
     "disabled:pointer-events-none disabled:opacity-50",
     "[&_svg]:h-4 [&_svg]:w-4 [&_svg]:shrink-0",
@@ -14,14 +19,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-ink text-white hover:bg-[#2A2D32]",
-        /* the money button: green means "this releases or commits payment" */
-        cta: "bg-release text-ink hover:bg-[#26A366]",
-        secondary: "bg-laminate-sunk text-ink hover:bg-sand/70",
-        ghost: "bg-transparent text-ink hover:bg-laminate-sunk",
-        link: "h-auto min-h-0 rounded-none p-0 text-ink underline decoration-ink/45 decoration-[1.5px] underline-offset-[3px] hover:decoration-ink",
-        danger: "bg-transparent text-alarm shadow-[inset_0_0_0_1px_#B42318] hover:bg-alarm-tint",
-        outline: "bg-transparent text-ink shadow-[inset_0_0_0_1px_#8A9096] hover:bg-laminate-sunk hover:shadow-[inset_0_0_0_1px_#121417]",
+        default: "bg-ink text-white hover:bg-[#2A2A2E]",
+        cta: "bg-ink text-white hover:bg-[#2A2A2E]",
+        release: "bg-go-ink text-white hover:bg-[#0B4A29]",
+        secondary: "bg-surface text-ink shadow-[inset_0_0_0_1px_#C9C6BE] hover:shadow-[inset_0_0_0_1px_#111113]",
+        outline: "bg-surface text-ink shadow-[inset_0_0_0_1px_#C9C6BE] hover:shadow-[inset_0_0_0_1px_#111113]",
+        quiet: "bg-transparent text-ink hover:bg-surface-sunk",
+        ghost: "bg-transparent text-ink hover:bg-surface-sunk",
+        link: "h-auto min-h-0 rounded-none p-0 text-ink underline decoration-line-strong decoration-1 underline-offset-4 hover:decoration-ink",
+        danger: "bg-transparent text-stop shadow-[inset_0_0_0_1px_#B42318] hover:bg-stop-bg",
       },
       size: {
         default: "h-11 px-[18px]",

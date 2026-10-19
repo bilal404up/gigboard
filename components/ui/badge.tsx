@@ -2,17 +2,18 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils/cn"
 
-const badgeVariants = cva("inline-flex min-h-7 items-center gap-1.5 whitespace-nowrap rounded-pill px-2.5 font-sans text-[0.8125rem] font-medium leading-none", {
+/* Status pills share the .tag look. warning is amber (held), success is green (released), error is red. */
+const badgeVariants = cva("tag tag--plain", {
   variants: {
     variant: {
-      default: "bg-laminate-sunk text-ink",
-      solid: "bg-ink text-white",
-      secondary: "bg-sand text-ink",
-      outline: "bg-transparent text-ink shadow-[inset_0_0_0_1px_#8A9096]",
-      success: "bg-release-tint text-release-deep",
-      warning: "bg-[#FFF4E5] text-[#8A4B00]",
-      error: "bg-alarm-tint text-alarm",
-      info: "bg-[#E9EEF5] text-info",
+      default: "",
+      solid: "!bg-ink !text-white",
+      secondary: "",
+      outline: "!bg-transparent shadow-[inset_0_0_0_1px_#C9C6BE]",
+      success: "!bg-go-bg !text-go-ink",
+      warning: "!bg-held-bg !text-held-ink",
+      error: "!bg-stop-bg !text-stop",
+      info: "",
     },
   },
   defaultVariants: { variant: "default" },

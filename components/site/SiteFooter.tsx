@@ -1,19 +1,12 @@
 import Link from "next/link";
+import { WordMark } from "@/components/layout/wordmark";
 import "./site-footer.css";
 
 type FooterLink = { label: string; href: string };
 
-type Props = {
-  buyers?: FooterLink[];
-  sellers?: FooterLink[];
-  company?: FooterLink[];
-  year?: number;
-};
-
-/* Only link to routes that exist. Drop any that don't. */
 const BUYERS: FooterLink[] = [
   { label: "Browse gigs", href: "/search" },
-  { label: "How payment works", href: "/#how-the-counter-works" },
+  { label: "How held payment works", href: "/#how-held-payment-works" },
   { label: "Log in", href: "/login" },
 ];
 const SELLERS: FooterLink[] = [
@@ -26,7 +19,6 @@ const COMPANY: FooterLink[] = [
 ];
 
 function Column({ title, links }: { title: string; links: FooterLink[] }) {
-  if (!links.length) return null;
   return (
     <nav className="sf-col" aria-label={title}>
       <h2 className="sf-h">{title}</h2>
@@ -41,30 +33,42 @@ function Column({ title, links }: { title: string; links: FooterLink[] }) {
   );
 }
 
-export default function SiteFooter({ buyers = BUYERS, sellers = SELLERS, company = COMPANY, year = new Date().getFullYear() }: Props) {
+/* Marketing footer on public pages; a single slim line inside the app (dashboards, orders, admin). */
+export default function SiteFooter({ variant = "site", year = new Date().getFullYear() }: { variant?: "site" | "app"; year?: number }) {
+  if (variant === "app") {
+    return (
+      <footer className="sf-app">
+        <div className="wrap sf-app-inner">
+          <span>Gigboard demo. Sample data, no real money moves.</span>
+          <span className="sf-app-links">
+            <Link href="/how-it-works">How it works</Link>
+            <Link href="/search">Browse gigs</Link>
+          </span>
+        </div>
+      </footer>
+    );
+  }
   return (
     <footer className="site-footer sf">
       <div className="sf-inner">
         <div className="sf-brand">
-          <Link href="/" className="sf-mark">
-            Gigboard
+          <Link href="/" className="sf-mark" aria-label="Gigboard home">
+            <WordMark />
           </Link>
-          <p className="sf-tagline">Fixed-price freelance work. You pay up front, and the seller is paid when you approve.</p>
+          <p className="sf-tagline">Fixed-price freelance work. You pay when you book, and the seller is paid when you approve.</p>
           <ul className="sf-rules">
-            <li>Late delivery means a full refund.</li>
-            <li>Three days of silence after delivery approves the job.</li>
-            <li>If something&apos;s wrong, a person from Gigboard steps in.</li>
+            <li>Nothing is paid out before the work is delivered.</li>
+            <li>Three days without a reply after delivery approves the order.</li>
+            <li>If the work is not what you asked for, ask for a revision before you approve.</li>
           </ul>
         </div>
-
-        <Column title="For buyers" links={buyers} />
-        <Column title="For sellers" links={sellers} />
-        <Column title="Gigboard" links={company} />
+        <Column title="For buyers" links={BUYERS} />
+        <Column title="For sellers" links={SELLERS} />
+        <Column title="Gigboard" links={COMPANY} />
       </div>
-
       <div className="sf-bottom">
-        <p>Sample data, Stripe test mode. No real money moves.</p>
-        <p>{year} Gigboard</p>
+        <p>A demo marketplace with sample data. No real money moves.</p>
+        <p className="num">{year} Gigboard</p>
       </div>
     </footer>
   );

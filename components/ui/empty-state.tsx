@@ -1,20 +1,28 @@
 import type { ReactNode } from "react"
+import { FlapText } from "@/components/board/flap-text"
 
-type Props = { icon?: ReactNode; title: string; description?: string; action?: ReactNode; className?: string }
+type Props = {
+  /** kept for older callers; the flap sign replaces icons */
+  icon?: ReactNode
+  title: string
+  description?: string
+  action?: ReactNode
+  /** Words on the small flap sign. Defaults to the title. */
+  sign?: string
+  className?: string
+}
 
-/* A closed window: a dark sign with the lamp off, then what to do next. */
-export function EmptyState({ icon, title, description, action, className = "" }: Props) {
+/* A small departure-board sign, one line of help, one action. */
+export function EmptyState({ title, description, action, sign, className = "" }: Props) {
+  const words = (sign ?? title).replace(/[^a-zA-Z0-9 ]/g, "").split(/\s+/).slice(0, 3).join(" ")
   return (
-    <div className={`tray grid justify-items-center gap-4 px-6 py-10 text-center ${className}`}>
-      <div className="sign relative flex h-16 w-24 items-center justify-center text-laminate" aria-hidden="true">
-        <span className="lamp absolute left-3 top-3" />
-        {icon ? <span className="[&_svg]:h-7 [&_svg]:w-7">{icon}</span> : <span className="grille scale-75" />}
-      </div>
+    <div className={`panel grid justify-items-start gap-4 px-6 py-8 md:px-8 md:py-10 ${className}`}>
+      <FlapText text={words} size="sm" label={title} />
       <div className="grid gap-1.5">
-        <p className="t-head">{title}</p>
-        {description ? <p className="mx-auto max-w-[40ch] text-sm leading-[1.45] text-ink-muted">{description}</p> : null}
+        <p className="text-[1.0625rem] font-semibold">{title}</p>
+        {description ? <p className="max-w-[52ch] text-sm leading-[1.5] text-ink-2">{description}</p> : null}
       </div>
-      {action ? <div className="mt-1">{action}</div> : null}
+      {action ? <div>{action}</div> : null}
     </div>
   )
 }

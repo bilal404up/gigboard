@@ -30,7 +30,7 @@ const NAV_LINKS = [
 const ICON_BTN = "inline-flex h-11 w-11 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-laminate-sunk hover:text-ink md:h-10 md:w-10";
 const NAV_LINK = "inline-flex h-10 items-center rounded-md px-3 text-[14px] font-semibold transition-colors";
 const SECONDARY = "inline-flex h-11 items-center justify-center rounded-md border border-line text-sm font-semibold text-ink transition-colors hover:bg-laminate-sunk";
-const PRIMARY = "nav-join inline-flex items-center justify-center rounded-md bg-ink px-4 text-sm font-semibold text-white transition-colors hover:bg-[#2A2D32]";
+const PRIMARY = "nav-join inline-flex items-center justify-center rounded-md bg-ink px-4 text-sm font-semibold text-white transition-colors hover:bg-[#2A2A2E]";
 
 export function Navbar() {
   const demo = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
