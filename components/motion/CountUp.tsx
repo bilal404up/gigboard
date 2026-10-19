@@ -4,22 +4,24 @@ import { useEffect, useState } from "react";
 import { useInView } from "./useInView";
 
 /* Counts from `from` to `value` once, when it scrolls into view.
-   Server render and reduced motion show the final value. `format` turns the number into display text. */
+   Server render and reduced motion show the final value. Pass `decimals` for fixed decimals:
+   functions cannot cross from a server component into this client component, so no format callback. */
 export function CountUp({
   value,
   from = 0,
   ms = 900,
   delay = 0,
-  format = (n: number) => String(Math.round(n)),
+  decimals = 0,
   className,
 }: {
   value: number;
   from?: number;
   ms?: number;
   delay?: number;
-  format?: (n: number) => string;
+  decimals?: number;
   className?: string;
 }) {
+  const format = (n: number) => n.toFixed(decimals);
   const { ref, inView } = useInView<HTMLSpanElement>();
   const [n, setN] = useState(value);
 

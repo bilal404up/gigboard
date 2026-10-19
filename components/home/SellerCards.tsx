@@ -50,7 +50,7 @@ export function SellerCards({ sellers }: { sellers: SellerCardData[] }) {
                       {s.rating > 0 ? (
                         <>
                           <RatingGlyph size={11} />
-                          <CountUp value={s.rating} ms={800} format={(n) => n.toFixed(1)} />
+                          <CountUp value={s.rating} ms={800} decimals={1} />
                         </>
                       ) : (
                         "None yet"
