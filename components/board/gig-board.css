@@ -41,9 +41,9 @@
 
 .gb-inner {
   position: relative;
-  max-width: 1440px;
+  max-width: 80rem;
   margin-inline: auto;
-  padding: 40px 16px 32px;
+  padding: 40px var(--wrap-x) 32px;
 }
 
 /* faint timetable rules behind the headline */
@@ -234,7 +234,32 @@
   white-space: nowrap;
 }
 
-.gb-plain { display: none; }
+.gb-plain {
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  flex: none;
+  min-width: 0;
+  width: calc(var(--span) * var(--cw) + (var(--span) - 1) * var(--cg));
+}
+.gb-plain-title {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.3;
+  color: var(--gb-text);
+  letter-spacing: 0;
+  text-transform: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gb-plain-meta { font-size: 0.8125rem; line-height: 1.2; color: var(--gb-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gb-plain-rating { font-family: var(--font-mono); }
+/* Seller and rating columns show only on wide screens, so the meta line is needed below them. */
+@media (min-width: 1200px) {
+  .gb-plain-meta { display: none; }
+}
 
 /* Flap cells ----------------------------------------------------------- */
 
@@ -255,7 +280,8 @@
   top: calc(50% - 0.5px);
   height: 1px;
   background: rgb(0 0 0 / 0.55);
-  z-index: 3;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.04);
+  z-index: 0;
   pointer-events: none;
 }
 
@@ -263,7 +289,8 @@
   position: absolute;
   left: 0;
   right: 0;
-  height: 50%;
+  z-index: 1;
+  height: calc(50% - 0.5px);
   overflow: hidden;
   background: var(--gb-flap);
   color: var(--gb-text);
@@ -363,13 +390,13 @@
 /* Breakpoints ------------------------------------------------------------ */
 
 @media (min-width: 768px) {
-  .gb-inner { padding: 64px 32px 48px; }
+  .gb-inner { padding: 64px var(--wrap-x) 48px; }
   .gb-frame { padding: 16px 20px 8px; }
   .gb .gb-input, .gb .gb-go { height: 56px; }
 }
 
 @media (min-width: 1024px) {
-  .gb-inner { padding: 88px 48px 56px; }
+  .gb-inner { padding: 88px var(--wrap-x) 56px; }
   .gb-plate {
     grid-template-columns: minmax(0, 1fr) minmax(360px, 480px);
     column-gap: 64px;
@@ -388,10 +415,8 @@
   .gb-row:nth-child(n + 5) { display: none; }
   .gb-grid { --cw: 14px; --cg: 2px; --ch: 22px; --gap: 6px; }
   .gb-cells { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: end; gap: 6px 6px; }
-  .gb-plain { display: grid; gap: 4px; grid-column: 1 / -1; min-width: 0; }
-  .gb-plain-title { font-size: 0.9375rem; font-weight: 500; line-height: 1.35; color: var(--gb-text); }
-  .gb-plain-meta { font-size: 0.8125rem; color: var(--gb-muted); }
-  .gb-plain-rating { font-family: var(--font-mono); }
+  .gb-plain { gap: 4px; grid-column: 1 / -1; width: auto; }
+  .gb-plain-title { font-size: 0.9375rem; line-height: 1.35; }
   .gb-tail { display: flex; grid-column: 1 / -1; justify-content: flex-start; gap: 6px; }
   .gb-link { padding-block: 12px; }
   .gb-link[href]::before { left: -8px; }

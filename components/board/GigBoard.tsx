@@ -43,7 +43,6 @@ const CADENCE: Record<Cadence, { row: number; col: number; step: number }> = {
 
 const ROWS = 6;
 const COMPACT_ROWS = 4;
-const LINE = 24;
 const ARRIVAL_MS = 15_000;
 const DEBOUNCE_MS = 150;
 const SETTLE_MS = 1300;
@@ -279,32 +278,14 @@ const FlapCell = memo(function FlapCell({ value, tone, n = 1, row, col, strip = 
 
 type Drums = Record<"seller" | "ready" | "price" | "status", Glyph[]>;
 
-function pad(s: string, len: number) {
-  return Array.from(s.toUpperCase().slice(0, len).padEnd(len, " "));
-}
-
 const Row = memo(function Row({ gig, row, blank, drums, today }: { gig: BoardGig | null; row: number; blank?: string; drums: Drums; today: Date }) {
-  const l1 = pad(gig ? gig.lines[0] : (blank ?? ""), LINE);
-  const l2 = pad(gig ? gig.lines[1] : "", LINE);
   const ready = gig ? readyBy(gig.days, today) : "";
 
   return (
     <li className="gb-row" aria-hidden={gig ? undefined : true}>
       <a className="gb-link" href={gig?.href} aria-label={gig?.label}>
         <span className="gb-cells" aria-hidden="true">
-          <span className="gb-col gb-col--title gb-strip-wide">
-            <span className="gb-line">
-              {l1.map((ch, i) => (
-                <FlapCell key={i} value={ch} row={row} col={i} strip="wide" />
-              ))}
-            </span>
-            <span className="gb-line">
-              {l2.map((ch, i) => (
-                <FlapCell key={i} value={ch} row={row} col={i + 3} strip="wide" />
-              ))}
-            </span>
-          </span>
-          <span className="gb-plain">
+          <span className="gb-plain gb-col--title">
             <span className="gb-plain-title">{gig?.title ?? (blank ? "No gig matches that search" : "")}</span>
             {gig ? (
               <span className="gb-plain-meta">
