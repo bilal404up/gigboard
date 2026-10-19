@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ChevronDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useUser } from "@/lib/contexts/user-context";
 import { DEMO_ROLES, type DemoRole } from "@/lib/demo";
 import { cn } from "@/lib/utils/cn";
@@ -44,31 +46,38 @@ export function DemoSwitch({ className }: { className?: string }) {
     }
   }
 
+  const label = current ? LABELS[current] : "Choose";
+
   return (
-    <div role="group" aria-label="View the demo as" className={cn("inline-flex items-center gap-0.5 rounded-[10px] bg-surface-sunk p-[3px] shadow-[inset_0_0_0_1px_#E2E0DA]", className)}>
-      <span className="hidden px-2 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-ink-2 xl:inline" aria-hidden="true">
-        Demo
-      </span>
-      {DEMO_ROLES.map((role) => {
-        const on = current === role;
-        return (
-          <button
-            key={role}
-            type="button"
-            onClick={() => switchTo(role)}
-            disabled={pending !== null}
-            aria-pressed={on}
-            className={cn(
-              "inline-flex h-9 min-w-11 flex-1 items-center justify-center rounded-[8px] px-3 text-[13px] font-semibold transition-colors md:h-8 md:flex-none",
-              "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:opacity-60",
-              on ? "bg-ink text-white" : "text-ink-2 hover:text-ink"
-            )}
-          >
-            {pending === role ? "Switching" : LABELS[role]}
-          </button>
-        );
-      })}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          disabled={pending !== null}
+          aria-label={`Switch role. Demo: ${label}`}
+          className={cn(
+            "inline-flex h-11 items-center gap-2 rounded-full bg-surface-sunk px-4 text-[13px] font-semibold text-ink shadow-[inset_0_0_0_1px_#E2E0DA] md:h-9",
+            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:opacity-60",
+            className
+          )}
+        >
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-ink-2" aria-hidden="true">
+            Demo:
+          </span>
+          <span aria-hidden="true">{pending ? "Switching" : label}</span>
+          <ChevronDown className="h-3.5 w-3.5 text-ink-2" aria-hidden="true" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuLabel>View the demo as</DropdownMenuLabel>
+        {DEMO_ROLES.map((role) => (
+          <DropdownMenuItem key={role} disabled={pending !== null} onSelect={() => switchTo(role)} className={cn(current === role && "font-semibold")}>
+            {LABELS[role]}
+            {current === role ? <span className="ml-auto text-xs font-normal text-ink-2">Current</span> : null}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
