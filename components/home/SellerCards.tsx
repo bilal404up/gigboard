@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { SellerMark, LevelPlate } from "@/components/seller/SellerMark"
 import { RatingGlyph } from "@/components/ui/rating-stars"
+import { Reveal } from "@/components/motion/Reveal"
+import { CountUp } from "@/components/motion/CountUp"
 
 export type SellerCardData = {
   username: string
@@ -27,17 +29,12 @@ export function SellerCards({ sellers }: { sellers: SellerCardData[] }) {
           </h2>
           <p className="home-lead">Sample sellers. Each one lists fixed prices and is paid only when the buyer approves.</p>
         </div>
-        <ul className="sc-grid">
+        <Reveal as="ul" stagger={70} className="sc-grid">
           {sellers.map((s) => (
             <li key={s.username}>
               <Link href={`/seller/${s.username}`} className="sc-card">
                 <span className="sc-top">
-                  {s.avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={s.avatarUrl} alt="" width={56} height={56} className="sc-avatar" />
-                  ) : (
-                    <SellerMark username={s.username} level={s.level} size={56} label={`${s.fullName}, initials`} />
-                  )}
+                  <SellerMark username={s.username} level={s.level} size={56} label={`${s.fullName}, initials`} />
                   <LevelPlate level={s.level} />
                 </span>
                 <span className="sc-name">{s.fullName}</span>
@@ -45,7 +42,7 @@ export function SellerCards({ sellers }: { sellers: SellerCardData[] }) {
                 <span className="sc-facts">
                   <span>
                     <span className="sc-k">Jobs</span>
-                    <span className="num sc-v">{s.jobs}</span>
+                    <CountUp className="num sc-v" value={s.jobs} ms={800} />
                   </span>
                   <span>
                     <span className="sc-k">Rating</span>
@@ -53,7 +50,7 @@ export function SellerCards({ sellers }: { sellers: SellerCardData[] }) {
                       {s.rating > 0 ? (
                         <>
                           <RatingGlyph size={11} />
-                          {s.rating.toFixed(1)}
+                          <CountUp value={s.rating} ms={800} format={(n) => n.toFixed(1)} />
                         </>
                       ) : (
                         "None yet"
@@ -68,7 +65,7 @@ export function SellerCards({ sellers }: { sellers: SellerCardData[] }) {
               </Link>
             </li>
           ))}
-        </ul>
+        </Reveal>
       </div>
     </section>
   )

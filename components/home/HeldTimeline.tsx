@@ -1,4 +1,4 @@
-import { FlapText } from "@/components/board/flap-text"
+import { HeldTimelineList, type HeldStop } from "./HeldTimelineList"
 
 type Props = { autoCompleteDays?: number }
 
@@ -8,7 +8,7 @@ type Props = { autoCompleteDays?: number }
  */
 export function HeldTimeline({ autoCompleteDays = 3 }: Props) {
   const days = `${autoCompleteDays} ${autoCompleteDays === 1 ? "day" : "days"}`
-  const stops = [
+  const stops: HeldStop[] = [
     { word: "BOOKED", tone: undefined, title: "You book a fixed price", body: "Pick a package. The price, the delivery days and the revisions are fixed before you pay." },
     { word: "HELD", tone: "held" as const, title: "Gigboard holds the payment", body: "The seller sees the payment is there and starts work, but cannot take it." },
     { word: "DELIVERED", tone: "held" as const, title: "The work arrives", body: "Check it against your brief. Ask for a revision if it is not right. The money stays held." },
@@ -29,19 +29,7 @@ export function HeldTimeline({ autoCompleteDays = 3 }: Props) {
           </h2>
           <p className="home-lead">Every order follows the same four steps.</p>
         </div>
-        <ol className="ht-line">
-          {stops.map((s, i) => (
-            <li key={s.word} className="ht-stop" data-tone={s.tone ?? "neutral"}>
-              <span className="ht-index num" aria-hidden="true">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span className="ht-node" aria-hidden="true" />
-              <FlapText text={s.word} size="sm" tone={s.tone} />
-              <h3 className="ht-title">{s.title}</h3>
-              <p className="ht-body">{s.body}</p>
-            </li>
-          ))}
-        </ol>
+        <HeldTimelineList stops={stops} />
       </div>
     </section>
   )

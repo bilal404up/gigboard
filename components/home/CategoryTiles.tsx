@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Reveal } from "@/components/motion/Reveal"
 
 export type CategoryTile = { slug: string; name: string; count: number; from: number | null }
 
@@ -15,7 +16,7 @@ export function CategoryTiles({ categories }: { categories: CategoryTile[] }) {
           </h2>
           <p className="home-lead">Every gig has a fixed price and a delivery date, whatever the category.</p>
         </div>
-        <ul className="ct-grid">
+        <Reveal as="ul" stagger={55} className="ct-grid">
           {categories.map((c, i) => (
             <li key={c.slug}>
               <Link href={`/category/${c.slug}`} className="ct-tile">
@@ -23,9 +24,8 @@ export function CategoryTiles({ categories }: { categories: CategoryTile[] }) {
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span className="ct-name">{c.name}</span>
-                <span className="ct-facts">
-                  <span className="num">{c.count === 0 ? "No gigs yet" : `${c.count} ${c.count === 1 ? "gig" : "gigs"}`}</span>
-                  {c.from !== null ? <span className="num">from ${c.from}</span> : null}
+                <span className="ct-strip num">
+                  {c.count === 0 ? "No gigs yet" : [c.from !== null ? `From $${c.from}` : null, `${c.count} ${c.count === 1 ? "gig" : "gigs"}`].filter(Boolean).join(" · ")}
                 </span>
                 <span className="ct-arrow" aria-hidden="true">
                   <svg viewBox="0 0 16 16" width="16" height="16">
@@ -35,7 +35,7 @@ export function CategoryTiles({ categories }: { categories: CategoryTile[] }) {
               </Link>
             </li>
           ))}
-        </ul>
+        </Reveal>
       </div>
     </section>
   )
