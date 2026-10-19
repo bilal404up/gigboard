@@ -198,7 +198,7 @@ export default function CounterStory({ title, price, days, sellerName, feeRate =
       <div className="cs-rules">
         <h3 className="cs-h3">The rules</h3>
         <ul>
-          <li>If the work arrives late, you get a full refund.</li>
+
           <li>If you don&apos;t respond within three days of delivery, the job approves itself, so sellers are never left waiting.</li>
           <li>If something&apos;s wrong, ask for changes, or a person from Gigboard steps in.</li>
         </ul>
