@@ -1,5 +1,6 @@
 import type { OrderStatus } from "@/types/database.types"
 import { cn } from "@/lib/utils/cn"
+import { DrawLine } from "@/components/motion/DrawLine"
 
 type Props = {
   status: OrderStatus
@@ -27,6 +28,11 @@ const RANK: Record<OrderStatus, number> = {
   disputed: 2,
   completed: 3,
   cancelled: 1,
+}
+
+/* The step that is current right now: held, or released when approved. */
+function isCurrent(s: { tone: string }, last: boolean) {
+  return s.tone === "held" || (s.tone === "go" && last)
 }
 
 /* The order as a vertical timetable: Booked, Held, Delivered, Released, each with its date in mono. */
@@ -83,7 +89,11 @@ export function OrderTimeline({ status, created, delivered, completed, cancelled
           const last = i === stops.length - 1
           return (
             <li key={s.key} className="relative grid grid-cols-[20px_minmax(0,1fr)] gap-x-4 pb-6 last:pb-0" aria-current={s.tone === "held" || (s.tone === "go" && last) ? "step" : undefined}>
-              {!last ? <span aria-hidden="true" className={cn("absolute left-[9px] top-5 h-[calc(100%-12px)] w-px", s.tone === "off" ? "bg-line" : "bg-line-strong")} /> : null}
+              {!last ? (
+                <span aria-hidden="true" className={cn("absolute left-[9px] top-5 h-[calc(100%-12px)] w-px text-[var(--line-strong)]", s.tone === "off" && "text-[var(--line)]")}>
+                  <DrawLine direction="y" delay={i * 150} className="h-full" />
+                </span>
+              ) : null}
               <span
                 aria-hidden="true"
                 className={cn(
@@ -92,7 +102,8 @@ export function OrderTimeline({ status, created, delivered, completed, cancelled
                   s.tone === "held" && "bg-held shadow-[0_0_0_3px_#FFF3CC]",
                   s.tone === "go" && "bg-go shadow-[0_0_0_3px_#E2F3E9]",
                   s.tone === "stop" && "bg-stop shadow-[0_0_0_3px_#FCEBE9]",
-                  s.tone === "off" && "bg-surface shadow-[inset_0_0_0_1.5px_#C9C6BE]"
+                  s.tone === "off" && "bg-surface shadow-[inset_0_0_0_1.5px_#C9C6BE]",
+                  isCurrent(s, last) && (s.tone === "go" ? "tl-pulse tl-pulse--go" : "tl-pulse tl-pulse--held")
                 )}
               />
               <div className="min-w-0">

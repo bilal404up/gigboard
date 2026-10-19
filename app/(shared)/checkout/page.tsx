@@ -151,7 +151,7 @@ function CheckoutInner() {
           <section className="space-y-5">
             {useStripeFlow ? (
               <div className="rounded-[12px] bg-held-bg p-4 shadow-[inset_0_0_0_1px_#F0D98A]">
-                <p className="text-sm font-semibold text-ink">Stripe test mode</p>
+                <p className="text-sm font-semibold text-ink">Demo payments</p>
                 <p className="mt-1 text-sm leading-relaxed text-ink">
                   Use <span className="num rounded-[4px] bg-surface px-1.5 py-0.5 text-xs">4242 4242 4242 4242</span>, any future expiry and any CVC. No real money moves.
                 </p>

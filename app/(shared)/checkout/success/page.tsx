@@ -7,6 +7,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { DepartureStrip } from "@/components/order/departure-strip";
+import { FlapText } from "@/components/board/flap-text";
+import { Reveal } from "@/components/motion/Reveal";
 import { createClient } from "@/lib/supabase/client";
 import { formatMoney } from "@/lib/utils/format";
 import { gigTitle } from "@/lib/order-status";
@@ -49,6 +51,20 @@ function SuccessInner() {
         <p className="mt-5 max-w-[48ch] text-[1.0625rem] leading-[1.55] text-ink-2">
           It stays with Gigboard until you approve the delivery. Nothing reaches the seller before that.
         </p>
+
+        {order ? (
+          <div className="mt-10 max-w-5xl">
+            <Reveal variant="clip" as="div" className="panel ticket-print flex flex-wrap items-center justify-between gap-4 p-5 md:p-6">
+              <div className="min-w-0">
+                <p className="num text-xs text-ink-2">{order.number ? `Order ${order.number}` : "Your order"}</p>
+                <p className="mt-1 truncate text-lg font-semibold">{order.title}</p>
+                <p className="num mt-1 text-sm text-ink-2">{formatMoney(order.amount)}</p>
+              </div>
+              <FlapText text="HELD" tone="held" size="lg" />
+            </Reveal>
+            <p className="mt-3 text-sm text-ink-2">The payment is held until you approve the work.</p>
+          </div>
+        ) : null}
 
         <div className="mt-10 max-w-5xl">
           {order ? (
