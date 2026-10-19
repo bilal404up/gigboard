@@ -32,7 +32,15 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const demo = process.env.NEXT_PUBLIC_DEMO_MODE === "true"
 
   return (
-    <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
+    <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "document.documentElement.classList.add('js');setTimeout(function(){if(!window.__kit)document.documentElement.classList.remove('js')},4000)",
+          }}
+        />
+      </head>
       <body className="flex min-h-screen flex-col" data-demo={demo ? "true" : undefined}>
         <a href="#main" className="skip-link">
           Skip to content
