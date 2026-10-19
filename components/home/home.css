@@ -112,8 +112,16 @@ html.js .ht-line:not([data-in]) .ht-label { opacity: 0; transform: translateY(6p
 
 /* Try it */
 .bp-layout { display: grid; gap: 8px; }
-@media (min-width: 1024px) { .bp-layout { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 64px; } .bp-layout .home-head { margin-bottom: 0; } }
-.bp-steps { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+@media (min-width: 1024px) { .bp-layout { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 64px; } .bp-layout .home-head { margin-bottom: 0; align-content: start; } }
+.bp-steps { position: relative; display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+/* Progress line: a track, and a fill that grows to the last reached step. */
+.bp-steps::before, .bp-steps::after { content: ""; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; pointer-events: none; }
+.bp-steps::before { background: var(--line-strong); }
+.bp-steps::after { background: var(--ink); transform-origin: 50% 0; transform: scaleY(calc(var(--reached, 0) / var(--total, 1))); transition: transform 600ms var(--kit-ease); }
+.bp-steps li { position: relative; }
+.bp-steps li[data-reached] .bp-n { background: var(--ink); color: var(--page); }
+.bp-steps .bp-n { justify-self: start; min-width: 16px; padding: 2px 4px; margin-left: -4px; border-radius: 4px; transition: background-color 300ms var(--kit-ease), color 300ms var(--kit-ease); }
+.bp-role { display: inline-flex; align-items: center; height: 20px; margin-left: 8px; padding: 0 7px; border-radius: 999px; border: 1px solid var(--line-strong); font: 500 0.6875rem/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); vertical-align: middle; }
 .bp-steps li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; padding: 18px 0; border-bottom: 1px solid var(--line); }
 .bp-n { font-size: 0.8125rem; color: var(--ink-2); padding-top: 2px; }
 .bp-step-title { display: block; font-weight: 600; font-size: 1rem; }
@@ -127,7 +135,12 @@ html.js .ht-line:not([data-in]) .ht-label { opacity: 0; transform: translateY(6p
 @media (min-width: 640px) { .bp-dl > div { grid-template-columns: 9rem minmax(0, 1fr); gap: 24px; } }
 .bp-dl dt { font: 500 0.75rem/1.6 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
 .bp-dl dd { margin: 0; line-height: 1.6; max-width: 58ch; }
-.bp-map { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 24px; align-content: start; }
-.bp-col ul { display: grid; gap: 2px; margin: 12px 0 0; padding: 0; list-style: none; }
-.bp-col li a { display: inline-flex; min-height: 36px; align-items: center; font-size: 0.9375rem; }
+.bp-map { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 16px; align-content: start; }
+.bp-card { display: grid; align-content: start; gap: 8px; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.bp-card-title { display: flex; align-items: center; gap: 8px; margin: 0; font: 500 0.75rem/1.4 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+.bp-card ul { display: grid; gap: 2px; margin: 4px 0 0; padding: 0; list-style: none; }
+.bp-card-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; font-size: 0.9375rem; color: var(--ink); text-decoration: none; }
+.bp-card-link svg { color: var(--ink-2); transition: transform 220ms var(--kit-ease), color 220ms var(--kit-ease); }
+.bp-card-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.bp-card-link:hover svg { transform: translate(2px, -2px); color: var(--ink); }
 .bp-note { grid-column: 1 / -1; margin: 0; font-size: 0.8125rem; color: var(--ink-2); }

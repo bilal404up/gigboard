@@ -86,20 +86,6 @@ function coverText(seed: string): string | null {
   return s ? s[0].toUpperCase() + s.slice(1) : null
 }
 
-function Cells({ text }: { text: string }) {
-  return (
-    <span className="ga-cells" aria-hidden="true">
-      {Array.from(text.toUpperCase()).map((ch, i) =>
-        ch === ' ' ? <span key={i} className="ga-gap" /> : (
-          <span key={i} className="ga-cell">
-            {ch}
-          </span>
-        )
-      )}
-    </span>
-  )
-}
-
 export function GigArt({ seed, category, className = '', title, cover = false, text, price, days, variant = 'cover' }: Props) {
   const cat = categoryOf(category)
   const words = variant === 'thumb' ? null : (text ?? coverText(seed))
@@ -114,7 +100,7 @@ export function GigArt({ seed, category, className = '', title, cover = false, t
       style={{ ['--ga-rule' as string]: RULE[cat] }}
     >
       <div className="ga-band">
-        <Cells text={NAME[cat]} />
+        <span className="ga-cat">{NAME[cat]}</span>
         {priceText ? <span className="ga-price">{variant === 'thumb' ? priceText : `From ${priceText}`}</span> : null}
       </div>
       <div className="ga-body">

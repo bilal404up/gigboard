@@ -1,5 +1,11 @@
 import Link from "next/link";
 import type { PaymentMode } from "@/lib/stripe/mode";
+import { StepsProgress } from "./StepsProgress";
+import { Reveal } from "@/components/motion/Reveal";
+import { ShoppingBag, Store, Shield, ArrowUpRight } from "lucide-react";
+
+/* Role for each step, in order: 1 Switch to Buyer, 2 Book, 3 Pay, 4 Deliver as seller, 5 Approve as buyer. */
+const STEP_ROLES = ["Buyer", "Buyer", "Buyer", "Seller", "Buyer"] as const;
 
 type Gig = { title: string; href: string; price: number };
 
@@ -16,7 +22,7 @@ export function TestOrder({ gig, mode }: { gig: Gig; mode: PaymentMode }) {
             title: "Pay with a Stripe test card",
             body: (
               <>
-                Card <span className="num">4242 4242 4242 4242</span>, any future date, any CVC. Stripe test mode, so no real money moves.
+                Card <span className="num">4242 4242 4242 4242</span>, any future date, any CVC. Demo payments, no real money moves.
               </>
             ),
           }
@@ -54,19 +60,22 @@ export function TestOrder({ gig, mode }: { gig: Gig; mode: PaymentMode }) {
               : "The switch in the top menu moves you between buyer and seller."}
           </p>
         </div>
-        <ol className="bp-steps">
+        <StepsProgress className="bp-steps">
           {steps.map((s, i) => (
             <li key={s.title}>
               <span className="bp-n num" aria-hidden="true">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <span>
-                <span className="bp-step-title">{s.title}</span>
+                <span className="bp-step-title">
+                  {s.title}
+                  <span className="bp-role">{STEP_ROLES[i]}</span>
+                </span>
                 <span className="bp-step-body">{s.body}</span>
               </span>
             </li>
           ))}
-        </ol>
+        </StepsProgress>
       </div>
     </section>
   );
@@ -105,6 +114,8 @@ const MAP: Array<{ title: string; links: Array<{ label: string; href: string }> 
   },
 ];
 
+const ICONS: Record<string, typeof ShoppingBag> = { Buyers: ShoppingBag, Sellers: Store, Admins: Shield }
+
 /** A compact case study: the problem, the approach, the stack, and every page that is built. */
 export function BuildNotes({ mode }: { mode: PaymentMode }) {
   return (
@@ -137,21 +148,30 @@ export function BuildNotes({ mode }: { mode: PaymentMode }) {
               </div>
             </dl>
           </div>
-          <div className="bp-map">
-            {MAP.map((group) => (
-              <nav key={group.title} className="bp-col" aria-label={`${group.title} pages`}>
-                <h3 className="eyebrow">{group.title}</h3>
-                <ul>
-                  {group.links.map((l) => (
-                    <li key={l.href}>
-                      <Link href={l.href} className="link">
-                        {l.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            ))}
+          <div>
+            <Reveal as="div" stagger={80} className="bp-map">
+            {MAP.map((group) => {
+              const Icon = ICONS[group.title]
+              return (
+                <nav key={group.title} className="bp-card" aria-label={`${group.title} pages`}>
+                  <h3 className="bp-card-title">
+                    <Icon size={16} aria-hidden="true" />
+                    {group.title}
+                  </h3>
+                  <ul>
+                    {group.links.map((l) => (
+                      <li key={l.href}>
+                        <Link href={l.href} className="bp-card-link">
+                          {l.label}
+                          <ArrowUpRight size={14} aria-hidden="true" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              )
+            })}
+            </Reveal>
             <p className="bp-note">Pages that need an account ask you to sign in. In the demo, pick a role in the top menu.</p>
           </div>
         </div>

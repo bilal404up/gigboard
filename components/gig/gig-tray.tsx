@@ -88,7 +88,7 @@ export function GigTrayHeader() {
 /* Board row: dense, one line per gig. On phones it stacks into two lines. */
 export function GigTrayRow({ gig, favorite }: TrayProps) {
   return (
-    <article className={cn("group relative border-b border-line px-2 py-3 transition-colors duration-150 hover:bg-surface md:px-4", ROW, "grid-cols-[4.5rem_minmax(0,1fr)_auto] focus-within:bg-surface")}>
+    <article className={cn("gig-row group relative border-b border-line px-2 py-3 md:px-4", ROW, "grid-cols-[4.5rem_minmax(0,1fr)_auto]")}>
       <div className="overflow-hidden rounded-[6px]">
         <Art gig={gig} thumb />
       </div>
@@ -112,9 +112,9 @@ export function GigTrayRow({ gig, favorite }: TrayProps) {
       <div className="hidden md:block">
         <ReviewSummary average={gig.average_rating} total={gig.total_reviews} compact />
       </div>
-      <div className="num hidden text-sm text-ink-2 md:block">{delivery(gig.delivery_days) ?? " "}</div>
+      <div className="hidden md:block">{delivery(gig.delivery_days) ? <span className="row-chip num">{delivery(gig.delivery_days)}</span> : null}</div>
       <div className="num hidden text-right text-[0.9375rem] md:block">${Math.round(gig.starting_price)}</div>
-      <div className="relative z-10 justify-self-end">{favorite}</div>
+      <div className="row-pin relative z-10 justify-self-end">{favorite}</div>
     </article>
   )
 }

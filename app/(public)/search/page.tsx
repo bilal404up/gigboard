@@ -9,6 +9,8 @@ import { X } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SortSelect } from "./sort-select";
 import { MobileFilterTrigger } from "./mobile-filter-trigger";
+import { Reveal } from "@/components/motion/Reveal";
+import { ShowMore } from "@/components/gig/show-more";
 
 export const revalidate = 0;
 
@@ -157,6 +159,50 @@ const RATING_OPTIONS = [
   { value: "3.5", label: "3.5 and up" },
 ];
 
+/* Board results: the first 12 show at once, the rest wait behind "Show N more gigs". */
+const BOARD_LIMIT = 12;
+/* Grouping by category applies to relevance order only, and only when there is something to group. */
+const GROUP_MIN = 8;
+
+function categoryLabel(slug: string | null | undefined) {
+  if (!slug) return "Other";
+  return slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+function renderBoard(cards: GigCardData[], grouped: boolean) {
+  const row = (c: GigCardData, i: number) => (
+    <div key={c.id} data-more={i >= BOARD_LIMIT ? "" : undefined} hidden={i >= BOARD_LIMIT || undefined}>
+      <GigRow gig={c} />
+    </div>
+  );
+  if (!grouped) return cards.map((c, i) => row(c, i));
+
+  const groups = new Map<string, { label: string; items: Array<{ c: GigCardData; i: number }> }>();
+  cards.forEach((c, i) => {
+    const key = c.category_slug ?? "other";
+    const g = groups.get(key) ?? { label: categoryLabel(c.category_slug), items: [] };
+    g.items.push({ c, i });
+    groups.set(key, g);
+  });
+  return Array.from(groups.entries()).map(([key, g]) => {
+    const headHidden = g.items[0].i >= BOARD_LIMIT;
+    return (
+      <section key={key} aria-label={g.label}>
+        <h2 data-more={headHidden ? "" : undefined} hidden={headHidden || undefined} className="search-group-head">
+          <span>{g.label}</span>
+          <span className="num">
+            {g.items.length} {g.items.length === 1 ? "gig" : "gigs"}
+          </span>
+        </h2>
+        {g.items.map(({ c, i }) => row(c, i))}
+      </section>
+    );
+  });
+}
+
 function countActiveFilters(p: SearchParams) {
   let n = 0;
   if (p.min_price) n++;
@@ -280,13 +326,13 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
               ))}
             </div>
           ) : (
-            <div className="panel overflow-hidden px-0 pt-3">
+            <div className="panel px-0 pt-3">
               <GigBoardHeader />
-              <div className="[&>article:last-child]:border-b-0">
-                {cards.map((c) => (
-                  <GigRow key={c.id} gig={c} />
-                ))}
-              </div>
+              <ShowMore hiddenCount={Math.max(0, cards.length - BOARD_LIMIT)}>
+                <Reveal as="div" stagger={30} className="[&>div:last-child>article]:border-b-0 [&>section:last-child>div:last-child>article]:border-b-0">
+                  {renderBoard(cards, sort === "relevance" && cards.length > GROUP_MIN)}
+                </Reveal>
+              </ShowMore>
             </div>
           )}
         </div>
@@ -327,7 +373,7 @@ function buildRemoveUrl(current: SearchParams, removeKeys: string[], overrides: 
 
 function ActiveChip({ label, removeUrl }: { label: string; removeUrl: string }) {
   return (
-    <Link href={removeUrl} className="chip h-11 gap-1.5 pr-2 text-xs font-semibold hover:shadow-[inset_0_0_0_1px_#111113] md:h-9">
+    <Link href={removeUrl} className="chip chip--dark h-11 gap-1.5 pr-2 text-xs font-semibold md:h-9">
       <span>{label}</span>
       <X className="h-3.5 w-3.5" aria-hidden="true" />
       <span className="sr-only">Remove filter</span>

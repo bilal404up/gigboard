@@ -343,6 +343,7 @@ body {
 }
 .ga-cell::after { content: ""; position: absolute; inset: calc(50% - 0.5px) 0 auto; height: 1px; background: rgb(0 0 0 / 0.55); }
 .ga-gap { width: calc(var(--cw) * 0.4); }
+.ga-cat { font: 500 max(10px, 3.2cqw)/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--flap-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .ga-price { font: 500 max(11px, 3.6cqw)/1 var(--font-mono); color: var(--held); white-space: nowrap; letter-spacing: 0.02em; }
 .ga-body {
   display: flex;
@@ -368,9 +369,11 @@ body {
   text-wrap: balance;
 }
 .ga-meta { font: 500 max(10px, 3.2cqw)/1 var(--font-mono); color: var(--ink-2); letter-spacing: 0.04em; text-transform: uppercase; }
-.ga--thumb .ga-band { flex-direction: column; align-items: flex-start; justify-content: center; flex: 1; border-bottom-width: 2px; padding: 8px; }
+.ga-band { flex-direction: column; align-items: flex-start; justify-content: center; gap: 6px; }
+.ga.ga--thumb { aspect-ratio: 3 / 2; }
+.ga--thumb .ga-band { flex: 1; border-bottom-width: 2px; padding: 6px 8px; }
 .ga--thumb .ga-body { display: none; }
-.ga--thumb .ga-cells { --cw: 9px; }
+.ga--thumb .ga-cat { font-size: 9px; }
 .ga--thumb .ga-price { font-size: 12px; }
 
 /* 5. Controls ------------------------------------------------------- */
@@ -482,6 +485,8 @@ body {
 
 .chip { display: inline-flex; align-items: center; min-height: 30px; padding: 0 12px; border-radius: 999px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); font: 500 0.8125rem/1 var(--font-body); }
 .chip--booth { background: var(--ink); color: #fff; box-shadow: none; }
+.chip--dark { background: var(--board); color: var(--flap-text); box-shadow: none; }
+.chip--dark:hover { background: var(--flap); box-shadow: none; }
 .chip--release { background: var(--go-bg); color: var(--go-ink); box-shadow: none; }
 .chip--alarm { background: var(--stop-bg); color: var(--stop-ink); box-shadow: none; }
 
@@ -684,3 +689,12 @@ html.js .draw-line--y:not([data-in]) { transform: scaleY(0); }
   }
 }
 /* ===== End motion kit ===== */
+
+/* Search board rows and group heads */
+.gig-row { transition: background-color 150ms var(--ease-out); }
+.gig-row:hover, .gig-row:focus-within { background: color-mix(in srgb, var(--sunk) 50%, transparent); }
+.row-pin { opacity: 0; transition: opacity 150ms var(--ease-out); }
+.gig-row:hover .row-pin, .gig-row:focus-within .row-pin, .row-pin:has([aria-pressed="true"]) { opacity: 1; }
+@media (hover: none) { .row-pin { opacity: 1; } }
+.row-chip { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 4px; background: var(--board); color: var(--flap-text); font: 500 12px/1 var(--font-mono); letter-spacing: 0.04em; white-space: nowrap; }
+.search-group-head { position: sticky; top: var(--header-h); z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0; padding: 10px 16px; background: var(--surface); border-top: 1px solid var(--line); font: 500 0.6875rem/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
